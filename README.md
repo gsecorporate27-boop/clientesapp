@@ -1,34 +1,31 @@
-# Ruta de Avance Visible™ - Conexión Google Sheets
+# Ruta de Avance Visible™ - Versión final conectada a Google Sheet
 
-Esta versión está corregida para aceptar un Google Sheet publicado con ID tipo `2PACX-...`.
+Esta versión NO tiene "Cliente Demo" quemado en el código de la pantalla.
+El nombre del cliente, servicio, estado, avance y próximo paso se leen desde la pestaña `Proyecto`.
 
-## Variable en Vercel
+## Variable requerida en Vercel
 
-Crear la variable:
-
-```text
 VITE_SPREADSHEET_ID
-```
 
-Valor recomendado para este caso:
+Ejemplo:
+1Catg2DFNqLHJ_Kvb9uqiKJhrcsVIpICP
 
-```text
-2PACX-1vT5FVaNryfpqK38L3RKORy8fueRuS6qamcd85YfOYljPtVuhXUfklbv-v1OP248tg
-```
+## Pestaña Proyecto
 
-También acepta la URL completa publicada:
+Debe tener:
 
-```text
-https://docs.google.com/spreadsheets/d/e/2PACX-.../pubhtml
-```
+Campo | Valor
 
-## Importante
+Cliente | troyamotors
+Servicio | power
+EstadoGeneral | pendiente
+AvanceGeneral | 40
+ProximoPaso | Reunión de validación de hallazgos y priorización
+FechaProximoPaso | 28 de mayo · 10h00
+ResponsableCliente | yo
+MensajeWhatsApp | Hola, equipo 👋 Ya actualizamos la Ruta de Avance Visible™.
 
-El Google Sheet debe estar publicado en la web:
-
-Archivo → Compartir → Publicar en la web → Todo el documento
-
-La app espera estas pestañas con nombres exactos:
+## Pestañas requeridas
 
 - Proyecto
 - Hitos
@@ -36,26 +33,3 @@ La app espera estas pestañas con nombres exactos:
 - PendientesCliente
 - Entregables
 - Actualizaciones
-
-No cambies nombres de pestañas ni encabezados de columnas.
-
-## Después de cambiar la variable o subir este código
-
-En Vercel:
-
-Deployments → tres puntitos → Redeploy
-
-
-## Corrección incluida
-
-Esta versión mejora la lectura de la pestaña `Proyecto`.
-Ahora reconoce los campos aunque Google Sheets entregue encabezados con espacios, caracteres invisibles o variaciones como:
-
-- EstadoGeneral / Estado general
-- AvanceGeneral / Avance general
-- ProximoPaso / Próximo paso
-- FechaProximoPaso / Fecha próximo paso
-
-Sigue siendo recomendado mantener la pestaña `Proyecto` con columnas:
-
-Campo | Valor

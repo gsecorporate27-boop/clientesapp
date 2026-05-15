@@ -21,17 +21,10 @@ import "./index.css";
 function getStatusType(status = "") {
   const normalized = String(status).toLowerCase();
   if (normalized.includes("finalizado") || normalized.includes("aprobado")) return "success";
-  if (normalized.includes("validación") || normalized.includes("revision") || normalized.includes("revisión")) return "warning";
+  if (normalized.includes("validación") || normalized.includes("validacion") || normalized.includes("revision") || normalized.includes("revisión")) return "warning";
   if (normalized.includes("bloqueado")) return "danger";
   if (normalized.includes("desarrollo")) return "info";
   return "neutral";
-}
-
-function getUpdateIcon(type = "") {
-  const normalized = String(type).toLowerCase();
-  if (normalized.includes("pendiente")) return AlertTriangle;
-  if (normalized.includes("proximo") || normalized.includes("próximo")) return Flag;
-  return Search;
 }
 
 function Badge({ children, status }) {
@@ -65,7 +58,11 @@ function Sidebar({ view, setView }) {
 
       <nav className="nav">
         {items.map(([Icon, label, value]) => (
-          <button key={label} className={`navItem ${view === value ? "active" : ""}`} onClick={() => setView(value)}>
+          <button
+            key={label}
+            className={`navItem ${view === value ? "active" : ""}`}
+            onClick={() => setView(value)}
+          >
             <Icon size={18} />
             {label}
           </button>
@@ -82,34 +79,31 @@ function Sidebar({ view, setView }) {
   );
 }
 
-function Header({ project, source, error }) {
+function Header({ project, connected }) {
   return (
     <header className="header">
       <div>
         <div className="eyebrow">{project.service}</div>
         <h1>Ruta de Avance Visible™</h1>
         <p>Seguimiento ejecutivo del proyecto · {project.client}</p>
-        {error && <p className="errorText">{error}</p>}
       </div>
 
       <div className="headerActions">
+        <Badge status={connected ? "Finalizado" : "Bloqueado"}>{connected ? "Conectado a Google Sheets" : "Sin conexión"}</Badge>
         <Badge status={project.status}>Estado general: {project.status}</Badge>
-        <Badge status={source === "google-sheets" ? "Finalizado" : "Pendiente"}>
-          {source === "google-sheets" ? "Conectado a Google Sheets" : "Modo demo"}
-        </Badge>
       </div>
     </header>
   );
 }
 
-function KpiCards({ data }) {
-  const done = data.milestones.filter((m) => getStatusType(m.status) === "success").length;
-  const blocked = data.pending.filter((p) => getStatusType(p.status) === "danger").length;
+function KpiCards({ project, milestones, pending }) {
+  const done = milestones.filter((m) => m.status === "Finalizado" || m.status === "Aprobado").length;
+  const blocked = pending.filter((p) => String(p.status).toLowerCase().includes("bloqueado")).length;
 
   const cards = [
-    { label: "Avance general", value: `${data.project.progress}%`, icon: BarChart3, note: "Proyecto en tiempo", status: data.project.status },
-    { label: "Hitos cumplidos", value: `${done}/${data.milestones.length}`, icon: CheckCircle2, note: "Avance validado", status: "Finalizado" },
-    { label: "Pendientes cliente", value: data.pending.length, icon: Clock3, note: "Requieren seguimiento", status: "En validación" },
+    { label: "Avance general", value: `${project.progress}%`, icon: BarChart3, note: "Proyecto actualizado", status: project.status },
+    { label: "Hitos cumplidos", value: `${done}/${milestones.length}`, icon: CheckCircle2, note: "Avance validado", status: "Finalizado" },
+    { label: "Pendientes cliente", value: pending.length, icon: Clock3, note: "Requieren seguimiento", status: "En validación" },
     { label: "Bloqueos", value: blocked, icon: LockKeyhole, note: "Impactan cronograma", status: blocked ? "Bloqueado" : "Finalizado" },
   ];
 
@@ -140,14 +134,14 @@ function Timeline({ milestones }) {
           <h2>Ruta del proyecto</h2>
           <p>Hitos visibles para que el cliente entienda qué se logró y qué sigue.</p>
         </div>
-        <Badge status="En validación">Hito actual: Hallazgos</Badge>
+        <Badge status="En validación">Ruta actualizada</Badge>
       </div>
 
       <div className="timeline">
-        {milestones.map((m) => (
+        {milestones.map((m, index) => (
           <div className="milestone" key={`${m.id}-${m.title}`}>
             <div className={`circle ${getStatusType(m.status)}`}>
-              {getStatusType(m.status) === "success" ? <CheckCircle2 size={20} /> : m.id}
+              {m.status === "Finalizado" || m.status === "Aprobado" ? <CheckCircle2 size={20} /> : index + 1}
             </div>
             <div className="milestoneTitle">{m.title}</div>
             <ProgressBar value={m.progress} status={m.status} />
@@ -167,7 +161,7 @@ function Findings({ findings }) {
           <h2>Hallazgos encontrados</h2>
           <p>Qué está causando desorden, reprocesos o pérdida de claridad.</p>
         </div>
-        <Badge status="En validación">En validación</Badge>
+        <Badge status="En validación">{findings.length} hallazgos</Badge>
       </div>
 
       <div className="list">
@@ -241,11 +235,6 @@ function Deliverables({ deliverables }) {
             </div>
             <ProgressBar value={item.progress} status={item.status} />
             <div className="muted">{item.progress}% de avance</div>
-            {item.link && (
-              <a href={item.link} target="_blank" rel="noreferrer" className="linkBtn">
-                Ver entregable <ChevronRight size={16} />
-              </a>
-            )}
           </div>
         ))}
       </div>
@@ -254,32 +243,35 @@ function Deliverables({ deliverables }) {
 }
 
 function UpdatesPanel({ project, updates }) {
+  const safeUpdates = updates.length ? updates : [
+    { title: "Próximo paso", text: project.nextStep },
+  ];
+
   return (
     <aside className="rightPanel">
       <div className="nextCard">
         <div className="nextLabel"><Flag size={18} /> Próximo paso</div>
         <h3>{project.nextStep}</h3>
         <p>{project.nextDate}</p>
-        <button className="tealBtn">Ver agenda</button>
       </div>
 
-      {updates.map((u) => {
-        const Icon = getUpdateIcon(u.type);
-        return (
-          <div className="card updateCard" key={`${u.title}-${u.type}`}>
-            <div className="updateTitle">
-              <div className="iconBox teal"><Icon size={20} /></div>
-              <strong>{u.title}</strong>
-            </div>
-            <p>{u.text}</p>
+      {safeUpdates.map((u, index) => (
+        <div className="card updateCard" key={`${u.title}-${index}`}>
+          <div className="updateTitle">
+            <div className="iconBox teal"><Search size={20} /></div>
+            <strong>{u.title}</strong>
           </div>
-        );
-      })}
+          <p>{u.text}</p>
+          <button className="linkBtn">
+            Ver detalle <ChevronRight size={16} />
+          </button>
+        </div>
+      ))}
     </aside>
   );
 }
 
-function WhatsAppMessage({ message }) {
+function WhatsAppMessage({ project }) {
   return (
     <section className="card">
       <div className="sectionHeader">
@@ -293,7 +285,7 @@ function WhatsAppMessage({ message }) {
       </div>
 
       <div className="whatsappBox">
-        {String(message || "").split("\n").map((line, index) => (
+        {String(project.whatsappMessage || "").split("\n").map((line, index) => (
           <p key={index}>{line || " "}</p>
         ))}
       </div>
@@ -304,88 +296,88 @@ function WhatsAppMessage({ message }) {
 function App() {
   const [view, setView] = useState("resumen");
   const [data, setData] = useState(demoData);
-  const [source, setSource] = useState("demo");
-  const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [connected, setConnected] = useState(false);
+  const [error, setError] = useState("");
 
   useEffect(() => {
-    loadSheetData().then((result) => {
-      setData(result.data);
-      setSource(result.source);
-      setError(result.error);
-      setLoading(false);
-    });
+    loadSheetData()
+      .then((sheetData) => {
+        setData(sheetData);
+        setConnected(true);
+        setError("");
+      })
+      .catch((err) => {
+        console.error(err);
+        setConnected(false);
+        setError("No se pudo conectar con Google Sheets. Revisa publicación, permisos o nombres de pestañas.");
+      });
   }, []);
 
-  const completedText = useMemo(() => {
-    const completed = data.milestones.filter((m) => getStatusType(m.status) === "success").length;
-    return `${completed} hitos completados de ${data.milestones.length}`;
-  }, [data.milestones]);
+  const { project, milestones, findings, pending, deliverables, updates } = data;
 
-  if (loading) {
-    return (
-      <div className="loading">
-        <div className="loadingCard">
-          <div className="logo dark">GSE</div>
-          <h1>Cargando Ruta de Avance Visible™</h1>
-          <p>Estamos leyendo la información del proyecto.</p>
-        </div>
-      </div>
-    );
-  }
+  const completedText = useMemo(() => {
+    const completed = milestones.filter((m) => m.status === "Finalizado" || m.status === "Aprobado").length;
+    return `${completed} hitos completados de ${milestones.length}`;
+  }, [milestones]);
 
   return (
     <div className="app">
       <Sidebar view={view} setView={setView} />
 
       <main className="main">
-        <Header project={data.project} source={source} error={error} />
+        <Header project={project} connected={connected} />
 
         <div className="content">
           <div className="mobileTabs">
             {["resumen", "hallazgos", "pendientes", "entregables", "whatsapp"].map((item) => (
-              <button key={item} onClick={() => setView(item)} className={view === item ? "active" : ""}>
+              <button
+                key={item}
+                onClick={() => setView(item)}
+                className={view === item ? "active" : ""}
+              >
                 {item}
               </button>
             ))}
           </div>
 
+          {error && <div className="errorBox">{error}</div>}
+
           <div className="heroCard">
             <div>
-              <div className="eyebrow">Tablero conectado</div>
-              <h2>{data.project.service} · {data.project.client}</h2>
+              <div className="eyebrow">{connected ? "Tablero conectado" : "Revisar conexión"}</div>
+              <h2>{project.service} · {project.client}</h2>
               <p>{completedText}. Avance general actualizado desde Google Sheets.</p>
             </div>
             <div className="responsible">
               <Users size={22} />
               <div>
                 <span>Responsable cliente</span>
-                <strong>{data.project.responsibleClient}</strong>
+                <strong>{project.responsibleClient}</strong>
               </div>
             </div>
           </div>
 
           {view === "resumen" && (
             <>
-              <KpiCards data={data} />
+              <KpiCards project={project} milestones={milestones} pending={pending} />
               <div className="layout">
                 <div className="leftContent">
-                  <Timeline milestones={data.milestones} />
-                  <Findings findings={data.findings} />
+                  <Timeline milestones={milestones} />
+                  <Findings findings={findings} />
                 </div>
-                <UpdatesPanel project={data.project} updates={data.updates} />
+                <UpdatesPanel project={project} updates={updates} />
               </div>
               <div className="twoColumns">
-                <PendingClient pending={data.pending} />
-                <Deliverables deliverables={data.deliverables} />
+                <PendingClient pending={pending} />
+                <Deliverables deliverables={deliverables} />
               </div>
             </>
           )}
 
-          {view === "hallazgos" && <Findings findings={data.findings} />}
-          {view === "pendientes" && <PendingClient pending={data.pending} />}
-          {view === "entregables" && <Deliverables deliverables={data.deliverables} />}
-          {view === "whatsapp" && <WhatsAppMessage message={data.project.whatsappMessage} />}
+          {view === "hallazgos" && <Findings findings={findings} />}
+          {view === "pendientes" && <PendingClient pending={pending} />}
+          {view === "entregables" && <Deliverables deliverables={deliverables} />}
+          {view === "whatsapp" && <WhatsAppMessage project={project} />}
         </div>
       </main>
     </div>
