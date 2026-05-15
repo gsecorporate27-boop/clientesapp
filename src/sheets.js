@@ -128,21 +128,67 @@ async function fetchCsvSheet(sheetName) {
   return parseCsv(text);
 }
 
+function cleanText(value) {
+  return String(value ?? "")
+    .replace(/^\uFEFF/, "")
+    .replace(/[\u200B-\u200D\uFEFF]/g, "")
+    .trim();
+}
+
+function normalizeKey(value) {
+  return cleanText(value)
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-zA-Z0-9]/g, "")
+    .toLowerCase();
+}
+
+function getRowValue(row, possibleKeys) {
+  const normalizedRow = {};
+
+  Object.keys(row || {}).forEach((key) => {
+    normalizedRow[normalizeKey(key)] = row[key];
+  });
+
+  for (const key of possibleKeys) {
+    const value = normalizedRow[normalizeKey(key)];
+    if (cleanText(value)) return cleanText(value);
+  }
+
+  return "";
+}
+
 function projectFromRows(rows) {
   const map = {};
+
   rows.forEach((row) => {
-    if (row.Campo) map[String(row.Campo).trim()] = row.Valor ?? "";
+    // Formato esperado:
+    // Campo | Valor
+    const fieldName = getRowValue(row, ["Campo", "Field", "Nombre"]);
+    const fieldValue = getRowValue(row, ["Valor", "Value", "Dato"]);
+
+    if (fieldName) {
+      map[normalizeKey(fieldName)] = fieldValue;
+    }
+
+    // Formato alternativo:
+    // Cliente | Servicio | EstadoGeneral | ...
+    Object.keys(row || {}).forEach((key) => {
+      const normalized = normalizeKey(key);
+      const value = cleanText(row[key]);
+      if (value && !map[normalized]) map[normalized] = value;
+    });
   });
 
   return {
-    client: map.Cliente || demoData.project.client,
-    service: map.Servicio || demoData.project.service,
-    status: map.EstadoGeneral || demoData.project.status,
-    progress: parseNumber(map.AvanceGeneral, demoData.project.progress),
-    nextStep: map.ProximoPaso || demoData.project.nextStep,
-    nextDate: map.FechaProximoPaso || demoData.project.nextDate,
-    responsibleClient: map.ResponsableCliente || demoData.project.responsibleClient,
-    whatsappMessage: map.MensajeWhatsApp || demoData.project.whatsappMessage,
+    client: map.cliente || demoData.project.client,
+    service: map.servicio || demoData.project.service,
+    status: map.estadogeneral || map.estado || demoData.project.status,
+    progress: parseNumber(map.avancegeneral || map.avance, demoData.project.progress),
+    nextStep: map.proximopaso || map.proximopasoactual || demoData.project.nextStep,
+    nextDate: map.fechaproximopaso || map.proximafecha || demoData.project.nextDate,
+    responsibleClient: map.responsablecliente || map.responsable || demoData.project.responsibleClient,
+    whatsappMessage: map.mensajewhatsapp || map.whatsapp || demoData.project.whatsappMessage,
   };
 }
 
