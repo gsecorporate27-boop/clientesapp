@@ -2,13 +2,13 @@ const SPREADSHEET_ID = import.meta.env.VITE_SPREADSHEET_ID || "";
 
 export const demoData = {
   project: {
-    client: "SIN CONEXIÓN - REVISAR GOOGLE SHEET",
-    service: "Business Power™",
-    status: "Pendiente",
-    progress: 0,
-    nextStep: "Configurar Google Sheet",
-    nextDate: "Sin fecha",
-    responsibleClient: "Sin responsable",
+    client: "troyamotors",
+    service: "power™",
+    status: "pendiente",
+    progress: 140,
+    nextStep: "Reunión de validación de hallazgos y priorización",
+    nextDate: "28 de mayo · 10h00",
+    responsibleClient: "yo",
     whatsappMessage: "Hola, equipo 👋 Ya actualizamos la Ruta de Avance Visible™."
   },
   milestones: [],
