@@ -58,8 +58,36 @@ export const demoData = {
   ],
 };
 
+function getSpreadsheetId(rawValue) {
+  const raw = String(rawValue || "").trim();
+
+  // Acepta:
+  // 1) ID editable: 1ABC...
+  // 2) ID publicado: 2PACX-...
+  // 3) URL completa publicada: https://docs.google.com/spreadsheets/d/e/2PACX-.../pubhtml
+  // 4) URL editable: https://docs.google.com/spreadsheets/d/1ABC.../edit
+  const publishedMatch = raw.match(/\/d\/e\/([^/]+)/);
+  if (publishedMatch) return { id: publishedMatch[1], type: "published" };
+
+  const editableMatch = raw.match(/\/d\/([^/]+)/);
+  if (editableMatch) return { id: editableMatch[1], type: "editable" };
+
+  if (raw.startsWith("2PACX-")) return { id: raw, type: "published" };
+
+  return { id: raw, type: "editable" };
+}
+
 function csvUrl(sheetName) {
-  return `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(sheetName)}`;
+  const { id, type } = getSpreadsheetId(SPREADSHEET_ID);
+  const encodedSheet = encodeURIComponent(sheetName);
+
+  // Para Google Sheets publicado en la web
+  if (type === "published") {
+    return `https://docs.google.com/spreadsheets/d/e/${id}/gviz/tq?tqx=out:csv&sheet=${encodedSheet}`;
+  }
+
+  // Para Google Sheets compartido como editable/público
+  return `https://docs.google.com/spreadsheets/d/${id}/gviz/tq?tqx=out:csv&sheet=${encodedSheet}`;
 }
 
 function parseNumber(value, fallback = 0) {
@@ -82,11 +110,21 @@ function parseCsv(text) {
 }
 
 async function fetchCsvSheet(sheetName) {
-  const response = await fetch(csvUrl(sheetName), { cache: "no-store" });
+  const url = csvUrl(sheetName);
+  const response = await fetch(url, { cache: "no-store" });
+
   if (!response.ok) {
-    throw new Error(`No se pudo leer la hoja ${sheetName}`);
+    throw new Error(`No se pudo leer la hoja ${sheetName}. URL: ${url}`);
   }
+
   const text = await response.text();
+
+  // Google devuelve HTML cuando la hoja no está publicada correctamente.
+  // Esto evita mostrar una tabla vacía sin avisar.
+  if (text.trim().startsWith("<")) {
+    throw new Error(`La hoja ${sheetName} devolvió HTML, no CSV. Revisa que el documento esté publicado en la web.`);
+  }
+
   return parseCsv(text);
 }
 
