@@ -6,7 +6,6 @@ function getSheetIdFromUrl() {
 
 const SPREADSHEET_ID = getSheetIdFromUrl() || import.meta.env.VITE_SPREADSHEET_ID || "";
 
-
 export const demoData = {
   project: {
     client: "SIN CONEXIÓN - REVISAR GOOGLE SHEET",
@@ -164,58 +163,83 @@ function getRowValue(row, possibleKeys) {
   return "";
 }
 
-/**
- * LECTURA DEFINITIVA DE PROYECTO:
- * Soporta cualquiera de estas formas:
- * 1) Campo | Valor
- * 2) Cliente | Servicio | EstadoGeneral | ...
- * 3) Filas sueltas donde Google Sheets no reconoce encabezados
- * 4) Espacios ocultos, mayúsculas, tildes o variantes
- */
 function projectFromRawRows(rows) {
   const map = {};
+  const validKeys = [
+    "cliente",
+    "servicio",
+    "estadogeneral",
+    "estado",
+    "avancegeneral",
+    "avance",
+    "proximopaso",
+    "proximopasoactual",
+    "fechaproximopaso",
+    "proximafecha",
+    "responsablecliente",
+    "responsable",
+    "mensajewhatsapp",
+    "whatsapp"
+  ];
 
-  rows.forEach((row) => {
+  const cleanRows = rows
+    .map((row) => row.map(cleanText))
+    .filter((row) => row.some((cell) => cell !== ""));
+
+  if (!cleanRows.length) {
+    return demoData.project;
+  }
+
+  // FORMATO HORIZONTAL RECOMENDADO
+  // Fila 1: Cliente | Servicio | EstadoGeneral | ...
+  // Fila 2: Troya Motors | Business Power™ | En tiempo | ...
+  const headerKeys = cleanRows[0].map(normalizeKey);
+  const valueRow = cleanRows[1] || [];
+  const looksHorizontal = headerKeys.includes("cliente") && headerKeys.includes("servicio");
+
+  if (looksHorizontal && valueRow.length) {
+    headerKeys.forEach((key, index) => {
+      if (validKeys.includes(key)) {
+        const value = cleanText(valueRow[index]);
+        if (value) map[key] = value;
+      }
+    });
+  }
+
+  // FORMATO VERTICAL ALTERNATIVO
+  // Campo | Valor
+  // Cliente | Troya Motors
+  const firstA = normalizeKey(cleanRows[0]?.[0]);
+  const firstB = normalizeKey(cleanRows[0]?.[1]);
+
+  if (firstA === "campo" && firstB === "valor") {
+    cleanRows.slice(1).forEach((row) => {
+      const key = normalizeKey(row[0]);
+      const value = cleanText(row[1]);
+      if (validKeys.includes(key) && value) {
+        map[key] = value;
+      }
+    });
+  }
+
+  // FORMATO KEY-VALUE SIN ENCABEZADOS
+  cleanRows.forEach((row) => {
     const cells = row.map(cleanText).filter((cell) => cell !== "");
     if (!cells.length) return;
 
     const first = normalizeKey(cells[0]);
     const second = cells[1] ? cleanText(cells[1]) : "";
 
-    // Caso Campo | Valor como encabezado
-    if (first === "campo" || first === "field" || first === "nombre") return;
+    // Evitar tomar encabezados como datos
+    if (first === "cliente" && normalizeKey(second) === "servicio") return;
+    if (first === "campo" && normalizeKey(second) === "valor") return;
 
-    // Caso key-value directo: Cliente | troyamotors
-    if (first && second) {
+    if (validKeys.includes(first) && second && !map[first]) {
       map[first] = second;
     }
-
-    // Caso accidental: Cliente está en cualquier celda y valor en la siguiente
-    cells.forEach((cell, index) => {
-      const key = normalizeKey(cell);
-      const value = cells[index + 1] ? cleanText(cells[index + 1]) : "";
-      if (key && value && [
-        "cliente",
-        "servicio",
-        "estadogeneral",
-        "estado",
-        "avancegeneral",
-        "avance",
-        "proximopaso",
-        "proximopasoactual",
-        "fechaproximopaso",
-        "proximafecha",
-        "responsablecliente",
-        "responsable",
-        "mensajewhatsapp",
-        "whatsapp"
-      ].includes(key)) {
-        map[key] = value;
-      }
-    });
   });
 
-  const project = {
+  return {
     client: map.cliente || demoData.project.client,
     service: map.servicio || demoData.project.service,
     status: map.estadogeneral || map.estado || demoData.project.status,
@@ -225,8 +249,6 @@ function projectFromRawRows(rows) {
     responsibleClient: map.responsablecliente || map.responsable || demoData.project.responsibleClient,
     whatsappMessage: map.mensajewhatsapp || map.whatsapp || demoData.project.whatsappMessage,
   };
-
-  return project;
 }
 
 function mapMilestones(rows) {
@@ -276,7 +298,7 @@ function mapUpdates(rows) {
 
 export async function loadSheetData() {
   if (!SPREADSHEET_ID) {
-    throw new Error("Falta configurar VITE_SPREADSHEET_ID");
+    throw new Error("Falta configurar VITE_SPREADSHEET_ID o usar ?sheet=ID");
   }
 
   const [projectRawRows, milestoneRows, findingRows, pendingRows, deliverableRows, updateRows] = await Promise.all([
