@@ -66,3 +66,73 @@ Cambios:
 - PendientesCliente ahora acepta:
   Pendiente | Responsable | Fecha | Estado | Que bloquea | Descripcion | Link
 - En la pestaña Pendientes, cada pendiente se despliega con descripción y link del documento a aprobar.
+
+
+## V7 - Botón visible para detalle de hitos
+
+Esta versión no depende de hacer clic en toda la tarjeta.
+En la pestaña Ruta del proyecto, cada hito muestra un botón visible:
+
+Ver detalle
+
+Al hacer clic, despliega:
+- Descripción
+- Incluye
+- Link
+- Entregables relacionados
+
+
+## V8 - Ver detalle desde resumen
+
+Cambio clave:
+- En el resumen, el botón ahora dice "Ver detalle".
+- Al hacer clic, lleva a Ruta del proyecto y abre automáticamente ese hito.
+- En Ruta del proyecto, el botón "Ver detalle" despliega Descripcion, Incluye, Link y entregables relacionados.
+
+
+## V9 - Limpieza de resumen y ruta por clic
+
+Cambios:
+- Se elimina el botón visible "Ver detalle" del resumen.
+- En el resumen, al hacer clic en cualquier hito, lleva a Ruta del proyecto y abre ese hito.
+- En Ruta del proyecto, al hacer clic en cualquier hito, se despliega o se oculta su detalle.
+- Los números del resumen son menos pesados visualmente.
+- Las etiquetas mantienen tamaño más homogéneo y letra más pequeña.
+
+
+## V10 - Ruta y resumen
+
+Cambios:
+- En resumen, los hitos se muestran 4 por fila en escritorio.
+- En resumen, al hacer clic sobre un hito, lleva a Ruta del proyecto y abre ese hito.
+- En Ruta del proyecto, al hacer clic sobre cualquier hito, se despliega/oculta descripción, incluye y link.
+- Se mantiene el mensaje si el hito no tiene Descripcion, Incluye o Link cargado en Google Sheet.
+
+
+## V11 - Acordeón nativo para Hitos
+
+Cambio clave:
+- Ruta del proyecto ahora usa <details>/<summary>, más estable para desplegar detalles.
+- Campos aceptados en Hitos:
+  ID | Hito | Sistema | Estado | Avance | Descripcion | Qué incluye | Link | FechaObjetivo
+- En resumen, hitos a 4 por fila.
+- Al abrir un hito en Ruta se muestra Descripción, Qué incluye, Link y entregables relacionados.
+
+
+## V12 - Ruta forzada como desplegable
+
+- La vista `ruta` queda forzada con `detailed={true}`.
+- Si en Ruta sigues viendo el texto corto, revisa que el render `view === "ruta"` haya sido reemplazado en src/main.jsx.
+- Hitos reconoce: ID | Hito | Sistema | Estado | Avance | Descripcion | Qué incluye | Link | FechaObjetivo.
+
+
+## V13 - Detalle en tarjeta
+
+Cambio clave:
+- Ya no se despliegan los hitos.
+- En la pestaña Ruta del proyecto, cada tarjeta muestra directamente:
+  - Descripción
+  - Qué incluye
+  - Link
+  - Entregables relacionados
+- En resumen, los hitos siguen compactos y en 4 por fila.
