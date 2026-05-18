@@ -55,3 +55,14 @@ ID | Hito | Sistema | Estado | Avance | Descripcion | Incluye | Link | FechaObje
   - Link
   - Entregables relacionados
 - Las etiquetas evitan verse como círculos y no se salen del cuadro.
+
+
+## V6 - Hitos y pendientes
+
+Cambios:
+- En Ruta del proyecto, cada hito se despliega al hacer clic y muestra Descripcion, Incluye, Link y entregables relacionados.
+- Las etiquetas son más pequeñas, centradas y homogéneas.
+- En Resumen, el bloque de Pendientes del cliente redirecciona a la pestaña Pendientes.
+- PendientesCliente ahora acepta:
+  Pendiente | Responsable | Fecha | Estado | Que bloquea | Descripcion | Link
+- En la pestaña Pendientes, cada pendiente se despliega con descripción y link del documento a aprobar.
