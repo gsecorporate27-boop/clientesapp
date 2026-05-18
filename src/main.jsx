@@ -239,13 +239,13 @@ function Timeline({ milestones, deliverables = [], detailed = false, setView, se
     }
   }, [detailed, selectedHito]);
 
-  const goToRouteAndOpen = (title) => {
+  const openFromSummary = (title) => {
     setSelectedHito?.(title);
     setOpenHito(title);
     setView?.("ruta");
   };
 
-  const toggleDetail = (title) => {
+  const toggleInRoute = (title) => {
     const next = openHito === title ? "" : title;
     setOpenHito(next);
     setSelectedHito?.(next);
@@ -258,13 +258,13 @@ function Timeline({ milestones, deliverables = [], detailed = false, setView, se
           <h2>Ruta del proyecto</h2>
           <p>
             {detailed
-              ? "Haz clic en cualquier hito para desplegar su descripción, lo que incluye y el enlace relacionado."
+              ? "Haz clic en un hito para desplegar su descripción, lo que incluye y el enlace relacionado."
               : "Hitos visibles para entender qué se logró, qué contiene cada etapa y qué sigue."}
           </p>
         </div>
       </div>
 
-      <div className={detailed ? "timelineDetailed" : "timeline"}>
+      <div className={detailed ? "timelineDetailed" : "timeline timelineSummary"}>
         {milestones.map((m, index) => {
           const relatedDeliverables = deliverables.filter((d) => String(d.milestone || "").trim().toLowerCase() === String(m.title || "").trim().toLowerCase());
           const isOpen = openHito === m.title;
@@ -275,9 +275,9 @@ function Timeline({ milestones, deliverables = [], detailed = false, setView, se
               key={`${m.id}-${m.title}`}
               onClick={() => {
                 if (detailed) {
-                  toggleDetail(m.title);
+                  toggleInRoute(m.title);
                 } else {
-                  goToRouteAndOpen(m.title);
+                  openFromSummary(m.title);
                 }
               }}
               role="button"
@@ -285,8 +285,8 @@ function Timeline({ milestones, deliverables = [], detailed = false, setView, se
               onKeyDown={(e) => {
                 if (e.key === "Enter" || e.key === " ") {
                   e.preventDefault();
-                  if (detailed) toggleDetail(m.title);
-                  else goToRouteAndOpen(m.title);
+                  if (detailed) toggleInRoute(m.title);
+                  else openFromSummary(m.title);
                 }
               }}
             >
@@ -320,7 +320,7 @@ function Timeline({ milestones, deliverables = [], detailed = false, setView, se
               )}
 
               {detailed && isOpen && (
-                <div className="milestoneDetails" onClick={(e) => e.stopPropagation()}>
+                <div className="milestoneDetails">
                   {m.description && (
                     <div className="detailBlock">
                       <strong>Descripción</strong>
