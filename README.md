@@ -1,31 +1,44 @@
-# Ruta de Avance Visible™ - Versión final conectada a Google Sheet
+# Ruta de Avance Visible™ - Versión multi-cliente
 
-Esta versión NO tiene "Cliente Demo" quemado en el código de la pantalla.
-El nombre del cliente, servicio, estado, avance y próximo paso se leen desde la pestaña `Proyecto`.
+Esta versión permite usar UNA sola app para varios clientes.
 
-## Variable requerida en Vercel
+## Cómo funciona
 
-VITE_SPREADSHEET_ID
+La app lee el Google Sheet desde el link usando el parámetro:
+
+```text
+?sheet=ID_DEL_GOOGLE_SHEET
+```
 
 Ejemplo:
-1Catg2DFNqLHJ_Kvb9uqiKJhrcsVIpICP
 
-## Pestaña Proyecto
+```text
+https://tuapp.vercel.app/?sheet=1Catg2DFNqLHJ_Kvb9uqiKJhrcsVIpICP
+```
 
-Debe tener:
+Si no colocas `?sheet=...`, la app usará la variable de Vercel:
 
-Campo | Valor
+```text
+VITE_SPREADSHEET_ID
+```
 
-Cliente | troyamotors
-Servicio | power
-EstadoGeneral | pendiente
-AvanceGeneral | 40
-ProximoPaso | Reunión de validación de hallazgos y priorización
-FechaProximoPaso | 28 de mayo · 10h00
-ResponsableCliente | yo
-MensajeWhatsApp | Hola, equipo 👋 Ya actualizamos la Ruta de Avance Visible™.
+Esto te permite tener:
 
-## Pestañas requeridas
+- Una sola app publicada en Vercel
+- Un Google Sheet diferente para cada cliente
+- Un link único por cliente
+
+## Estructura recomendada por cliente
+
+Duplica la plantilla de Google Sheet para cada cliente:
+
+```text
+Ruta de Avance Visible - Troya Motors
+Ruta de Avance Visible - Vital Gym
+Ruta de Avance Visible - Hospital
+```
+
+Cada Sheet debe tener las mismas pestañas:
 
 - Proyecto
 - Hitos
@@ -33,3 +46,36 @@ MensajeWhatsApp | Hola, equipo 👋 Ya actualizamos la Ruta de Avance Visible™
 - PendientesCliente
 - Entregables
 - Actualizaciones
+
+## Pestaña Proyecto recomendada
+
+Formato horizontal:
+
+| Cliente | Servicio | EstadoGeneral | AvanceGeneral | ProximoPaso | FechaProximoPaso | ResponsableCliente | MensajeWhatsApp |
+|---|---|---|---|---|---|---|---|
+| Troya Motors | Business Power™ | En tiempo | 40 | Validación de hallazgos | 28 de mayo · 10h00 | Gerencia | Hola, equipo... |
+
+## Cómo crear un link para un cliente
+
+1. Abre el Google Sheet del cliente.
+2. Copia el ID desde la URL:
+
+```text
+https://docs.google.com/spreadsheets/d/ESTE_ES_EL_ID/edit
+```
+
+3. Pégalo al final de la URL de la app:
+
+```text
+https://tuapp.vercel.app/?sheet=ESTE_ES_EL_ID
+```
+
+## Importante
+
+El Google Sheet del cliente debe estar compartido como:
+
+```text
+Cualquier persona con el enlace → Lector
+```
+
+No coloques datos sensibles en la hoja que se muestra al cliente.

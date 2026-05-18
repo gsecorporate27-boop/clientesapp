@@ -1,14 +1,21 @@
-const SPREADSHEET_ID = import.meta.env.VITE_SPREADSHEET_ID || "";
+
+function getSheetIdFromUrl() {
+  const params = new URLSearchParams(window.location.search);
+  return params.get("sheet") || params.get("sheetId") || "";
+}
+
+const SPREADSHEET_ID = getSheetIdFromUrl() || import.meta.env.VITE_SPREADSHEET_ID || "";
+
 
 export const demoData = {
   project: {
-    client: "troyamotors",
-    service: "power™",
-    status: "pendiente",
-    progress: 140,
-    nextStep: "Reunión de validación de hallazgos y priorización",
-    nextDate: "28 de mayo · 10h00",
-    responsibleClient: "yo",
+    client: "SIN CONEXIÓN - REVISAR GOOGLE SHEET",
+    service: "Business Power™",
+    status: "Pendiente",
+    progress: 0,
+    nextStep: "Configurar Google Sheet",
+    nextDate: "Sin fecha",
+    responsibleClient: "Sin responsable",
     whatsappMessage: "Hola, equipo 👋 Ya actualizamos la Ruta de Avance Visible™."
   },
   milestones: [],
@@ -22,6 +29,7 @@ function cleanText(value) {
   return String(value ?? "")
     .replace(/^\uFEFF/, "")
     .replace(/[\u200B-\u200D\uFEFF]/g, "")
+    .replace(/\r/g, "")
     .trim();
 }
 
@@ -63,7 +71,7 @@ function csvUrl(sheetName) {
   return `https://docs.google.com/spreadsheets/d/${id}/gviz/tq?tqx=out:csv&sheet=${encodedSheet}`;
 }
 
-function parseCsv(csvText) {
+function parseCsvRows(csvText) {
   const rows = [];
   let current = [];
   let value = "";
@@ -94,8 +102,7 @@ function parseCsv(csvText) {
       if (char === "\r" && next === "\n") i++;
       current.push(value);
       value = "";
-
-      if (current.some((cell) => cleanText(cell))) rows.push(current);
+      if (current.some((cell) => cleanText(cell))) rows.push(current.map(cleanText));
       current = [];
       continue;
     }
@@ -104,10 +111,12 @@ function parseCsv(csvText) {
   }
 
   current.push(value);
-  if (current.some((cell) => cleanText(cell))) rows.push(current);
+  if (current.some((cell) => cleanText(cell))) rows.push(current.map(cleanText));
+  return rows;
+}
 
+function rowsToObjects(rows) {
   if (!rows.length) return [];
-
   const headers = rows[0].map(cleanText);
   return rows.slice(1).map((row) => {
     const obj = {};
@@ -118,7 +127,7 @@ function parseCsv(csvText) {
   });
 }
 
-async function fetchCsvSheet(sheetName) {
+async function fetchCsvRows(sheetName) {
   const url = csvUrl(sheetName);
   const response = await fetch(url, { cache: "no-store" });
 
@@ -132,7 +141,12 @@ async function fetchCsvSheet(sheetName) {
     throw new Error(`La hoja ${sheetName} devolvió HTML, no CSV`);
   }
 
-  return parseCsv(text);
+  return parseCsvRows(text);
+}
+
+async function fetchCsvSheet(sheetName) {
+  const rows = await fetchCsvRows(sheetName);
+  return rowsToObjects(rows);
 }
 
 function getRowValue(row, possibleKeys) {
@@ -150,25 +164,58 @@ function getRowValue(row, possibleKeys) {
   return "";
 }
 
-function projectFromRows(rows) {
+/**
+ * LECTURA DEFINITIVA DE PROYECTO:
+ * Soporta cualquiera de estas formas:
+ * 1) Campo | Valor
+ * 2) Cliente | Servicio | EstadoGeneral | ...
+ * 3) Filas sueltas donde Google Sheets no reconoce encabezados
+ * 4) Espacios ocultos, mayúsculas, tildes o variantes
+ */
+function projectFromRawRows(rows) {
   const map = {};
 
   rows.forEach((row) => {
-    const fieldName = getRowValue(row, ["Campo", "Field", "Nombre"]);
-    const fieldValue = getRowValue(row, ["Valor", "Value", "Dato"]);
+    const cells = row.map(cleanText).filter((cell) => cell !== "");
+    if (!cells.length) return;
 
-    if (fieldName) {
-      map[normalizeKey(fieldName)] = fieldValue;
+    const first = normalizeKey(cells[0]);
+    const second = cells[1] ? cleanText(cells[1]) : "";
+
+    // Caso Campo | Valor como encabezado
+    if (first === "campo" || first === "field" || first === "nombre") return;
+
+    // Caso key-value directo: Cliente | troyamotors
+    if (first && second) {
+      map[first] = second;
     }
 
-    Object.keys(row || {}).forEach((key) => {
-      const normalized = normalizeKey(key);
-      const value = cleanText(row[key]);
-      if (value && !map[normalized]) map[normalized] = value;
+    // Caso accidental: Cliente está en cualquier celda y valor en la siguiente
+    cells.forEach((cell, index) => {
+      const key = normalizeKey(cell);
+      const value = cells[index + 1] ? cleanText(cells[index + 1]) : "";
+      if (key && value && [
+        "cliente",
+        "servicio",
+        "estadogeneral",
+        "estado",
+        "avancegeneral",
+        "avance",
+        "proximopaso",
+        "proximopasoactual",
+        "fechaproximopaso",
+        "proximafecha",
+        "responsablecliente",
+        "responsable",
+        "mensajewhatsapp",
+        "whatsapp"
+      ].includes(key)) {
+        map[key] = value;
+      }
     });
   });
 
-  return {
+  const project = {
     client: map.cliente || demoData.project.client,
     service: map.servicio || demoData.project.service,
     status: map.estadogeneral || map.estado || demoData.project.status,
@@ -178,6 +225,8 @@ function projectFromRows(rows) {
     responsibleClient: map.responsablecliente || map.responsable || demoData.project.responsibleClient,
     whatsappMessage: map.mensajewhatsapp || map.whatsapp || demoData.project.whatsappMessage,
   };
+
+  return project;
 }
 
 function mapMilestones(rows) {
@@ -230,8 +279,8 @@ export async function loadSheetData() {
     throw new Error("Falta configurar VITE_SPREADSHEET_ID");
   }
 
-  const [projectRows, milestoneRows, findingRows, pendingRows, deliverableRows, updateRows] = await Promise.all([
-    fetchCsvSheet("Proyecto"),
+  const [projectRawRows, milestoneRows, findingRows, pendingRows, deliverableRows, updateRows] = await Promise.all([
+    fetchCsvRows("Proyecto"),
     fetchCsvSheet("Hitos"),
     fetchCsvSheet("Hallazgos"),
     fetchCsvSheet("PendientesCliente"),
@@ -240,7 +289,7 @@ export async function loadSheetData() {
   ]);
 
   return {
-    project: projectFromRows(projectRows),
+    project: projectFromRawRows(projectRawRows),
     milestones: mapMilestones(milestoneRows),
     findings: mapFindings(findingRows),
     pending: mapPending(pendingRows),
