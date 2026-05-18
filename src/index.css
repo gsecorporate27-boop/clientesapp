@@ -1198,3 +1198,133 @@ h1, h2, h3, p { margin-top: 0; }
     grid-template-columns: 1fr !important;
   }
 }
+
+
+/* V12: fuerza Ruta desplegable y resumen 4 por fila */
+.timelineSummary {
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+}
+
+.timelineDetailed {
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+}
+
+.milestoneDetailsNative {
+  padding: 0 !important;
+  overflow: hidden;
+}
+
+.milestoneDetailsNative summary {
+  list-style: none;
+  padding: 14px;
+  cursor: pointer;
+}
+
+.milestoneDetailsNative summary::-webkit-details-marker {
+  display: none;
+}
+
+.milestoneDetailsNative[open] {
+  border-color: var(--brand);
+  box-shadow: 0 0 0 4px rgba(0, 184, 181, 0.14), 0 12px 24px rgba(7, 59, 76, 0.08);
+}
+
+.milestoneDetailsNative[open] .chevron {
+  transform: rotate(90deg);
+}
+
+.timelineSummary .milestone {
+  cursor: pointer;
+}
+
+.expandHint {
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid var(--line);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  color: var(--brand-dark);
+  font-size: 12px;
+  font-weight: 800;
+  width: 100%;
+}
+
+.chevron {
+  transition: transform 0.2s ease;
+}
+
+.milestoneDetails {
+  margin: 0 14px 14px;
+  background: white;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  padding: 14px;
+  text-align: left;
+}
+
+.detailBlock {
+  margin-bottom: 12px;
+}
+
+.detailBlock strong {
+  display: block;
+  color: var(--petrol);
+  margin-bottom: 4px;
+  font-family: "Montserrat", sans-serif;
+  font-size: 13px;
+}
+
+.detailBlock p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.badge {
+  font-size: 10px;
+  font-weight: 700;
+  min-height: 24px;
+  min-width: 88px;
+  max-width: 140px;
+  padding: 5px 8px;
+  justify-content: center;
+  text-align: center;
+  line-height: 1.15;
+  border-radius: 12px;
+}
+
+.badgeRow.center,
+.milestone .badgeRow {
+  justify-content: center;
+  width: 100%;
+  text-align: center;
+}
+
+.milestoneTitle {
+  text-align: center;
+}
+
+.targetDate {
+  justify-content: center;
+  text-align: center;
+  flex-wrap: wrap;
+}
+
+.detailButton {
+  display: none !important;
+}
+
+@media (max-width: 1320px) {
+  .timelineSummary {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+}
+
+@media (max-width: 900px) {
+  .timelineSummary,
+  .timelineDetailed {
+    grid-template-columns: 1fr !important;
+  }
+}

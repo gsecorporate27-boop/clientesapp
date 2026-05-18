@@ -288,12 +288,6 @@ function Timeline({ milestones, deliverables = [], detailed = false, setView, se
                 onClick={() => goToRouteAndOpen(m.title)}
                 role="button"
                 tabIndex={0}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" || e.key === " ") {
-                    e.preventDefault();
-                    goToRouteAndOpen(m.title);
-                  }
-                }}
               >
                 {cardContent}
               </div>
