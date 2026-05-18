@@ -231,24 +231,9 @@ function ProjectHero({ project, completedText }) {
 }
 
 function Timeline({ milestones, deliverables = [], detailed = false, setView, setSelectedDeliverable, selectedHito = "", setSelectedHito }) {
-  const [openHito, setOpenHito] = useState("");
-
-  useEffect(() => {
-    if (detailed && selectedHito) {
-      setOpenHito(selectedHito);
-    }
-  }, [detailed, selectedHito]);
-
-  const openFromSummary = (title) => {
+  const goToRouteAndOpen = (title) => {
     setSelectedHito?.(title);
-    setOpenHito(title);
     setView?.("ruta");
-  };
-
-  const toggleInRoute = (title) => {
-    const next = openHito === title ? "" : title;
-    setOpenHito(next);
-    setSelectedHito?.(next);
   };
 
   return (
@@ -258,7 +243,7 @@ function Timeline({ milestones, deliverables = [], detailed = false, setView, se
           <h2>Ruta del proyecto</h2>
           <p>
             {detailed
-              ? "Haz clic en un hito para desplegar su descripción, lo que incluye y el enlace relacionado."
+              ? "Abre cada hito para revisar su descripción, qué incluye y el enlace relacionado."
               : "Hitos visibles para entender qué se logró, qué contiene cada etapa y qué sigue."}
           </p>
         </div>
@@ -267,29 +252,10 @@ function Timeline({ milestones, deliverables = [], detailed = false, setView, se
       <div className={detailed ? "timelineDetailed" : "timeline timelineSummary"}>
         {milestones.map((m, index) => {
           const relatedDeliverables = deliverables.filter((d) => String(d.milestone || "").trim().toLowerCase() === String(m.title || "").trim().toLowerCase());
-          const isOpen = openHito === m.title;
+          const shouldOpen = detailed && selectedHito === m.title;
 
-          return (
-            <div
-              className={`milestone clickable ${isOpen ? "selected" : ""}`}
-              key={`${m.id}-${m.title}`}
-              onClick={() => {
-                if (detailed) {
-                  toggleInRoute(m.title);
-                } else {
-                  openFromSummary(m.title);
-                }
-              }}
-              role="button"
-              tabIndex={0}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" || e.key === " ") {
-                  e.preventDefault();
-                  if (detailed) toggleInRoute(m.title);
-                  else openFromSummary(m.title);
-                }
-              }}
-            >
+          const cardContent = (
+            <>
               <div className={`circle ${getStatusType(m.status)}`}>
                 {m.status === "Finalizado" || m.status === "Aprobado" ? <CheckCircle2 size={20} /> : index + 1}
               </div>
@@ -311,70 +277,105 @@ function Timeline({ milestones, deliverables = [], detailed = false, setView, se
 
               <ProgressBar value={m.progress} status={m.status} />
               <div className="milestoneStatus">{m.progress}% de avance</div>
+            </>
+          );
 
-              {detailed && (
+          if (!detailed) {
+            return (
+              <div
+                className="milestone clickable"
+                key={`${m.id}-${m.title}`}
+                onClick={() => goToRouteAndOpen(m.title)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    goToRouteAndOpen(m.title);
+                  }
+                }}
+              >
+                {cardContent}
+              </div>
+            );
+          }
+
+          return (
+            <details
+              className="milestone milestoneDetailsNative"
+              key={`${m.id}-${m.title}`}
+              open={shouldOpen}
+              onToggle={(e) => {
+                if (e.currentTarget.open) {
+                  setSelectedHito?.(m.title);
+                } else if (selectedHito === m.title) {
+                  setSelectedHito?.("");
+                }
+              }}
+            >
+              <summary>
+                {cardContent}
                 <div className="expandHint">
-                  {isOpen ? "Ocultar detalle" : "Clic para ver detalle"}
-                  <ChevronRight className={`chevron ${isOpen ? "open" : ""}`} size={16} />
+                  Ver detalle
+                  <ChevronRight className="chevron" size={16} />
                 </div>
-              )}
+              </summary>
 
-              {detailed && isOpen && (
-                <div className="milestoneDetails">
-                  {m.description && (
-                    <div className="detailBlock">
-                      <strong>Descripción</strong>
-                      <p>{m.description}</p>
-                    </div>
-                  )}
+              <div className="milestoneDetails">
+                {m.description && (
+                  <div className="detailBlock">
+                    <strong>Descripción</strong>
+                    <p>{m.description}</p>
+                  </div>
+                )}
 
-                  {m.includes && (
-                    <div className="detailBlock">
-                      <strong>Incluye</strong>
-                      <p>{m.includes}</p>
-                    </div>
-                  )}
+                {m.includes && (
+                  <div className="detailBlock">
+                    <strong>Qué incluye</strong>
+                    <p>{m.includes}</p>
+                  </div>
+                )}
 
-                  {relatedDeliverables.length > 0 && (
-                    <div className="miniList">
-                      <strong>Entregables dentro de este hito:</strong>
-                      {relatedDeliverables.map((d) => (
-                        <button
-                          key={d.deliverable}
-                          className="miniListItem"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setSelectedDeliverable?.(d.deliverable);
-                            setView?.("entregables");
-                          }}
-                        >
-                          {d.deliverable}
-                          <ChevronRight size={14} />
-                        </button>
-                      ))}
-                    </div>
-                  )}
+                {relatedDeliverables.length > 0 && (
+                  <div className="miniList">
+                    <strong>Entregables dentro de este hito:</strong>
+                    {relatedDeliverables.map((d) => (
+                      <button
+                        key={d.deliverable}
+                        className="miniListItem"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          setSelectedDeliverable?.(d.deliverable);
+                          setView?.("entregables");
+                        }}
+                      >
+                        {d.deliverable}
+                        <ChevronRight size={14} />
+                      </button>
+                    ))}
+                  </div>
+                )}
 
-                  {m.link && safeUrl(m.link) && (
-                    <a
-                      className="secondaryLink"
-                      href={m.link}
-                      target="_blank"
-                      rel="noreferrer"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      Abrir enlace del hito <ExternalLink size={15} />
-                    </a>
-                  )}
+                {m.link && safeUrl(m.link) && (
+                  <a
+                    className="secondaryLink"
+                    href={m.link}
+                    target="_blank"
+                    rel="noreferrer"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    Abrir enlace del hito <ExternalLink size={15} />
+                  </a>
+                )}
 
-                  {!m.description && !m.includes && !safeUrl(m.link) && relatedDeliverables.length === 0 && (
-                    <p className="muted">
-                      Agrega Descripcion, Incluye, Link o entregables relacionados para mostrar el detalle de este hito.
-                    </p>
-                  )}
-                </div>
-              )}
-            </div>
+                {!m.description && !m.includes && !safeUrl(m.link) && relatedDeliverables.length === 0 && (
+                  <p className="muted">
+                    Agrega Descripcion, Qué incluye, Link o entregables relacionados para mostrar el detalle de este hito.
+                  </p>
+                )}
+              </div>
+            </details>
           );
         })}
       </div>

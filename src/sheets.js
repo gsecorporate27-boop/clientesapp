@@ -278,8 +278,8 @@ function mapMilestones(rows) {
     system: getRowValue(row, ["Sistema"]),
     status: getRowValue(row, ["Estado"]),
     progress: parseNumber(getRowValue(row, ["% Avance", "Avance", "Progreso"])),
-    description: getRowValue(row, ["Descripcion", "Descripción", "Detalle", "QueIncluye", "Qué incluye"]),
-    includes: getRowValue(row, ["Incluye", "Contenido", "Dentro", "Actividades"]),
+    description: getRowValue(row, ["Descripcion", "Descripción", "Detalle"]),
+    includes: getRowValue(row, ["Qué incluye", "Que incluye", "QueIncluye", "Incluye", "Contenido", "Dentro", "Actividades"]),
     link: getRowValue(row, ["Link", "URL", "Enlace", "LinkHito"]),
     targetDate: getRowValue(row, ["FechaObjetivo", "Fecha Objetivo", "Fecha objetivo", "Fecha", "FechaMeta"]),
   })).filter((x) => x.title);
