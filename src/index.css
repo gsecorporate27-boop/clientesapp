@@ -737,3 +737,64 @@ h1, h2, h3, p { margin-top: 0; }
   border-radius: 20px;
   padding: 14px;
 }
+
+
+/* V7: botón visible para desplegar hitos */
+.detailButton {
+  margin-top: 12px;
+  width: 100%;
+  border: 1px solid rgba(0, 184, 181, 0.28);
+  background: var(--brand-soft);
+  color: var(--brand-dark);
+  border-radius: 14px;
+  padding: 9px 10px;
+  font-size: 12px;
+  font-weight: 900;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  cursor: pointer;
+}
+
+.detailButton:hover {
+  background: rgba(0, 184, 181, 0.16);
+}
+
+.timelineDetailed .milestone {
+  min-height: auto;
+}
+
+.milestoneDetails {
+  margin-top: 14px;
+  background: white;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  padding: 14px;
+  text-align: left;
+}
+
+.badge {
+  min-height: 24px;
+  min-width: 92px;
+  max-width: 138px;
+  justify-content: center;
+  text-align: center;
+  font-size: 10px;
+  line-height: 1.15;
+  padding: 5px 8px;
+  border-radius: 12px;
+}
+
+.badgeRow.center,
+.milestone .badgeRow {
+  justify-content: center;
+  text-align: center;
+  width: 100%;
+}
+
+.targetDate {
+  justify-content: center;
+  text-align: center;
+  flex-wrap: wrap;
+}
