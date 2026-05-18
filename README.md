@@ -42,3 +42,16 @@ ID | Hito | Sistema | Estado | Avance | Descripcion | Incluye | Link | FechaObje
 
 - `Sistema` aparece como etiqueta dentro del hito.
 - `FechaObjetivo` aparece debajo de las etiquetas del hito.
+
+
+## V5 - Ajustes de interacción y visualización
+
+- Las etiquetas de los hitos se centran.
+- El sistema se muestra sin el prefijo "Sistema:".
+- Al hacer clic en un hito desde el resumen, lleva a la pestaña Ruta del proyecto.
+- En Ruta del proyecto, al hacer clic en un hito se despliega:
+  - Descripcion
+  - Incluye
+  - Link
+  - Entregables relacionados
+- Las etiquetas evitan verse como círculos y no se salen del cuadro.

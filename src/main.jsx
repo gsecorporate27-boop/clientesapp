@@ -226,26 +226,42 @@ function ProjectHero({ project, completedText }) {
 }
 
 function Timeline({ milestones, deliverables = [], detailed = false, setView, setSelectedDeliverable }) {
+  const [openHito, setOpenHito] = useState("");
+
   return (
     <section className="card">
       <div className="sectionHeader">
         <div>
           <h2>Ruta del proyecto</h2>
-          <p>Hitos visibles para entender qué se logró, qué contiene cada etapa y qué sigue.</p>
+          <p>Haz clic en cada hito para ver su descripción, qué incluye y el enlace relacionado.</p>
         </div>
       </div>
 
       <div className={detailed ? "timelineDetailed" : "timeline"}>
         {milestones.map((m, index) => {
           const relatedDeliverables = deliverables.filter((d) => String(d.milestone || "").trim().toLowerCase() === String(m.title || "").trim().toLowerCase());
+          const isOpen = openHito === m.title;
+
           return (
-            <div className="milestone" key={`${m.id}-${m.title}`}>
-              <div className={`circle ${getStatusType(m.status)}`}>{m.status === "Finalizado" || m.status === "Aprobado" ? <CheckCircle2 size={20} /> : index + 1}</div>
+            <div
+              className={`milestone clickable ${isOpen ? "selected" : ""}`}
+              key={`${m.id}-${m.title}`}
+              onClick={() => {
+                if (!detailed) {
+                  setView?.("ruta");
+                  return;
+                }
+                setOpenHito(isOpen ? "" : m.title);
+              }}
+            >
+              <div className={`circle ${getStatusType(m.status)}`}>
+                {m.status === "Finalizado" || m.status === "Aprobado" ? <CheckCircle2 size={20} /> : index + 1}
+              </div>
 
               <div className="milestoneTitle">{m.title}</div>
 
-              <div className="badgeRow">
-                {m.system && <Badge status="info">Sistema: {m.system}</Badge>}
+              <div className="badgeRow center">
+                {m.system && <Badge status="info">{m.system}</Badge>}
                 {m.status && <Badge status={m.status}>{m.status}</Badge>}
               </div>
 
@@ -260,9 +276,28 @@ function Timeline({ milestones, deliverables = [], detailed = false, setView, se
               <div className="milestoneStatus">{m.progress}% de avance</div>
 
               {detailed && (
-                <div className="milestoneDetails">
-                  {m.description && <p>{m.description}</p>}
-                  {m.includes && <p><strong>Incluye:</strong> {m.includes}</p>}
+                <div className="expandHint">
+                  {isOpen ? "Ocultar detalle" : "Ver detalle del hito"}
+                  <ChevronRight className={`chevron ${isOpen ? "open" : ""}`} size={16} />
+                </div>
+              )}
+
+              {detailed && isOpen && (
+                <div className="milestoneDetails" onClick={(e) => e.stopPropagation()}>
+                  {m.description && (
+                    <div className="detailBlock">
+                      <strong>Descripción</strong>
+                      <p>{m.description}</p>
+                    </div>
+                  )}
+
+                  {m.includes && (
+                    <div className="detailBlock">
+                      <strong>Incluye</strong>
+                      <p>{m.includes}</p>
+                    </div>
+                  )}
+
                   {relatedDeliverables.length > 0 && (
                     <div className="miniList">
                       <strong>Entregables dentro de este hito:</strong>
@@ -281,8 +316,15 @@ function Timeline({ milestones, deliverables = [], detailed = false, setView, se
                       ))}
                     </div>
                   )}
+
                   {m.link && safeUrl(m.link) && (
-                    <a className="secondaryLink" href={m.link} target="_blank" rel="noreferrer">Ver información del hito <ExternalLink size={15} /></a>
+                    <a className="secondaryLink" href={m.link} target="_blank" rel="noreferrer">
+                      Abrir enlace del hito <ExternalLink size={15} />
+                    </a>
+                  )}
+
+                  {!m.description && !m.includes && !safeUrl(m.link) && relatedDeliverables.length === 0 && (
+                    <p className="muted">Agrega Descripcion, Incluye, Link o entregables relacionados para mostrar el detalle de este hito.</p>
                   )}
                 </div>
               )}
