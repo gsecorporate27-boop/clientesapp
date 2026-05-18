@@ -14,14 +14,20 @@ export const demoData = {
     progress: 0,
     nextStep: "Configurar Google Sheet",
     nextDate: "Sin fecha",
+    linkMeet: "",
     responsibleClient: "Sin responsable",
+    generalManager: "Sin información",
+    logoGSE: "",
+    logoClient: "",
+    projectPhrase: "Ruta de avance del proyecto",
     whatsappMessage: "Hola, equipo 👋 Ya actualizamos la Ruta de Avance Visible™."
   },
   milestones: [],
   findings: [],
   pending: [],
   deliverables: [],
-  updates: []
+  updates: [],
+  education: []
 };
 
 function cleanText(value) {
@@ -126,25 +132,27 @@ function rowsToObjects(rows) {
   });
 }
 
-async function fetchCsvRows(sheetName) {
+async function fetchCsvRows(sheetName, required = true) {
   const url = csvUrl(sheetName);
   const response = await fetch(url, { cache: "no-store" });
 
   if (!response.ok) {
+    if (!required) return [];
     throw new Error(`No se pudo leer la hoja ${sheetName}`);
   }
 
   const text = await response.text();
 
   if (text.trim().startsWith("<")) {
+    if (!required) return [];
     throw new Error(`La hoja ${sheetName} devolvió HTML, no CSV`);
   }
 
   return parseCsvRows(text);
 }
 
-async function fetchCsvSheet(sheetName) {
-  const rows = await fetchCsvRows(sheetName);
+async function fetchCsvSheet(sheetName, required = true) {
+  const rows = await fetchCsvRows(sheetName, required);
   return rowsToObjects(rows);
 }
 
@@ -176,8 +184,18 @@ function projectFromRawRows(rows) {
     "proximopasoactual",
     "fechaproximopaso",
     "proximafecha",
+    "linkmeet",
+    "meet",
+    "googlemeet",
     "responsablecliente",
     "responsable",
+    "gerentegeneral",
+    "dueno",
+    "dueño",
+    "lidercliente",
+    "logogse",
+    "logocliente",
+    "fraseproyecto",
     "mensajewhatsapp",
     "whatsapp"
   ];
@@ -190,9 +208,8 @@ function projectFromRawRows(rows) {
     return demoData.project;
   }
 
-  // FORMATO HORIZONTAL RECOMENDADO
-  // Fila 1: Cliente | Servicio | EstadoGeneral | ...
-  // Fila 2: Troya Motors | Business Power™ | En tiempo | ...
+  // Formato horizontal recomendado:
+  // Cliente | Servicio | EstadoGeneral | AvanceGeneral | ...
   const headerKeys = cleanRows[0].map(normalizeKey);
   const valueRow = cleanRows[1] || [];
   const looksHorizontal = headerKeys.includes("cliente") && headerKeys.includes("servicio");
@@ -206,9 +223,8 @@ function projectFromRawRows(rows) {
     });
   }
 
-  // FORMATO VERTICAL ALTERNATIVO
+  // Formato vertical alternativo:
   // Campo | Valor
-  // Cliente | Troya Motors
   const firstA = normalizeKey(cleanRows[0]?.[0]);
   const firstB = normalizeKey(cleanRows[0]?.[1]);
 
@@ -222,7 +238,7 @@ function projectFromRawRows(rows) {
     });
   }
 
-  // FORMATO KEY-VALUE SIN ENCABEZADOS
+  // Formato key-value sin encabezados
   cleanRows.forEach((row) => {
     const cells = row.map(cleanText).filter((cell) => cell !== "");
     if (!cells.length) return;
@@ -230,7 +246,6 @@ function projectFromRawRows(rows) {
     const first = normalizeKey(cells[0]);
     const second = cells[1] ? cleanText(cells[1]) : "";
 
-    // Evitar tomar encabezados como datos
     if (first === "cliente" && normalizeKey(second) === "servicio") return;
     if (first === "campo" && normalizeKey(second) === "valor") return;
 
@@ -246,7 +261,12 @@ function projectFromRawRows(rows) {
     progress: parseNumber(map.avancegeneral || map.avance, demoData.project.progress),
     nextStep: map.proximopaso || map.proximopasoactual || demoData.project.nextStep,
     nextDate: map.fechaproximopaso || map.proximafecha || demoData.project.nextDate,
+    linkMeet: map.linkmeet || map.meet || map.googlemeet || demoData.project.linkMeet,
     responsibleClient: map.responsablecliente || map.responsable || demoData.project.responsibleClient,
+    generalManager: map.gerentegeneral || map.dueno || map.dueño || map.lidercliente || demoData.project.generalManager,
+    logoGSE: map.logogse || demoData.project.logoGSE,
+    logoClient: map.logocliente || demoData.project.logoClient,
+    projectPhrase: map.fraseproyecto || demoData.project.projectPhrase,
     whatsappMessage: map.mensajewhatsapp || map.whatsapp || demoData.project.whatsappMessage,
   };
 }
@@ -283,9 +303,12 @@ function mapPending(rows) {
 function mapDeliverables(rows) {
   return rows.map((row) => ({
     system: getRowValue(row, ["Sistema"]),
+    milestone: getRowValue(row, ["Hito"]),
     deliverable: getRowValue(row, ["Entregable"]),
     status: getRowValue(row, ["Estado"]),
     progress: parseNumber(getRowValue(row, ["% Avance", "Avance", "Progreso"])),
+    link: getRowValue(row, ["LinkEntregable", "Link", "URL"]),
+    observation: getRowValue(row, ["Observacion", "Observación", "Notas"]),
   })).filter((x) => x.deliverable);
 }
 
@@ -296,18 +319,33 @@ function mapUpdates(rows) {
   })).filter((x) => x.title || x.text);
 }
 
+function mapEducation(rows) {
+  return rows.map((row) => ({
+    system: getRowValue(row, ["Sistema"]),
+    milestone: getRowValue(row, ["Hito"]),
+    deliverable: getRowValue(row, ["Entregable"]),
+    whatIs: getRowValue(row, ["QueEs", "Qué es", "Que es"]),
+    purpose: getRowValue(row, ["ParaQueSirve", "Para qué sirve", "Para que sirve"]),
+    howToRead: getRowValue(row, ["ComoLeerlo", "Cómo leerlo", "Como leerlo"]),
+    imagePreview: getRowValue(row, ["ImagenPreview", "Imagen previa", "Imagen"]),
+    link: getRowValue(row, ["LinkEntregable", "Link", "URL"]),
+    status: getRowValue(row, ["Estado"]),
+  })).filter((x) => x.deliverable || x.whatIs || x.purpose);
+}
+
 export async function loadSheetData() {
   if (!SPREADSHEET_ID) {
     throw new Error("Falta configurar VITE_SPREADSHEET_ID o usar ?sheet=ID");
   }
 
-  const [projectRawRows, milestoneRows, findingRows, pendingRows, deliverableRows, updateRows] = await Promise.all([
+  const [projectRawRows, milestoneRows, findingRows, pendingRows, deliverableRows, updateRows, educationRows] = await Promise.all([
     fetchCsvRows("Proyecto"),
     fetchCsvSheet("Hitos"),
     fetchCsvSheet("Hallazgos"),
     fetchCsvSheet("PendientesCliente"),
     fetchCsvSheet("Entregables"),
-    fetchCsvSheet("Actualizaciones"),
+    fetchCsvSheet("Actualizaciones", false),
+    fetchCsvSheet("Educacion", false),
   ]);
 
   return {
@@ -317,5 +355,6 @@ export async function loadSheetData() {
     pending: mapPending(pendingRows),
     deliverables: mapDeliverables(deliverableRows),
     updates: mapUpdates(updateRows),
+    education: mapEducation(educationRows),
   };
 }
