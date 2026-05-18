@@ -230,8 +230,26 @@ function ProjectHero({ project, completedText }) {
   );
 }
 
-function Timeline({ milestones, deliverables = [], detailed = false, setView, setSelectedDeliverable }) {
+function Timeline({ milestones, deliverables = [], detailed = false, setView, setSelectedDeliverable, selectedHito = "", setSelectedHito }) {
   const [openHito, setOpenHito] = useState("");
+
+  useEffect(() => {
+    if (detailed && selectedHito) {
+      setOpenHito(selectedHito);
+    }
+  }, [detailed, selectedHito]);
+
+  const goToRouteAndOpen = (title) => {
+    setSelectedHito?.(title);
+    setOpenHito(title);
+    setView?.("ruta");
+  };
+
+  const toggleDetail = (title) => {
+    const next = openHito === title ? "" : title;
+    setOpenHito(next);
+    setSelectedHito?.(next);
+  };
 
   return (
     <section className="card">
@@ -240,7 +258,7 @@ function Timeline({ milestones, deliverables = [], detailed = false, setView, se
           <h2>Ruta del proyecto</h2>
           <p>
             {detailed
-              ? "Haz clic en Ver detalle para desplegar la descripción, lo que incluye y el enlace de cada hito."
+              ? "Haz clic en cualquier hito para desplegar su descripción, lo que incluye y el enlace relacionado."
               : "Hitos visibles para entender qué se logró, qué contiene cada etapa y qué sigue."}
           </p>
         </div>
@@ -253,10 +271,23 @@ function Timeline({ milestones, deliverables = [], detailed = false, setView, se
 
           return (
             <div
-              className={`milestone ${isOpen ? "selected" : ""}`}
+              className={`milestone clickable ${isOpen ? "selected" : ""}`}
               key={`${m.id}-${m.title}`}
               onClick={() => {
-                if (!detailed) setView?.("ruta");
+                if (detailed) {
+                  toggleDetail(m.title);
+                } else {
+                  goToRouteAndOpen(m.title);
+                }
+              }}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  if (detailed) toggleDetail(m.title);
+                  else goToRouteAndOpen(m.title);
+                }
               }}
             >
               <div className={`circle ${getStatusType(m.status)}`}>
@@ -281,33 +312,15 @@ function Timeline({ milestones, deliverables = [], detailed = false, setView, se
               <ProgressBar value={m.progress} status={m.status} />
               <div className="milestoneStatus">{m.progress}% de avance</div>
 
-              {!detailed && (
-                <button
-                  className="detailButton"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setView?.("ruta");
-                  }}
-                >
-                  Ver en ruta <ChevronRight size={15} />
-                </button>
-              )}
-
               {detailed && (
-                <button
-                  className="detailButton"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setOpenHito(isOpen ? "" : m.title);
-                  }}
-                >
-                  {isOpen ? "Ocultar detalle" : "Ver detalle"}
-                  <ChevronRight className={`chevron ${isOpen ? "open" : ""}`} size={15} />
-                </button>
+                <div className="expandHint">
+                  {isOpen ? "Ocultar detalle" : "Clic para ver detalle"}
+                  <ChevronRight className={`chevron ${isOpen ? "open" : ""}`} size={16} />
+                </div>
               )}
 
               {detailed && isOpen && (
-                <div className="milestoneDetails">
+                <div className="milestoneDetails" onClick={(e) => e.stopPropagation()}>
                   {m.description && (
                     <div className="detailBlock">
                       <strong>Descripción</strong>
@@ -694,6 +707,7 @@ function App() {
   const [connected, setConnected] = useState(false);
   const [error, setError] = useState("");
   const [selectedDeliverable, setSelectedDeliverable] = useState("");
+  const [selectedHito, setSelectedHito] = useState("");
 
   useEffect(() => {
     loadSheetData()
@@ -749,7 +763,7 @@ function App() {
               <div className="layout">
                 <div className="leftContent">
                   <DisorderCard project={project} />
-                  <Timeline milestones={milestones} deliverables={deliverables} setView={setView} setSelectedDeliverable={setSelectedDeliverable} />
+                  <Timeline milestones={milestones} deliverables={deliverables} setView={setView} setSelectedDeliverable={setSelectedDeliverable} selectedHito={selectedHito} setSelectedHito={setSelectedHito} />
                   <Findings findings={findings} />
                 </div>
                 <UpdatesPanel project={project} updates={updates} setView={setView} />
@@ -761,7 +775,7 @@ function App() {
             </>
           )}
 
-          {view === "ruta" && <Timeline milestones={milestones} deliverables={deliverables} setView={setView} setSelectedDeliverable={setSelectedDeliverable} />}
+          {view === "ruta" && <Timeline milestones={milestones} deliverables={deliverables} setView={setView} setSelectedDeliverable={setSelectedDeliverable} selectedHito={selectedHito} setSelectedHito={setSelectedHito} />}
           {view === "hallazgos" && <Findings findings={findings} />}
           {view === "pendientes" && <PendingClient pending={pending} />}
           {view === "entregables" && <Deliverables deliverables={deliverables} selectedDeliverable={selectedDeliverable} setSelectedDeliverable={setSelectedDeliverable} />}
