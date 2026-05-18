@@ -129,7 +129,7 @@ function Header({ project, connected }) {
   );
 }
 
-function KpiCards({ project, milestones, pending }) {
+function KpiCards({ project, milestones, pending, setView }) {
   const done = milestones.filter((m) => m.status === "Finalizado" || m.status === "Aprobado").length;
   const blocked = pending.filter((p) => String(p.status).toLowerCase().includes("bloqueado")).length;
   const disorder = Math.max(0, 100 - (Number(project.progress) || 0));
@@ -137,23 +137,28 @@ function KpiCards({ project, milestones, pending }) {
   const cards = [
     { label: "Avance general", value: `${project.progress}%`, icon: BarChart3, note: "Proyecto actualizado", status: project.status },
     { label: "Desorden operativo", value: `${disorder}%`, icon: AlertTriangle, note: "Disminuye con el avance", status: disorder > 60 ? "Bloqueado" : disorder > 30 ? "En validación" : "Finalizado" },
-    { label: "Hitos cumplidos", value: `${done}/${milestones.length}`, icon: CheckCircle2, note: "Avance validado", status: "Finalizado" },
-    { label: "Pendientes cliente", value: pending.length, icon: Clock3, note: "Requieren seguimiento", status: "En validación" },
-    { label: "Bloqueos", value: blocked, icon: LockKeyhole, note: "Impactan cronograma", status: blocked ? "Bloqueado" : "Finalizado" },
+    { label: "Hitos cumplidos", value: `${done}/${milestones.length}`, icon: CheckCircle2, note: "Avance validado", status: "Finalizado", target: "ruta" },
+    { label: "Pendientes cliente", value: pending.length, icon: Clock3, note: "Requieren seguimiento", status: "En validación", target: "pendientes" },
+    { label: "Bloqueos", value: blocked, icon: LockKeyhole, note: "Impactan cronograma", status: blocked ? "Bloqueado" : "Finalizado", target: "pendientes" },
   ];
 
   return (
     <div className="kpis">
       {cards.map((card) => {
         const Icon = card.icon;
+        const clickable = Boolean(card.target);
         return (
-          <div className="card kpi" key={card.label}>
+          <div
+            className={`card kpi ${clickable ? "clickable" : ""}`}
+            key={card.label}
+            onClick={() => clickable && setView?.(card.target)}
+          >
             <div className="kpiTop">
               <div className="iconBox"><Icon size={22} /></div>
-              <Badge status={card.status}>{card.note}</Badge>
             </div>
             <div className="muted">{card.label}</div>
             <div className="kpiValue">{card.value}</div>
+            <div className="badgeRow"><Badge status={card.status}>{card.note}</Badge></div>
           </div>
         );
       })}
@@ -233,7 +238,11 @@ function Timeline({ milestones, deliverables = [], detailed = false, setView, se
       <div className="sectionHeader">
         <div>
           <h2>Ruta del proyecto</h2>
-          <p>Haz clic en cada hito para ver su descripción, qué incluye y el enlace relacionado.</p>
+          <p>
+            {detailed
+              ? "Haz clic en cada hito para ver su descripción, qué incluye, enlace y entregables relacionados."
+              : "Hitos visibles para entender qué se logró, qué contiene cada etapa y qué sigue."}
+          </p>
         </div>
       </div>
 
@@ -382,36 +391,84 @@ function Findings({ findings }) {
   );
 }
 
-function PendingClient({ pending }) {
+function PendingClient({ pending, compact = false, setView }) {
+  const [openPending, setOpenPending] = useState("");
+  const items = compact ? pending.slice(0, 4) : pending;
+
   return (
     <section className="card">
       <div className="sectionHeader">
         <div>
           <h2>Pendientes del cliente</h2>
-          <p>Acciones necesarias para avanzar sin retrasos.</p>
+          <p>Acciones necesarias para avanzar sin retrasos. Haz clic para ver descripción y enlace de aprobación.</p>
         </div>
-        <Badge status="En validación">{pending.length} activos</Badge>
+      </div>
+      <div className="badgeRow"><Badge status="En validación">{pending.length} activos</Badge></div>
+
+      <div className="pendingList">
+        {items.map((item) => {
+          const isOpen = openPending === item.request;
+          const link = safeUrl(item.link);
+
+          return (
+            <div
+              className={`pendingCard clickable ${isOpen ? "selected" : ""}`}
+              key={`${item.request}-${item.owner}`}
+              onClick={() => {
+                if (compact) {
+                  setView?.("pendientes");
+                  return;
+                }
+                setOpenPending(isOpen ? "" : item.request);
+              }}
+            >
+              <div className="pendingHeader">
+                <div>
+                  <div className="itemTitle">{item.request}</div>
+                  <div className="muted">Bloquea: {item.blocks}</div>
+                </div>
+                <ChevronRight className={`chevron ${isOpen ? "open" : ""}`} size={18} />
+              </div>
+
+              <div className="pendingMeta">
+                <span><strong>Responsable:</strong> {item.owner}</span>
+                <span><strong>Fecha:</strong> {item.dueDate}</span>
+              </div>
+
+              <div className="badgeRow">
+                <Badge status={item.status}>{item.status}</Badge>
+              </div>
+
+              {!compact && isOpen && (
+                <div className="pendingDetails" onClick={(e) => e.stopPropagation()}>
+                  {item.description && (
+                    <div className="detailBlock">
+                      <strong>Descripción</strong>
+                      <p>{item.description}</p>
+                    </div>
+                  )}
+
+                  {link && (
+                    <a className="secondaryLink" href={link} target="_blank" rel="noreferrer">
+                      Abrir documento para aprobación <ExternalLink size={15} />
+                    </a>
+                  )}
+
+                  {!item.description && !link && (
+                    <p className="muted">Agrega Descripcion y Link en la pestaña PendientesCliente para mostrar más detalle.</p>
+                  )}
+                </div>
+              )}
+            </div>
+          );
+        })}
       </div>
 
-      <div className="table">
-        <div className="tableRow tableHead">
-          <div>Solicitud</div>
-          <div>Responsable</div>
-          <div>Fecha</div>
-          <div>Estado</div>
-        </div>
-        {pending.map((item) => (
-          <div className="tableRow" key={`${item.request}-${item.owner}`}>
-            <div>
-              <strong>{item.request}</strong>
-              <span>Bloquea: {item.blocks}</span>
-            </div>
-            <div>{item.owner}</div>
-            <div>{item.dueDate}</div>
-            <div><Badge status={item.status}>{item.status}</Badge></div>
-          </div>
-        ))}
-      </div>
+      {compact && pending.length > 4 && (
+        <button className="plainAction" onClick={() => setView?.("pendientes")}>
+          Ver todos los pendientes <ChevronRight size={16} />
+        </button>
+      )}
     </section>
   );
 }
@@ -664,7 +721,7 @@ function App() {
 
           {view === "resumen" && (
             <>
-              <KpiCards project={project} milestones={milestones} pending={pending} />
+              <KpiCards project={project} milestones={milestones} pending={pending} setView={setView} />
               <div className="layout">
                 <div className="leftContent">
                   <DisorderCard project={project} />
@@ -674,7 +731,7 @@ function App() {
                 <UpdatesPanel project={project} updates={updates} setView={setView} />
               </div>
               <div className="twoColumns">
-                <PendingClient pending={pending} />
+                <PendingClient pending={pending} compact setView={setView} />
                 <Deliverables deliverables={deliverables} compact setView={setView} selectedDeliverable={selectedDeliverable} setSelectedDeliverable={setSelectedDeliverable} />
               </div>
             </>

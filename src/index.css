@@ -614,3 +614,126 @@ h1, h2, h3, p { margin-top: 0; }
   border-radius: 14px;
   min-width: auto;
 }
+
+
+/* V6: etiquetas homogéneas, hitos desplegables y pendientes con detalle */
+.badge {
+  min-height: 24px;
+  min-width: 88px;
+  max-width: 148px;
+  justify-content: center;
+  text-align: center;
+  font-size: 10px;
+  line-height: 1.15;
+  padding: 5px 8px;
+  border-radius: 12px;
+}
+
+.badgeRow.center,
+.milestone .badgeRow {
+  justify-content: center;
+  text-align: center;
+  width: 100%;
+}
+
+.milestoneTitle {
+  text-align: center;
+}
+
+.targetDate {
+  justify-content: center;
+  text-align: center;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.milestone.clickable,
+.pendingCard.clickable {
+  cursor: pointer;
+}
+
+.milestone.selected,
+.pendingCard.selected {
+  border-color: var(--brand);
+  box-shadow: 0 0 0 4px rgba(0, 184, 181, 0.14), 0 12px 24px rgba(7, 59, 76, 0.08);
+}
+
+.expandHint {
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid var(--line);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--brand-dark);
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.chevron {
+  transition: transform 0.2s ease;
+  color: var(--brand-dark);
+  flex-shrink: 0;
+}
+
+.chevron.open {
+  transform: rotate(90deg);
+}
+
+.detailBlock {
+  margin-bottom: 12px;
+}
+
+.detailBlock strong {
+  display: block;
+  color: var(--petrol);
+  margin-bottom: 4px;
+  font-family: "Montserrat", sans-serif;
+}
+
+.detailBlock p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.pendingList {
+  display: grid;
+  gap: 12px;
+}
+
+.pendingCard {
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  padding: 16px;
+  background: #f8fafc;
+  transition: 0.2s ease;
+}
+
+.pendingHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.pendingMeta {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  color: var(--muted);
+  font-size: 13px;
+  margin-top: 8px;
+}
+
+.pendingMeta strong {
+  color: var(--petrol);
+}
+
+.pendingDetails {
+  margin-top: 14px;
+  background: white;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  padding: 14px;
+}

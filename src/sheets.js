@@ -302,9 +302,11 @@ function mapPending(rows) {
   return rows.map((row) => ({
     request: getRowValue(row, ["Pendiente", "Solicitud"]),
     owner: getRowValue(row, ["Responsable", "Responsable cliente", "Responsable Cliente"]),
-    dueDate: getRowValue(row, ["Fecha límite", "Fecha limite", "Fecha"]),
+    dueDate: getRowValue(row, ["Fecha límite", "Fecha limite", "Fecha", "FechaObjetivo", "Fecha Objetivo"]),
     status: getRowValue(row, ["Estado"]),
     blocks: getRowValue(row, ["Qué bloquea", "Que bloquea", "Bloquea", "Impacto"]),
+    description: getRowValue(row, ["Descripcion", "Descripción", "Detalle", "Explicacion", "Explicación"]),
+    link: getRowValue(row, ["Link", "URL", "Enlace", "LinkDocumento", "Link Documento", "Documento", "Archivo"]),
   })).filter((x) => x.request);
 }
 
