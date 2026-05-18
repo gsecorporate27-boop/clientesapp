@@ -225,58 +225,116 @@ function ProjectHero({ project, completedText }) {
   );
 }
 
-function Timeline({ milestones }) {
+function Timeline({ milestones, deliverables = [], detailed = false, setView, setSelectedDeliverable }) {
   return (
     <section className="card">
       <div className="sectionHeader">
         <div>
           <h2>Ruta del proyecto</h2>
-          <p>Hitos visibles para entender qué se logró y qué sigue.</p>
+          <p>Hitos visibles para entender qué se logró, qué contiene cada etapa y qué sigue.</p>
         </div>
-        <Badge status="En validación">Ruta actualizada</Badge>
       </div>
 
-      <div className="timeline">
-        {milestones.map((m, index) => (
-          <div className="milestone" key={`${m.id}-${m.title}`}>
-            <div className={`circle ${getStatusType(m.status)}`}>
-              {m.status === "Finalizado" || m.status === "Aprobado" ? <CheckCircle2 size={20} /> : index + 1}
+      <div className={detailed ? "timelineDetailed" : "timeline"}>
+        {milestones.map((m, index) => {
+          const relatedDeliverables = deliverables.filter((d) => String(d.milestone || "").trim().toLowerCase() === String(m.title || "").trim().toLowerCase());
+          return (
+            <div className="milestone" key={`${m.id}-${m.title}`}>
+              <div className={`circle ${getStatusType(m.status)}`}>{m.status === "Finalizado" || m.status === "Aprobado" ? <CheckCircle2 size={20} /> : index + 1}</div>
+
+              <div className="milestoneTitle">{m.title}</div>
+
+              <div className="badgeRow">
+                {m.system && <Badge status="info">Sistema: {m.system}</Badge>}
+                {m.status && <Badge status={m.status}>{m.status}</Badge>}
+              </div>
+
+              {m.targetDate && (
+                <div className="targetDate">
+                  <Clock3 size={14} />
+                  Fecha objetivo: <strong>{m.targetDate}</strong>
+                </div>
+              )}
+
+              <ProgressBar value={m.progress} status={m.status} />
+              <div className="milestoneStatus">{m.progress}% de avance</div>
+
+              {detailed && (
+                <div className="milestoneDetails">
+                  {m.description && <p>{m.description}</p>}
+                  {m.includes && <p><strong>Incluye:</strong> {m.includes}</p>}
+                  {relatedDeliverables.length > 0 && (
+                    <div className="miniList">
+                      <strong>Entregables dentro de este hito:</strong>
+                      {relatedDeliverables.map((d) => (
+                        <button
+                          key={d.deliverable}
+                          className="miniListItem"
+                          onClick={() => {
+                            setSelectedDeliverable?.(d.deliverable);
+                            setView?.("entregables");
+                          }}
+                        >
+                          {d.deliverable}
+                          <ChevronRight size={14} />
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                  {m.link && safeUrl(m.link) && (
+                    <a className="secondaryLink" href={m.link} target="_blank" rel="noreferrer">Ver información del hito <ExternalLink size={15} /></a>
+                  )}
+                </div>
+              )}
             </div>
-            <div className="milestoneTitle">{m.title}</div>
-            <ProgressBar value={m.progress} status={m.status} />
-            <div className="milestoneStatus">{m.status}</div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </section>
   );
 }
 
 function Findings({ findings }) {
+  const [open, setOpen] = useState("");
   return (
     <section className="card">
       <div className="sectionHeader">
         <div>
           <h2>Hallazgos encontrados</h2>
-          <p>Qué está causando desorden, reprocesos o pérdida de claridad.</p>
+          <p>Haz clic en cada hallazgo para ver su descripción, evidencia y solución propuesta.</p>
         </div>
-        <Badge status="En validación">{findings.length} hallazgos</Badge>
       </div>
 
       <div className="list">
-        {findings.map((item) => (
-          <div className="findingItem" key={`${item.area}-${item.finding}`}>
-            <div>
-              <div className="area">{item.area}</div>
-              <div className="itemTitle">{item.finding}</div>
-              <div className="muted">Sistema que lo resolverá: {item.system}</div>
+        {findings.map((item) => {
+          const isOpen = open === item.finding;
+          const image = safeUrl(item.image);
+          return (
+            <div key={item.finding} className="findingItem clickable" onClick={() => setOpen(isOpen ? "" : item.finding)}>
+              <div className="findingHeader">
+                <div>
+                  <div className="area">{item.area}</div>
+                  <div className="itemTitle">{item.finding}</div>
+                  <div className="muted">Sistema que lo resolverá: {item.system}</div>
+                  <div className="badgeRow">
+                    <Badge status={item.impact}>Impacto: {item.impact}</Badge>
+                    <Badge status={item.priority === "Alta" ? "Bloqueado" : "En validación"}>Prioridad: {item.priority}</Badge>
+                  </div>
+                </div>
+                <ChevronRight className={`chevron ${isOpen ? "open" : ""}`} size={20} />
+              </div>
+
+              {isOpen && (
+                <div className="findingExpanded" onClick={(e) => e.stopPropagation()}>
+                  {image && <img className="findingImage" src={image} alt={item.finding} />}
+                  {item.description && <p><strong>Descripción:</strong><br />{item.description}</p>}
+                  {item.solution && <p><strong>Solución propuesta:</strong><br />{item.solution}</p>}
+                  {!item.description && !item.solution && <p className="muted">Agrega columnas Descripcion y Solucion en la pestaña Hallazgos para mostrar más detalle.</p>}
+                </div>
+              )}
             </div>
-            <div className="badges">
-              <Badge status={item.impact}>Impacto: {item.impact}</Badge>
-              <Badge status={item.priority === "Alta" ? "Bloqueado" : "En validación"}>Prioridad: {item.priority}</Badge>
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </section>
   );
@@ -328,7 +386,7 @@ function FilterSelect({ label, value, onChange, options }) {
   );
 }
 
-function Deliverables({ deliverables }) {
+function Deliverables({ deliverables, selectedDeliverable, setSelectedDeliverable, compact = false, setView }) {
   const [systemFilter, setSystemFilter] = useState("Todos");
   const [milestoneFilter, setMilestoneFilter] = useState("Todos");
 
@@ -341,38 +399,48 @@ function Deliverables({ deliverables }) {
     return systemOk && milestoneOk;
   });
 
+  const items = compact ? filtered.slice(0, 6) : filtered;
+
   return (
     <section className="card">
       <div className="sectionHeader">
         <div>
-          <h2>Entregables</h2>
-          <p>Vista resumida por sistema e hito, con acceso al documento cuando esté disponible.</p>
+          <h2>{compact ? "Entregables principales" : "Entregables"}</h2>
+          <p>Vista por sistema e hito, con acceso al documento cuando esté disponible.</p>
         </div>
       </div>
 
-      <div className="filters">
-        <FilterSelect label="Sistema" value={systemFilter} onChange={setSystemFilter} options={systems} />
-        <FilterSelect label="Hito" value={milestoneFilter} onChange={setMilestoneFilter} options={milestones} />
-      </div>
+      {!compact && (
+        <div className="filters">
+          <FilterSelect label="Sistema" value={systemFilter} onChange={setSystemFilter} options={systems} />
+          <FilterSelect label="Hito" value={milestoneFilter} onChange={setMilestoneFilter} options={milestones} />
+        </div>
+      )}
 
       <div className="deliverablesGrid">
-        {filtered.map((item) => {
+        {items.map((item) => {
           const link = safeUrl(item.link);
+          const selected = selectedDeliverable === item.deliverable;
           return (
-            <div className="deliverableCard" key={`${item.system}-${item.milestone}-${item.deliverable}`}>
-              <div className="deliverableTop">
-                <div>
-                  <div className="area">{item.system}</div>
-                  <div className="itemTitle">{item.deliverable}</div>
-                  {item.milestone && <div className="muted">Hito: {item.milestone}</div>}
-                </div>
-                <Badge status={item.status}>{item.status}</Badge>
-              </div>
+            <div
+              className={`deliverableCard ${selected ? "selected" : ""} ${compact ? "clickable" : ""}`}
+              key={`${item.system}-${item.milestone}-${item.deliverable}`}
+              onClick={() => {
+                if (compact) {
+                  setSelectedDeliverable?.(item.deliverable);
+                  setView?.("entregables");
+                }
+              }}
+            >
+              <div className="area">{item.system}</div>
+              <div className="itemTitle">{item.deliverable}</div>
+              <div className="badgeRow"><Badge status={item.status}>{item.status}</Badge></div>
+              {item.milestone && <div className="muted">Hito: {item.milestone}</div>}
               <ProgressBar value={item.progress} status={item.status} />
               <div className="muted">{item.progress}% de avance</div>
               {item.observation && <p className="observation">{item.observation}</p>}
               {link && (
-                <a className="secondaryLink" href={link} target="_blank" rel="noreferrer">
+                <a className="secondaryLink" href={link} target="_blank" rel="noreferrer" onClick={(e) => e.stopPropagation()}>
                   Ver entregable <ExternalLink size={15} />
                 </a>
               )}
@@ -380,15 +448,30 @@ function Deliverables({ deliverables }) {
           );
         })}
       </div>
+
+      {compact && deliverables.length > 6 && (
+        <button className="plainAction" onClick={() => setView?.("entregables")}>Ver todos los entregables <ChevronRight size={16} /></button>
+      )}
     </section>
   );
 }
 
-function UpdatesPanel({ project, updates }) {
-  const safeUpdates = updates.length ? updates : [
-    { title: "Próximo paso", text: project.nextStep },
-  ];
+function UpdatesPanel({ project, updates, setView }) {
+  const safeUpdates = updates.length ? updates : [{ title: "Próximo paso", text: project.nextStep, target: "ruta" }];
   const meetUrl = safeUrl(project.linkMeet);
+
+  const inferTarget = (u) => {
+    const manual = String(u.target || "").toLowerCase();
+    if (manual.includes("hallazgo")) return "hallazgos";
+    if (manual.includes("pendiente")) return "pendientes";
+    if (manual.includes("entregable")) return "entregables";
+    if (manual.includes("ruta") || manual.includes("hito")) return "ruta";
+    const title = String(u.title || "").toLowerCase();
+    if (title.includes("hallazgo")) return "hallazgos";
+    if (title.includes("pendiente")) return "pendientes";
+    if (title.includes("entregable")) return "entregables";
+    return "ruta";
+  };
 
   return (
     <aside className="rightPanel">
@@ -404,41 +487,22 @@ function UpdatesPanel({ project, updates }) {
         )}
       </div>
 
-      {safeUpdates.map((u, index) => (
-        <div className="card updateCard" key={`${u.title}-${index}`}>
-          <div className="updateTitle">
-            <div className="iconBox teal"><Search size={20} /></div>
-            <strong>{u.title}</strong>
+      {safeUpdates.map((u, index) => {
+        const target = inferTarget(u);
+        return (
+          <div className="card updateCard" key={`${u.title}-${index}`}>
+            <div className="updateTitle">
+              <div className="iconBox teal"><Search size={20} /></div>
+              <strong>{u.title}</strong>
+            </div>
+            <p>{u.text}</p>
+            <button className="linkBtn" onClick={() => setView(target)}>
+              Ver detalle <ChevronRight size={16} />
+            </button>
           </div>
-          <p>{u.text}</p>
-          <button className="linkBtn">
-            Ver detalle <ChevronRight size={16} />
-          </button>
-        </div>
-      ))}
+        );
+      })}
     </aside>
-  );
-}
-
-function ValueChainGraphic() {
-  return (
-    <div className="valueChain">
-      <div className="vcBlock top">Dirección estratégica</div>
-      <div className="vcArrow">↓</div>
-      <div className="vcRow">
-        <div className="vcBlock">Comercial</div>
-        <div className="vcArrowSide">→</div>
-        <div className="vcBlock primary">Operación</div>
-        <div className="vcArrowSide">→</div>
-        <div className="vcBlock">Entrega de valor</div>
-      </div>
-      <div className="vcArrow">↓</div>
-      <div className="vcSupport">
-        <div>Administración</div>
-        <div>Talento Humano</div>
-        <div>Tecnología</div>
-      </div>
-    </div>
   );
 }
 
@@ -462,20 +526,8 @@ function Education({ education }) {
           <h2>Educación</h2>
           <p>Aprende qué es cada entregable, para qué sirve y cómo debe leerse.</p>
         </div>
-        <Badge status="Disponible">{filtered.length} recursos</Badge>
       </div>
-
-      <div className="educationIntro">
-        <div>
-          <h3>¿Qué es una cadena de valor?</h3>
-          <p>
-            La cadena de valor muestra cómo las actividades principales y de apoyo se conectan para generar valor al cliente.
-            Nos ayuda a visualizar qué áreas crean valor directamente, qué procesos sostienen la operación y dónde pueden existir
-            reprocesos o desconexiones.
-          </p>
-        </div>
-        <ValueChainGraphic />
-      </div>
+      <div className="badgeRow"><Badge status="Disponible">{filtered.length} recursos</Badge></div>
 
       <div className="filters">
         <FilterSelect label="Sistema" value={systemFilter} onChange={setSystemFilter} options={systems} />
@@ -491,26 +543,19 @@ function Education({ education }) {
               {image ? (
                 <img className="previewImage" src={image} alt={item.deliverable || "Imagen previa"} />
               ) : (
-                <div className="previewPlaceholder">
-                  <Monitor size={34} />
-                  Imagen previa
-                </div>
+                <div className="previewPlaceholder"><Monitor size={34} />Imagen previa</div>
               )}
               <div className="educationContent">
                 <div className="area">{item.system}</div>
                 <h3>{item.deliverable}</h3>
-                {item.milestone && <Badge status="En validación">Hito: {item.milestone}</Badge>}
+                <div className="badgeRow">
+                  {item.milestone && <Badge status="En validación">Hito: {item.milestone}</Badge>}
+                  {item.status && <Badge status={item.status}>{item.status}</Badge>}
+                </div>
                 {item.whatIs && <p><strong>¿Qué es?</strong><br />{item.whatIs}</p>}
                 {item.purpose && <p><strong>¿Para qué sirve?</strong><br />{item.purpose}</p>}
                 {item.howToRead && <p><strong>¿Cómo leerlo?</strong><br />{item.howToRead}</p>}
-                <div className="educationFooter">
-                  {item.status && <Badge status={item.status}>{item.status}</Badge>}
-                  {link && (
-                    <a className="secondaryLink" href={link} target="_blank" rel="noreferrer">
-                      Ver entregable <ExternalLink size={15} />
-                    </a>
-                  )}
-                </div>
+                {link && <a className="secondaryLink" href={link} target="_blank" rel="noreferrer">Ver entregable <ExternalLink size={15} /></a>}
               </div>
             </article>
           );
@@ -525,6 +570,7 @@ function App() {
   const [data, setData] = useState(demoData);
   const [connected, setConnected] = useState(false);
   const [error, setError] = useState("");
+  const [selectedDeliverable, setSelectedDeliverable] = useState("");
 
   useEffect(() => {
     loadSheetData()
@@ -580,22 +626,22 @@ function App() {
               <div className="layout">
                 <div className="leftContent">
                   <DisorderCard project={project} />
-                  <Timeline milestones={milestones} />
+                  <Timeline milestones={milestones} deliverables={deliverables} setView={setView} setSelectedDeliverable={setSelectedDeliverable} />
                   <Findings findings={findings} />
                 </div>
-                <UpdatesPanel project={project} updates={updates} />
+                <UpdatesPanel project={project} updates={updates} setView={setView} />
               </div>
               <div className="twoColumns">
                 <PendingClient pending={pending} />
-                <Deliverables deliverables={deliverables} />
+                <Deliverables deliverables={deliverables} compact setView={setView} selectedDeliverable={selectedDeliverable} setSelectedDeliverable={setSelectedDeliverable} />
               </div>
             </>
           )}
 
-          {view === "ruta" && <Timeline milestones={milestones} />}
+          {view === "ruta" && <Timeline milestones={milestones} deliverables={deliverables} setView={setView} setSelectedDeliverable={setSelectedDeliverable} />}
           {view === "hallazgos" && <Findings findings={findings} />}
           {view === "pendientes" && <PendingClient pending={pending} />}
-          {view === "entregables" && <Deliverables deliverables={deliverables} />}
+          {view === "entregables" && <Deliverables deliverables={deliverables} selectedDeliverable={selectedDeliverable} setSelectedDeliverable={setSelectedDeliverable} />}
           {view === "educacion" && <Education education={education} />}
         </div>
       </main>

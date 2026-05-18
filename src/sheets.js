@@ -274,9 +274,14 @@ function projectFromRawRows(rows) {
 function mapMilestones(rows) {
   return rows.map((row, index) => ({
     id: getRowValue(row, ["ID", "Id"]) || String(index + 1),
-    title: getRowValue(row, ["Hito", "Titulo", "Título"]),
+    title: getRowValue(row, ["Hito", "Titulo", "Título", "Nombre"]),
+    system: getRowValue(row, ["Sistema"]),
     status: getRowValue(row, ["Estado"]),
     progress: parseNumber(getRowValue(row, ["% Avance", "Avance", "Progreso"])),
+    description: getRowValue(row, ["Descripcion", "Descripción", "Detalle", "QueIncluye", "Qué incluye"]),
+    includes: getRowValue(row, ["Incluye", "Contenido", "Dentro", "Actividades"]),
+    link: getRowValue(row, ["Link", "URL", "Enlace", "LinkHito"]),
+    targetDate: getRowValue(row, ["FechaObjetivo", "Fecha Objetivo", "Fecha objetivo", "Fecha", "FechaMeta"]),
   })).filter((x) => x.title);
 }
 
@@ -287,6 +292,9 @@ function mapFindings(rows) {
     impact: getRowValue(row, ["Impacto"]),
     priority: getRowValue(row, ["Prioridad"]),
     system: getRowValue(row, ["Sistema", "Sistema que lo resuelve"]),
+    description: getRowValue(row, ["Descripcion", "Descripción", "Detalle", "Explicacion", "Explicación"]),
+    solution: getRowValue(row, ["Solucion", "Solución", "Propuesta", "Accion", "Acción"]),
+    image: getRowValue(row, ["Imagen", "ImagenPreview", "Imagen previa", "URLImagen"]),
   })).filter((x) => x.finding);
 }
 
@@ -307,8 +315,11 @@ function mapDeliverables(rows) {
     deliverable: getRowValue(row, ["Entregable"]),
     status: getRowValue(row, ["Estado"]),
     progress: parseNumber(getRowValue(row, ["% Avance", "Avance", "Progreso"])),
-    link: getRowValue(row, ["LinkEntregable", "Link", "URL"]),
-    observation: getRowValue(row, ["Observacion", "Observación", "Notas"]),
+    link: getRowValue(row, [
+      "LinkEntregable", "Link Entregable", "Link entregable", "Link", "URL", "Enlace",
+      "EnlaceEntregable", "Enlace Entregable", "Documento", "Archivo"
+    ]),
+    observation: getRowValue(row, ["Observacion", "Observación", "Notas", "Comentario"]),
   })).filter((x) => x.deliverable);
 }
 
@@ -316,6 +327,7 @@ function mapUpdates(rows) {
   return rows.map((row) => ({
     title: getRowValue(row, ["Título", "Titulo", "Title"]),
     text: getRowValue(row, ["Texto", "Mensaje", "Detalle"]),
+    target: getRowValue(row, ["Destino", "Target", "Vista"]),
   })).filter((x) => x.title || x.text);
 }
 
@@ -328,7 +340,7 @@ function mapEducation(rows) {
     purpose: getRowValue(row, ["ParaQueSirve", "Para qué sirve", "Para que sirve"]),
     howToRead: getRowValue(row, ["ComoLeerlo", "Cómo leerlo", "Como leerlo"]),
     imagePreview: getRowValue(row, ["ImagenPreview", "Imagen previa", "Imagen"]),
-    link: getRowValue(row, ["LinkEntregable", "Link", "URL"]),
+    link: getRowValue(row, ["LinkEntregable", "Link Entregable", "Link", "URL", "Enlace", "Documento", "Archivo"]),
     status: getRowValue(row, ["Estado"]),
   })).filter((x) => x.deliverable || x.whatIs || x.purpose);
 }
