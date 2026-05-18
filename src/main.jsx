@@ -240,7 +240,7 @@ function Timeline({ milestones, deliverables = [], detailed = false, setView, se
           <h2>Ruta del proyecto</h2>
           <p>
             {detailed
-              ? "Haz clic en cada hito para ver su descripción, qué incluye, enlace y entregables relacionados."
+              ? "Haz clic en Ver detalle para desplegar la descripción, lo que incluye y el enlace de cada hito."
               : "Hitos visibles para entender qué se logró, qué contiene cada etapa y qué sigue."}
           </p>
         </div>
@@ -253,14 +253,10 @@ function Timeline({ milestones, deliverables = [], detailed = false, setView, se
 
           return (
             <div
-              className={`milestone clickable ${isOpen ? "selected" : ""}`}
+              className={`milestone ${isOpen ? "selected" : ""}`}
               key={`${m.id}-${m.title}`}
               onClick={() => {
-                if (!detailed) {
-                  setView?.("ruta");
-                  return;
-                }
-                setOpenHito(isOpen ? "" : m.title);
+                if (!detailed) setView?.("ruta");
               }}
             >
               <div className={`circle ${getStatusType(m.status)}`}>
@@ -277,22 +273,41 @@ function Timeline({ milestones, deliverables = [], detailed = false, setView, se
               {m.targetDate && (
                 <div className="targetDate">
                   <Clock3 size={14} />
-                  Fecha objetivo: <strong>{m.targetDate}</strong>
+                  <span>Fecha objetivo:</span>
+                  <strong>{m.targetDate}</strong>
                 </div>
               )}
 
               <ProgressBar value={m.progress} status={m.status} />
               <div className="milestoneStatus">{m.progress}% de avance</div>
 
+              {!detailed && (
+                <button
+                  className="detailButton"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setView?.("ruta");
+                  }}
+                >
+                  Ver en ruta <ChevronRight size={15} />
+                </button>
+              )}
+
               {detailed && (
-                <div className="expandHint">
-                  {isOpen ? "Ocultar detalle" : "Ver detalle del hito"}
-                  <ChevronRight className={`chevron ${isOpen ? "open" : ""}`} size={16} />
-                </div>
+                <button
+                  className="detailButton"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setOpenHito(isOpen ? "" : m.title);
+                  }}
+                >
+                  {isOpen ? "Ocultar detalle" : "Ver detalle"}
+                  <ChevronRight className={`chevron ${isOpen ? "open" : ""}`} size={15} />
+                </button>
               )}
 
               {detailed && isOpen && (
-                <div className="milestoneDetails" onClick={(e) => e.stopPropagation()}>
+                <div className="milestoneDetails">
                   {m.description && (
                     <div className="detailBlock">
                       <strong>Descripción</strong>
@@ -314,7 +329,8 @@ function Timeline({ milestones, deliverables = [], detailed = false, setView, se
                         <button
                           key={d.deliverable}
                           className="miniListItem"
-                          onClick={() => {
+                          onClick={(e) => {
+                            e.stopPropagation();
                             setSelectedDeliverable?.(d.deliverable);
                             setView?.("entregables");
                           }}
@@ -327,13 +343,21 @@ function Timeline({ milestones, deliverables = [], detailed = false, setView, se
                   )}
 
                   {m.link && safeUrl(m.link) && (
-                    <a className="secondaryLink" href={m.link} target="_blank" rel="noreferrer">
+                    <a
+                      className="secondaryLink"
+                      href={m.link}
+                      target="_blank"
+                      rel="noreferrer"
+                      onClick={(e) => e.stopPropagation()}
+                    >
                       Abrir enlace del hito <ExternalLink size={15} />
                     </a>
                   )}
 
                   {!m.description && !m.includes && !safeUrl(m.link) && relatedDeliverables.length === 0 && (
-                    <p className="muted">Agrega Descripcion, Incluye, Link o entregables relacionados para mostrar el detalle de este hito.</p>
+                    <p className="muted">
+                      Agrega Descripcion, Incluye, Link o entregables relacionados para mostrar el detalle de este hito.
+                    </p>
                   )}
                 </div>
               )}
