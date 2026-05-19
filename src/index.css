@@ -1566,3 +1566,55 @@ h1, h2, h3, p { margin-top: 0; }
   color: var(--muted);
   line-height: 1.55;
 }
+
+
+/* FIX FINAL: evitar desbordamiento de observaciones en entregables */
+.deliverableCard {
+  overflow: hidden;
+  min-width: 0;
+}
+
+.deliverableCard * {
+  min-width: 0;
+}
+
+.observation {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  max-width: 100%;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  line-height: 1.45;
+  margin-top: 10px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.deliverableCard .itemTitle,
+.deliverableCard .muted,
+.deliverableCard .area {
+  max-width: 100%;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.deliverableCard .secondaryLink {
+  margin-top: 14px;
+  position: relative;
+  z-index: 1;
+}
+
+/* Si la observación es muy larga, que no empuje ni tape el botón */
+.deliverableCard {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.deliverableCard .secondaryLink {
+  align-self: flex-start;
+}
