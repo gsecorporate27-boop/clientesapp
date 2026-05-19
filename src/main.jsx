@@ -328,7 +328,7 @@ function DisorderCard({ project }) {
 function ProjectHero({ project, completedText }) {
   const meetUrl = safeUrl(project.linkMeet);
   return (
-    <div className="heroCard">
+    <div className="heroCard premiumHeroCard">
       <div>
         <div className="eyebrow">Tablero conectado</div>
         <h2>{project.service} · {project.client}</h2>
@@ -368,7 +368,7 @@ function Timeline({ milestones, deliverables = [], detailed = false, setView, se
   };
 
   return (
-    <section className="card">
+    <section className="card premiumSectionCard">
       <div className="sectionHeader">
         <div>
           <h2>Ruta del proyecto</h2>
@@ -387,7 +387,7 @@ function Timeline({ milestones, deliverables = [], detailed = false, setView, se
 
           return (
             <div
-              className={`milestone ${!detailed ? "clickable" : ""} ${isSelected ? "selected" : ""}`}
+              className={`milestone premiumMilestone ${!detailed ? "clickable" : ""} ${isSelected ? "selected" : ""}`}
               key={`${m.id}-${m.title}`}
               onClick={() => {
                 if (!detailed) goToRoute(m.title);
@@ -489,7 +489,7 @@ function Timeline({ milestones, deliverables = [], detailed = false, setView, se
 function Findings({ findings }) {
   const [open, setOpen] = useState("");
   return (
-    <section className="card">
+    <section className="card premiumSectionCard">
       <div className="sectionHeader">
         <div>
           <h2>Hallazgos encontrados</h2>
@@ -537,7 +537,7 @@ function PendingClient({ pending, compact = false, setView }) {
   const items = compact ? pending.slice(0, 4) : pending;
 
   return (
-    <section className="card">
+    <section className="card premiumSectionCard">
       <div className="sectionHeader">
         <div>
           <h2>Pendientes del cliente</h2>
@@ -642,7 +642,7 @@ function Deliverables({ deliverables, selectedDeliverable, setSelectedDeliverabl
   const items = compact ? filtered.slice(0, 6) : filtered;
 
   return (
-    <section className="card">
+    <section className="card premiumSectionCard">
       <div className="sectionHeader">
         <div>
           <h2>{compact ? "Entregables principales" : "Entregables"}</h2>
@@ -788,7 +788,7 @@ function Education({ education }) {
     const link = safeUrl(item.link);
 
     return (
-      <article className="educationCard" key={`${prefix}${item.deliverable}-${index}`}>
+      <article className="educationCard premiumEducationCard" key={`${prefix}${item.deliverable}-${index}`}>
         {image ? (
           <img className="previewImage" src={image} alt={item.deliverable || "Imagen previa"} />
         ) : (
@@ -819,7 +819,7 @@ function Education({ education }) {
   };
 
   return (
-    <section className="card">
+    <section className="card premiumSectionCard">
       <div className="sectionHeader">
         <div>
           <h2>Lo que vas a recibir</h2>
@@ -844,7 +844,7 @@ function Education({ education }) {
 
       <div className="systemsEducation">
         {grouped.map((group, groupIndex) => (
-          <div className="systemSection" key={group.system}>
+          <div className="systemSection premiumSystemSection" key={group.system}>
             <div className="systemHeader">
               <div className="systemNumber">Sistema {groupIndex + 1}</div>
               <h3>{group.system.replace(/^Sistema\s*\d+\s*:\s*/i, "")}</h3>
@@ -857,7 +857,7 @@ function Education({ education }) {
         ))}
 
         {ungrouped.length > 0 && (
-          <div className="systemSection">
+          <div className="systemSection premiumSystemSection">
             <div className="systemHeader">
               <div className="systemNumber">Otros</div>
               <h3>Entregables adicionales</h3>

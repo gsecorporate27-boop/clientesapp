@@ -2069,3 +2069,473 @@ body {
     grid-template-columns: 1fr !important;
   }
 }
+
+
+/* ==========================================================
+   PREMIUM HOMOGÉNEA V2 · GSE
+   Paleta basada únicamente en #00b8b5
+   ========================================================== */
+
+:root {
+  --brand: #00b8b5;
+  --brand-900: #003f3e;
+  --brand-850: #005856;
+  --brand-800: #006f6d;
+  --brand-700: #008b89;
+  --brand-600: #00a5a2;
+  --brand-500: #00b8b5;
+  --brand-400: #29d2ce;
+  --brand-300: #65e3df;
+  --brand-200: #a9f2ef;
+  --brand-100: #dffcfb;
+  --brand-50: #f1fffe;
+  --ink: #073332;
+  --ink-soft: #315b5a;
+  --muted: #5f7e7d;
+  --line: rgba(0, 184, 181, 0.16);
+  --premium-shadow: 0 22px 60px rgba(0, 88, 86, 0.11);
+  --premium-shadow-soft: 0 14px 35px rgba(0, 88, 86, 0.075);
+  --gradient-brand: linear-gradient(135deg, #003f3e 0%, #007f7d 48%, #00b8b5 100%);
+  --gradient-brand-soft: linear-gradient(135deg, rgba(0,184,181,0.16) 0%, rgba(223,252,251,0.92) 100%);
+  --gradient-card: radial-gradient(circle at top left, rgba(0,184,181,0.28), transparent 20rem),
+                   linear-gradient(135deg, #003f3e 0%, #006f6d 55%, #00b8b5 100%);
+}
+
+body {
+  color: var(--ink);
+  background:
+    radial-gradient(circle at top left, rgba(0, 184, 181, 0.14), transparent 30rem),
+    radial-gradient(circle at bottom right, rgba(0, 184, 181, 0.09), transparent 28rem),
+    linear-gradient(135deg, #f1fffe 0%, #ffffff 42%, #eefdfc 100%) !important;
+}
+
+/* Sidebar homogénea */
+.premiumSidebar {
+  background:
+    radial-gradient(circle at 0% 0%, rgba(0, 184, 181, 0.42), transparent 19rem),
+    linear-gradient(180deg, #003f3e 0%, #005856 52%, #003332 100%) !important;
+  box-shadow: 22px 0 70px rgba(0, 63, 62, 0.18) !important;
+}
+
+.premiumNav .navItem.active {
+  background: linear-gradient(135deg, #00b8b5, #65e3df) !important;
+  box-shadow: 0 14px 28px rgba(0, 184, 181, 0.32) !important;
+}
+
+.premiumNav .navItem:hover:not(.active) {
+  background: rgba(169, 242, 239, 0.12) !important;
+}
+
+.clientProfile,
+.premiumSidebarCard {
+  border-color: rgba(169, 242, 239, 0.22) !important;
+  background: rgba(223, 252, 251, 0.08) !important;
+}
+
+/* Header */
+.premiumHeader {
+  background: rgba(241, 255, 254, 0.82) !important;
+  border-bottom: 1px solid rgba(0, 184, 181, 0.14) !important;
+}
+
+.headerIcon,
+.primaryPortalButton,
+.systemNumber,
+.plainPortalAction:hover {
+  background: linear-gradient(135deg, #00b8b5, #65e3df) !important;
+  box-shadow: 0 18px 38px rgba(0, 184, 181, 0.22) !important;
+}
+
+.premiumHeader h1,
+.portalNextStep h3,
+.sectionHeader h2,
+.card h2,
+.card h3,
+.milestoneTitle {
+  color: var(--ink) !important;
+}
+
+/* Portal se mantiene, pero más homogéneo */
+.portalHero {
+  background: var(--gradient-card) !important;
+  box-shadow: 0 34px 95px rgba(0, 63, 62, 0.24) !important;
+}
+
+.portalMetricCard,
+.portalClientBox > div {
+  background: rgba(223, 252, 251, 0.11) !important;
+  border-color: rgba(169, 242, 239, 0.22) !important;
+}
+
+.secondaryPortalButton {
+  background: rgba(223, 252, 251, 0.10) !important;
+  border-color: rgba(169, 242, 239, 0.25) !important;
+}
+
+.portalNextStep {
+  border-color: var(--line) !important;
+  box-shadow: var(--premium-shadow-soft) !important;
+}
+
+/* Tarjetas generales */
+.card,
+.heroCard,
+.premiumSectionCard,
+.premiumHeroCard {
+  border: 1px solid var(--line) !important;
+  box-shadow: var(--premium-shadow-soft) !important;
+  border-radius: 34px !important;
+  background: rgba(255, 255, 255, 0.92) !important;
+}
+
+.card::before,
+.premiumSectionCard::before {
+  content: "";
+  display: block;
+  height: 4px;
+  margin: -1px -1px 18px;
+  border-radius: 34px 34px 0 0;
+  background: linear-gradient(90deg, transparent, rgba(0,184,181,0.55), transparent);
+}
+
+/* Tarjetas destacadas con degradado dentro de las pestañas */
+.kpi:nth-child(1),
+.premiumKpi:nth-child(1),
+.kpiCard:nth-child(1),
+.portalNextStep,
+.updatesPanel .card:first-child {
+  background: var(--gradient-card) !important;
+  color: white !important;
+  border: 0 !important;
+  box-shadow: 0 26px 70px rgba(0, 63, 62, 0.18) !important;
+}
+
+.kpi:nth-child(1) *,
+.premiumKpi:nth-child(1) *,
+.kpiCard:nth-child(1) *,
+.portalNextStep .eyebrow,
+.portalNextStep h3,
+.portalNextStep p,
+.updatesPanel .card:first-child * {
+  color: white !important;
+}
+
+.kpi:nth-child(1) .progressFill,
+.premiumKpi:nth-child(1) .progressFill,
+.kpiCard:nth-child(1) .progressFill {
+  background: #ffffff !important;
+}
+
+.kpi:nth-child(1) .progressTrack,
+.premiumKpi:nth-child(1) .progressTrack,
+.kpiCard:nth-child(1) .progressTrack {
+  background: rgba(255,255,255,0.22) !important;
+}
+
+/* KPI más elegantes */
+.kpi,
+.premiumKpi,
+.kpiCard {
+  border-radius: 30px !important;
+  border: 1px solid var(--line) !important;
+  box-shadow: var(--premium-shadow-soft) !important;
+  overflow: hidden;
+}
+
+.kpiValue,
+.kpi .value,
+.kpiCard .value {
+  font-weight: 750 !important;
+  letter-spacing: -0.045em !important;
+}
+
+.kpiIcon,
+.iconBox {
+  background: var(--brand-100) !important;
+  color: var(--brand-800) !important;
+}
+
+/* Badges uniformes */
+.badge,
+[class*="badge"] {
+  border-radius: 999px !important;
+  border: 1px solid rgba(0, 184, 181, 0.18) !important;
+  background: rgba(0, 184, 181, 0.10) !important;
+  color: var(--brand-800) !important;
+}
+
+.kpi:nth-child(1) .badge,
+.premiumKpi:nth-child(1) .badge,
+.portalHero .badge {
+  background: rgba(255,255,255,0.14) !important;
+  color: #ffffff !important;
+  border-color: rgba(255,255,255,0.24) !important;
+}
+
+/* Progreso solo turquesa */
+.progressFill,
+.progressBar > div,
+.progress div,
+[class*="progress"] [style] {
+  background: linear-gradient(90deg, #00b8b5, #65e3df) !important;
+}
+
+.progressTrack,
+.progressBar,
+[class*="progress"] {
+  background-color: rgba(0, 184, 181, 0.10) !important;
+}
+
+/* Ruta del proyecto */
+.timelineSummary,
+.timelineDetailed {
+  gap: 18px !important;
+}
+
+.timelineSummary {
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+}
+
+.timelineDetailed {
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  align-items: start;
+}
+
+.milestone,
+.premiumMilestone {
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.96), rgba(241,255,254,0.78)) !important;
+  border: 1px solid var(--line) !important;
+  border-radius: 30px !important;
+  box-shadow: 0 16px 35px rgba(0, 88, 86, 0.07) !important;
+}
+
+.milestone.selected,
+.premiumMilestone.selected,
+.milestone:hover {
+  border-color: rgba(0,184,181,0.42) !important;
+  box-shadow: 0 20px 48px rgba(0, 88, 86, 0.12) !important;
+}
+
+.circle {
+  background: linear-gradient(135deg, var(--brand), var(--brand-300)) !important;
+  color: white !important;
+  box-shadow: 0 12px 28px rgba(0,184,181,0.22);
+}
+
+.milestoneDetails.alwaysVisible,
+.milestoneDetails {
+  background: rgba(241, 255, 254, 0.72) !important;
+  border: 1px solid rgba(0,184,181,0.15) !important;
+  border-radius: 24px !important;
+}
+
+/* Cada 5ta tarjeta puede ser degradada para dar variación elegante */
+.timelineDetailed .milestone:nth-child(5n + 1) {
+  background: var(--gradient-card) !important;
+  color: white !important;
+}
+
+.timelineDetailed .milestone:nth-child(5n + 1) *,
+.timelineDetailed .milestone:nth-child(5n + 1) .detailBlock strong,
+.timelineDetailed .milestone:nth-child(5n + 1) .detailBlock p {
+  color: white !important;
+}
+
+.timelineDetailed .milestone:nth-child(5n + 1) .milestoneDetails {
+  background: rgba(255,255,255,0.10) !important;
+  border-color: rgba(255,255,255,0.18) !important;
+}
+
+/* Hallazgos */
+.findingCard,
+.premiumFindingCard,
+.findingItem {
+  border-radius: 28px !important;
+  border: 1px solid var(--line) !important;
+  background: rgba(255,255,255,0.94) !important;
+  box-shadow: var(--premium-shadow-soft) !important;
+}
+
+.findingCard:nth-child(3n + 1),
+.premiumFindingCard:nth-child(3n + 1) {
+  background: var(--gradient-card) !important;
+  color: white !important;
+}
+
+.findingCard:nth-child(3n + 1) *,
+.premiumFindingCard:nth-child(3n + 1) * {
+  color: white !important;
+}
+
+/* Pendientes */
+.pendingCard,
+.premiumPendingCard,
+.pendingItem,
+.pendingRow {
+  border-radius: 26px !important;
+  border: 1px solid var(--line) !important;
+  background: rgba(255,255,255,0.96) !important;
+  box-shadow: 0 12px 28px rgba(0, 88, 86, 0.06) !important;
+}
+
+.pendingCard:nth-child(4n + 1),
+.premiumPendingCard:nth-child(4n + 1) {
+  background: linear-gradient(135deg, #005856, #00b8b5) !important;
+  color: white !important;
+}
+
+.pendingCard:nth-child(4n + 1) *,
+.premiumPendingCard:nth-child(4n + 1) * {
+  color: white !important;
+}
+
+/* Entregables */
+.deliverableCard,
+.premiumDeliverableCard {
+  border-radius: 30px !important;
+  border: 1px solid var(--line) !important;
+  background: rgba(255,255,255,0.96) !important;
+  box-shadow: var(--premium-shadow-soft) !important;
+  overflow: hidden !important;
+}
+
+.deliverableCard:nth-child(6n + 1),
+.premiumDeliverableCard:nth-child(6n + 1) {
+  background: var(--gradient-card) !important;
+  color: white !important;
+}
+
+.deliverableCard:nth-child(6n + 1) *,
+.premiumDeliverableCard:nth-child(6n + 1) * {
+  color: white !important;
+}
+
+.deliverableCard:nth-child(6n + 1) .observation,
+.premiumDeliverableCard:nth-child(6n + 1) .observation {
+  color: rgba(255,255,255,0.82) !important;
+}
+
+.observation {
+  background: rgba(0,184,181,0.07);
+  border: 1px solid rgba(0,184,181,0.10);
+  border-radius: 18px;
+  padding: 10px 12px;
+}
+
+/* Lo que vas a recibir */
+.systemSection,
+.premiumSystemSection {
+  border-radius: 34px !important;
+  border: 1px solid var(--line) !important;
+  background: rgba(255,255,255,0.94) !important;
+  box-shadow: var(--premium-shadow-soft) !important;
+  overflow: hidden;
+}
+
+.systemHeader {
+  background: var(--gradient-card);
+  margin: -18px -18px 18px !important;
+  padding: 18px !important;
+  color: white;
+}
+
+.systemHeader h3,
+.systemHeader * {
+  color: white !important;
+}
+
+.systemNumber {
+  background: rgba(255,255,255,0.16) !important;
+  color: white !important;
+  border: 1px solid rgba(255,255,255,0.22);
+}
+
+.educationCard,
+.premiumEducationCard {
+  border-radius: 28px !important;
+  border: 1px solid var(--line) !important;
+  background: rgba(255,255,255,0.96) !important;
+  box-shadow: 0 12px 30px rgba(0, 88, 86, 0.06) !important;
+  overflow: hidden;
+}
+
+.educationCard:nth-child(4n + 1),
+.premiumEducationCard:nth-child(4n + 1) {
+  background: linear-gradient(135deg, #f1fffe 0%, #ffffff 60%, rgba(0,184,181,0.09) 100%) !important;
+}
+
+.previewPlaceholder {
+  background: linear-gradient(135deg, rgba(0,184,181,0.12), rgba(0,184,181,0.04)) !important;
+  color: var(--brand-800) !important;
+}
+
+/* Botones y enlaces */
+.secondaryLink,
+.primaryButton,
+button,
+a.secondaryLink {
+  transition: all 0.2s ease;
+}
+
+.secondaryLink {
+  border-color: rgba(0,184,181,0.22) !important;
+  background: var(--brand-100) !important;
+  color: var(--brand-800) !important;
+}
+
+.secondaryLink:hover {
+  transform: translateY(-1px);
+  background: rgba(0,184,181,0.18) !important;
+}
+
+/* Filtros */
+.filters select,
+.filters input,
+.filterSelect select {
+  border-color: rgba(0,184,181,0.20) !important;
+  background: #ffffff !important;
+  color: var(--ink) !important;
+  border-radius: 18px !important;
+}
+
+.filters label,
+.filterSelect label,
+.area,
+.eyebrow {
+  color: var(--brand-800) !important;
+}
+
+/* Tablas / listados */
+.tableHeader,
+.listHeader,
+.pendingHeader {
+  background: var(--brand-100) !important;
+  color: var(--brand-800) !important;
+}
+
+/* Responsive */
+@media (max-width: 1320px) {
+  .timelineSummary,
+  .timelineDetailed {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+}
+
+@media (max-width: 900px) {
+  .timelineSummary,
+  .timelineDetailed,
+  .educationGrid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .content {
+    padding: 20px 16px 40px !important;
+  }
+
+  .card,
+  .heroCard,
+  .premiumSectionCard {
+    border-radius: 26px !important;
+  }
+}
