@@ -9,6 +9,10 @@ const SPREADSHEET_ID = getSheetIdFromUrl() || import.meta.env.VITE_SPREADSHEET_I
 export const demoData = {
   project: {
     client: "SIN CONEXIÓN - REVISAR GOOGLE SHEET",
+    companyClient: "SIN CONEXIÓN - REVISAR GOOGLE SHEET",
+    contactName: "",
+    contactRole: "",
+    welcomeMessage: "",
     service: "Business Power™",
     status: "Pendiente",
     progress: 0,
@@ -256,6 +260,10 @@ function projectFromRawRows(rows) {
 
   return {
     client: map.cliente || demoData.project.client,
+    companyClient: map.empresacliente || map.cliente || demoData.project.client,
+    contactName: map.nombrecliente || map.gerentegeneral || map.responsablecliente || "",
+    contactRole: map.cargocliente || "",
+    welcomeMessage: map.mensajebienvenida || "",
     service: map.servicio || demoData.project.service,
     status: map.estadogeneral || map.estado || demoData.project.status,
     progress: parseNumber(map.avancegeneral || map.avance, demoData.project.progress),

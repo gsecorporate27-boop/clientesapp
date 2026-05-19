@@ -3,7 +3,9 @@ import React, { useEffect, useMemo, useState } from "react";
 import { createRoot } from "react-dom/client";
 import {
   AlertTriangle,
+  ArrowRight,
   BarChart3,
+  Building2,
   BookOpen,
   CheckCircle2,
   ChevronRight,
@@ -13,8 +15,11 @@ import {
   Flag,
   Layers3,
   LockKeyhole,
+  LogIn,
   Monitor,
   Search,
+  ShieldCheck,
+  Sparkles,
   Target,
   Users,
   Video,
@@ -63,6 +68,7 @@ function Logo({ src, fallback, className = "" }) {
 
 function Sidebar({ view, setView, project }) {
   const items = [
+    [Sparkles, "Portal del proyecto", "portal"],
     [BarChart3, "Resumen", "resumen"],
     [Target, "Ruta del proyecto", "ruta"],
     [Search, "Hallazgos", "hallazgos"],
@@ -71,61 +77,186 @@ function Sidebar({ view, setView, project }) {
     [BookOpen, "Lo que vas a recibir", "educacion"],
   ];
 
+  const company = project.companyClient || project.client;
+  const contact = project.contactName || project.generalManager || project.responsibleClient;
+  const role = project.contactRole || "Responsable del proyecto";
+
   return (
-    <aside className="sidebar">
-      <div className="brand">
+    <aside className="sidebar premiumSidebar">
+      <div className="brand premiumBrand">
         <Logo src={project.logoGSE} fallback="GSE" />
         <div>
-          <div className="brandTitle">Ruta de Avance Visible™</div>
-          <div className="brandSub">{project.service}</div>
+          <div className="brandTitle">GSE&CO.</div>
+          <div className="brandSub">Ruta de Avance Visible™</div>
         </div>
       </div>
 
-      <nav className="nav">
+      <div className="clientProfile">
+        <div className="clientProfileTop">
+          <Logo src={project.logoClient} fallback={company?.slice(0, 2) || "CL"} className="clientMiniLogo" />
+          <div>
+            <span>Cliente</span>
+            <strong>{company}</strong>
+          </div>
+        </div>
+
+        <div className="clientProfileLine">
+          <Users size={15} />
+          <div>
+            <span>{contact || "Sin contacto definido"}</span>
+            <small>{role}</small>
+          </div>
+        </div>
+
+        <div className="clientProfileLine">
+          <Layers3 size={15} />
+          <div>
+            <span>{project.service}</span>
+            <small>Proyecto activo</small>
+          </div>
+        </div>
+      </div>
+
+      <nav className="nav premiumNav">
         {items.map(([Icon, label, value]) => (
-          <button
-            key={label}
-            className={`navItem ${view === value ? "active" : ""}`}
-            onClick={() => setView(value)}
-          >
+          <button key={label} className={`navItem ${view === value ? "active" : ""}`} onClick={() => setView(value)}>
             <Icon size={18} />
             {label}
           </button>
         ))}
       </nav>
 
-      <div className="sidebarCard">
-        <div className="sidebarCardTitle">
-          <Layers3 size={18} /> GSE&CO.
-        </div>
-        <p>Procesos, estructura y talento humano para sostener el cambio.</p>
+      <div className="sidebarCard premiumSidebarCard">
+        <div className="sidebarCardTitle"><ShieldCheck size={18} /> Portal privado</div>
+        <p>Avance, decisiones, entregables y próximos pasos del proyecto en un solo lugar.</p>
       </div>
     </aside>
   );
 }
 
 function Header({ project, connected }) {
+  const company = project.companyClient || project.client;
+
   return (
-    <header className="header">
+    <header className="header premiumHeader">
       <div className="headerIdentity">
-        <Logo src={project.logoGSE} fallback="GSE" />
+        <div className="headerIcon">
+          <Building2 size={22} />
+        </div>
         <div className="headerText">
           <div className="eyebrow">{project.service}</div>
-          <h1>Ruta de Avance Visible™</h1>
-          <p>Seguimiento ejecutivo del proyecto · {project.client}</p>
+          <h1>{company}</h1>
+          <p>Seguimiento ejecutivo del proyecto · Ruta de Avance Visible™</p>
         </div>
       </div>
 
-      <div className="clientLogoBox">
-        <span>Cliente</span>
-        <Logo src={project.logoClient} fallback={project.client?.slice(0, 2) || "CL"} />
-      </div>
-
       <div className="headerActions">
-        <Badge status={connected ? "Finalizado" : "Bloqueado"}>{connected ? "Conectado a Google Sheets" : "Sin conexión"}</Badge>
-        <Badge status={project.status}>Estado general: {project.status}</Badge>
+        <Badge status={connected ? "Finalizado" : "Bloqueado"}>{connected ? "Google Sheets conectado" : "Sin conexión"}</Badge>
+        <Badge status={project.status}>Estado: {project.status}</Badge>
       </div>
     </header>
+  );
+}
+
+function PortalProject({ project, milestones, pending, setView }) {
+  const meetUrl = safeUrl(project.linkMeet);
+  const company = project.companyClient || project.client;
+  const contact = project.contactName || project.generalManager || project.responsibleClient;
+  const role = project.contactRole || "Responsable del proyecto";
+  const completed = milestones.filter((m) => m.status === "Finalizado" || m.status === "Aprobado").length;
+  const disorder = Math.max(0, 100 - (Number(project.progress) || 0));
+  const welcome = project.welcomeMessage || "Bienvenido a tu Ruta de Avance Visible™. Aquí podrás revisar el avance del proyecto, los hitos trabajados, los pendientes activos y los entregables construidos por GSE para ordenar tu empresa.";
+
+  return (
+    <div className="portalPage">
+      <section className="portalHero">
+        <div className="portalOverlay"></div>
+
+        <div className="portalContent">
+          <div className="portalLogos">
+            <Logo src={project.logoGSE} fallback="GSE" />
+            <div className="portalDivider"></div>
+            <Logo src={project.logoClient} fallback={company?.slice(0, 2) || "CL"} />
+          </div>
+
+          <div className="portalEyebrow">
+            <Sparkles size={16} />
+            Portal privado del proyecto
+          </div>
+
+          <h2>Bienvenido a tu Ruta de Avance Visible™</h2>
+          <p>{welcome}</p>
+
+          <div className="portalClientBox">
+            <div>
+              <span>Empresa</span>
+              <strong>{company}</strong>
+            </div>
+            <div>
+              <span>Contacto principal</span>
+              <strong>{contact || "Sin contacto definido"}</strong>
+              <small>{role}</small>
+            </div>
+            <div>
+              <span>Servicio</span>
+              <strong>{project.service}</strong>
+            </div>
+          </div>
+
+          <div className="portalActions">
+            <button className="primaryPortalButton" onClick={() => setView("resumen")}>
+              <LogIn size={18} />
+              Entrar al tablero
+              <ArrowRight size={18} />
+            </button>
+
+            {meetUrl && (
+              <a className="secondaryPortalButton" href={meetUrl} target="_blank" rel="noreferrer">
+                <Video size={18} />
+                Conectarse a reunión
+              </a>
+            )}
+          </div>
+        </div>
+
+        <div className="portalMetrics">
+          <div className="portalMetricCard">
+            <span>Avance general</span>
+            <strong>{project.progress}%</strong>
+            <ProgressBar value={project.progress} status={project.status} />
+          </div>
+
+          <div className="portalMetricCard">
+            <span>Desorden restante</span>
+            <strong>{disorder}%</strong>
+            <ProgressBar value={disorder} status="Bloqueado" reverse />
+          </div>
+
+          <div className="portalMetricCard">
+            <span>Hitos completados</span>
+            <strong>{completed}/{milestones.length}</strong>
+          </div>
+
+          <div className="portalMetricCard">
+            <span>Pendientes activos</span>
+            <strong>{pending.length}</strong>
+          </div>
+        </div>
+      </section>
+
+      <section className="portalNextStep">
+        <div>
+          <div className="eyebrow">Próximo paso</div>
+          <h3>{project.nextStep}</h3>
+          <p>{project.nextDate}</p>
+        </div>
+
+        <button className="plainPortalAction" onClick={() => setView("ruta")}>
+          Ver ruta del proyecto
+          <ChevronRight size={18} />
+        </button>
+      </section>
+    </div>
   );
 }
 
@@ -743,7 +874,7 @@ function Education({ education }) {
 }
 
 function App() {
-  const [view, setView] = useState("resumen");
+  const [view, setView] = useState("portal");
   const [data, setData] = useState(demoData);
   const [connected, setConnected] = useState(false);
   const [error, setError] = useState("");
@@ -781,6 +912,7 @@ function App() {
         <div className="content">
           <div className="mobileTabs">
             {[
+              ["portal", "Portal"],
               ["resumen", "Resumen"],
               ["ruta", "Ruta"],
               ["hallazgos", "Hallazgos"],
@@ -797,6 +929,8 @@ function App() {
           {error && <div className="errorBox">{error}</div>}
 
           <ProjectHero project={project} completedText={completedText} />
+
+          {view === "portal" && <PortalProject project={project} milestones={milestones} pending={pending} setView={setView} />}
 
           {view === "resumen" && (
             <>

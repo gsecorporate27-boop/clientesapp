@@ -1,43 +1,44 @@
-# Ruta de Avance Visible™ - Final con Lo que vas a recibir
+# Ruta de Avance Visible™ - Premium Portal GSE
 
-## Cambio principal
+## Cambios principales
 
-La pestaña visible `Educación` ahora se llama:
+- Nueva pestaña inicial: `Portal del proyecto`.
+- Vista premium de bienvenida antes del tablero.
+- Botón principal: `Entrar al tablero`.
+- Botón secundario: `Conectarse a reunión`.
+- Barra izquierda rediseñada con:
+  - Empresa del cliente
+  - Nombre del cliente
+  - Cargo
+  - Servicio contratado
+- Color principal de marca: `#00b8b5`.
+- Diseño más ejecutivo, con mejores márgenes, profundidad visual y tarjetas premium.
 
-```text
-Lo que vas a recibir
-```
-
-El nombre técnico del Google Sheet se mantiene como:
-
-```text
-Educacion
-```
-
-## Organización por sistemas
-
-La sección se agrupa por la columna `Sistema` de la pestaña `Educacion`.
-
-Usa estos nombres recomendados:
+## Campos usados en pestaña Proyecto
 
 ```text
-Sistema 1: Operación sin Caos
-Sistema 2: Talento en el Rol Correcto
-Sistema 3: Salarios Justos que Retienen
-Sistema 4: Desempeño que Optimiza la Estructura
-Sistema 5: K&ZEN Interno Permanente
+Cliente
+EmpresaCliente
+NombreCliente
+CargoCliente
+Servicio
+EstadoGeneral
+AvanceGeneral
+ProximoPaso
+FechaProximoPaso
+LinkMeet
+ResponsableCliente
+GerenteGeneral
+LogoGSE
+LogoCliente
+MensajeBienvenida
+MensajeWhatsApp
 ```
 
-## Columnas esperadas en `Educacion`
-
-```text
-Sistema | Hito | Entregable | QueEs | ParaQueSirve | ComoLeerlo | ImagenPreview | LinkEntregable | Estado
-```
-
-## Archivos clave
+## Archivos que debes reemplazar en GitHub
 
 ```text
 src/main.jsx
-src/index.css
 src/sheets.js
+src/index.css
 ```
