@@ -68,7 +68,7 @@ function Sidebar({ view, setView, project }) {
     [Search, "Hallazgos", "hallazgos"],
     [AlertTriangle, "Pendientes", "pendientes"],
     [FileText, "Entregables", "entregables"],
-    [BookOpen, "Educación", "educacion"],
+    [BookOpen, "Lo que vas a recibir", "educacion"],
   ];
 
   return (
@@ -619,7 +619,22 @@ function Education({ education }) {
   const [systemFilter, setSystemFilter] = useState("Todos");
   const [milestoneFilter, setMilestoneFilter] = useState("Todos");
 
-  const systems = [...new Set(education.map((d) => d.system).filter(Boolean))];
+  const systemOrder = [
+    "Sistema 1: Operación sin Caos",
+    "Sistema 2: Talento en el Rol Correcto",
+    "Sistema 3: Salarios Justos que Retienen",
+    "Sistema 4: Desempeño que Optimiza la Estructura",
+    "Sistema 5: K&ZEN Interno Permanente",
+  ];
+
+  const normalizeSystem = (value = "") => String(value || "").trim();
+
+  const systemsFromSheet = [...new Set(education.map((d) => normalizeSystem(d.system)).filter(Boolean))];
+  const orderedSystems = [
+    ...systemOrder.filter((system) => systemsFromSheet.includes(system)),
+    ...systemsFromSheet.filter((system) => !systemOrder.includes(system)),
+  ];
+
   const milestones = [...new Set(education.map((d) => d.milestone).filter(Boolean))];
 
   const filtered = education.filter((item) => {
@@ -628,47 +643,100 @@ function Education({ education }) {
     return systemOk && milestoneOk;
   });
 
+  const grouped = orderedSystems
+    .map((system) => ({
+      system,
+      items: filtered.filter((item) => normalizeSystem(item.system) === system),
+    }))
+    .filter((group) => group.items.length > 0);
+
+  const ungrouped = filtered.filter((item) => !normalizeSystem(item.system));
+
+  const renderEducationCard = (item, index, prefix = "") => {
+    const image = safeUrl(item.imagePreview);
+    const link = safeUrl(item.link);
+
+    return (
+      <article className="educationCard" key={`${prefix}${item.deliverable}-${index}`}>
+        {image ? (
+          <img className="previewImage" src={image} alt={item.deliverable || "Imagen previa"} />
+        ) : (
+          <div className="previewPlaceholder"><Monitor size={34} />Imagen previa</div>
+        )}
+
+        <div className="educationContent">
+          <div className="area">{item.system || "Entregable"}</div>
+          <h3>{item.deliverable}</h3>
+
+          <div className="badgeRow">
+            {item.milestone && <Badge status="En validación">Hito: {item.milestone}</Badge>}
+            {item.status && <Badge status={item.status}>{item.status}</Badge>}
+          </div>
+
+          {item.whatIs && <p><strong>¿Qué es?</strong><br />{item.whatIs}</p>}
+          {item.purpose && <p><strong>¿Para qué sirve?</strong><br />{item.purpose}</p>}
+          {item.howToRead && <p><strong>¿Cómo leerlo?</strong><br />{item.howToRead}</p>}
+
+          {link && (
+            <a className="secondaryLink" href={link} target="_blank" rel="noreferrer">
+              Ver entregable <ExternalLink size={15} />
+            </a>
+          )}
+        </div>
+      </article>
+    );
+  };
+
   return (
     <section className="card">
       <div className="sectionHeader">
         <div>
-          <h2>Educación</h2>
-          <p>Aprende qué es cada entregable, para qué sirve y cómo debe leerse.</p>
+          <h2>Lo que vas a recibir</h2>
+          <p>
+            Aquí encontrarás una guía clara de los entregables que estamos construyendo, qué significa cada uno,
+            para qué sirve y cómo debes leerlo.
+          </p>
         </div>
       </div>
+
+      <p className="sectionIntro">
+        La información está organizada por sistemas para que puedas entender cómo cada entregable aporta al orden,
+        control y sostenibilidad de tu empresa.
+      </p>
+
       <div className="badgeRow"><Badge status="Disponible">{filtered.length} recursos</Badge></div>
 
       <div className="filters">
-        <FilterSelect label="Sistema" value={systemFilter} onChange={setSystemFilter} options={systems} />
+        <FilterSelect label="Sistema" value={systemFilter} onChange={setSystemFilter} options={orderedSystems} />
         <FilterSelect label="Hito" value={milestoneFilter} onChange={setMilestoneFilter} options={milestones} />
       </div>
 
-      <div className="educationGrid">
-        {filtered.map((item, index) => {
-          const image = safeUrl(item.imagePreview);
-          const link = safeUrl(item.link);
-          return (
-            <article className="educationCard" key={`${item.deliverable}-${index}`}>
-              {image ? (
-                <img className="previewImage" src={image} alt={item.deliverable || "Imagen previa"} />
-              ) : (
-                <div className="previewPlaceholder"><Monitor size={34} />Imagen previa</div>
-              )}
-              <div className="educationContent">
-                <div className="area">{item.system}</div>
-                <h3>{item.deliverable}</h3>
-                <div className="badgeRow">
-                  {item.milestone && <Badge status="En validación">Hito: {item.milestone}</Badge>}
-                  {item.status && <Badge status={item.status}>{item.status}</Badge>}
-                </div>
-                {item.whatIs && <p><strong>¿Qué es?</strong><br />{item.whatIs}</p>}
-                {item.purpose && <p><strong>¿Para qué sirve?</strong><br />{item.purpose}</p>}
-                {item.howToRead && <p><strong>¿Cómo leerlo?</strong><br />{item.howToRead}</p>}
-                {link && <a className="secondaryLink" href={link} target="_blank" rel="noreferrer">Ver entregable <ExternalLink size={15} /></a>}
-              </div>
-            </article>
-          );
-        })}
+      <div className="systemsEducation">
+        {grouped.map((group, groupIndex) => (
+          <div className="systemSection" key={group.system}>
+            <div className="systemHeader">
+              <div className="systemNumber">Sistema {groupIndex + 1}</div>
+              <h3>{group.system.replace(/^Sistema\s*\d+\s*:\s*/i, "")}</h3>
+            </div>
+
+            <div className="educationGrid">
+              {group.items.map((item, index) => renderEducationCard(item, index, group.system))}
+            </div>
+          </div>
+        ))}
+
+        {ungrouped.length > 0 && (
+          <div className="systemSection">
+            <div className="systemHeader">
+              <div className="systemNumber">Otros</div>
+              <h3>Entregables adicionales</h3>
+            </div>
+
+            <div className="educationGrid">
+              {ungrouped.map((item, index) => renderEducationCard(item, index, "ungrouped"))}
+            </div>
+          </div>
+        )}
       </div>
     </section>
   );
@@ -718,7 +786,7 @@ function App() {
               ["hallazgos", "Hallazgos"],
               ["pendientes", "Pendientes"],
               ["entregables", "Entregables"],
-              ["educacion", "Educación"],
+              ["educacion", "Lo que vas a recibir"],
             ].map(([value, label]) => (
               <button key={value} onClick={() => setView(value)} className={view === value ? "active" : ""}>
                 {label}

@@ -1433,3 +1433,136 @@ h1, h2, h3, p { margin-top: 0; }
     grid-template-columns: 1fr !important;
   }
 }
+
+
+/* FINAL GSE: resumen 4 por fila + detalle visible en Ruta */
+.timelineSummary {
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+}
+
+.timelineDetailed {
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  align-items: start;
+}
+
+.milestoneDetails.alwaysVisible {
+  margin-top: 14px;
+  background: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  padding: 14px;
+  text-align: left;
+}
+
+.detailBlock {
+  margin-bottom: 12px;
+}
+
+.detailBlock strong {
+  display: block;
+  color: var(--petrol);
+  margin-bottom: 4px;
+  font-family: "Montserrat", sans-serif;
+  font-size: 13px;
+}
+
+.detailBlock p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.badge {
+  font-size: 10px;
+  font-weight: 700;
+  min-height: 24px;
+  min-width: 88px;
+  max-width: 140px;
+  padding: 5px 8px;
+  justify-content: center;
+  text-align: center;
+  line-height: 1.15;
+  border-radius: 12px;
+}
+
+.badgeRow.center,
+.milestone .badgeRow {
+  justify-content: center;
+  width: 100%;
+  text-align: center;
+}
+
+.milestoneTitle {
+  text-align: center;
+}
+
+.targetDate {
+  justify-content: center;
+  text-align: center;
+  flex-wrap: wrap;
+}
+
+.detailButton,
+.expandHint {
+  display: none !important;
+}
+
+@media (max-width: 1320px) {
+  .timelineSummary,
+  .timelineDetailed {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+}
+
+@media (max-width: 900px) {
+  .timelineSummary,
+  .timelineDetailed {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+
+/* FINAL: Lo que vas a recibir agrupado por sistemas */
+.systemsEducation {
+  display: grid;
+  gap: 26px;
+  margin-top: 18px;
+}
+
+.systemSection {
+  border: 1px solid var(--line);
+  border-radius: 28px;
+  padding: 18px;
+  background: #ffffff;
+}
+
+.systemHeader {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.systemNumber {
+  background: var(--brand);
+  color: white;
+  border-radius: 999px;
+  padding: 7px 12px;
+  font-size: 12px;
+  font-weight: 900;
+  font-family: "Montserrat", sans-serif;
+  white-space: nowrap;
+}
+
+.systemHeader h3 {
+  margin: 0;
+  color: var(--petrol);
+  font-size: 20px;
+}
+
+.sectionIntro {
+  margin-top: -8px;
+  margin-bottom: 14px;
+  color: var(--muted);
+  line-height: 1.55;
+}
