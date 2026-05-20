@@ -6,6 +6,10 @@ function getSheetIdFromUrl() {
 
 const SPREADSHEET_ID = getSheetIdFromUrl() || import.meta.env.VITE_SPREADSHEET_ID || "";
 
+export function getActiveSpreadsheetId() {
+  return SPREADSHEET_ID;
+}
+
 export const demoData = {
   project: {
     client: "SIN CONEXIÓN - REVISAR GOOGLE SHEET",
@@ -42,8 +46,10 @@ export const demoData = {
       item: "Organigrama actual",
       detail: "Documento donde se visualice la estructura actual de la empresa.",
       required: "Sí",
+      responseClient: "",
       status: "Pendiente",
-      observation: ""
+      observation: "",
+      responseDate: ""
     },
     {
       id: "2",
@@ -53,8 +59,10 @@ export const demoData = {
       item: "Listado de colaboradores",
       detail: "Base actual de colaboradores con cargo, área, fecha de ingreso y sueldo si aplica.",
       required: "Sí",
+      responseClient: "",
       status: "Pendiente",
-      observation: ""
+      observation: "",
+      responseDate: ""
     },
     {
       id: "3",
@@ -64,8 +72,10 @@ export const demoData = {
       item: "Manuales o procedimientos actuales",
       detail: "Manuales, instructivos, flujos o documentos internos existentes.",
       required: "No",
+      responseClient: "",
       status: "No disponible",
-      observation: ""
+      observation: "",
+      responseDate: ""
     }
   ]
 };
@@ -419,8 +429,10 @@ function mapDocuments(rows) {
       item,
       detail,
       required: getRowValue(row, ["Obligatorio", "Required", "Requerido", "Es obligatorio"]),
-      status: getRowValue(row, ["Estado", "Status", "Situacion", "Situación", "Tiene", "Disponible"]),
+      responseClient: getRowValue(row, ["RespuestaCliente", "Respuesta Cliente", "Respuesta", "Tiene", "Disponibilidad", "SeleccionCliente", "Selección Cliente"]),
+      status: getRowValue(row, ["Estado", "Status", "Situacion", "Situación", "Disponible"]),
       observation: getRowValue(row, ["Observacion", "Observación", "Notas", "Comentario", "Comentarios", "Observaciones"]),
+      responseDate: getRowValue(row, ["FechaRespuesta", "Fecha Respuesta", "Fecha", "FechaRegistro"]),
     };
   }).filter((x) => x.item || x.title || x.description || x.detail || x.category);
 }

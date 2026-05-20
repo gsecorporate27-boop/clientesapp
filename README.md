@@ -1,33 +1,37 @@
-# Ruta de Avance Visible™ - V4 Carga de Documentos
+# Ruta de Avance Visible™ - V5 Documentos con respuesta del cliente
 
-## Nueva pestaña incluida
+## Nuevo comportamiento
 
-Se añade la pestaña:
+En la pestaña `Carga de documentos`, cada ítem del checklist ahora muestra un menú:
 
 ```text
-Carga de documentos
+Sí tengo
+No tengo
 ```
+
+Cuando el cliente selecciona una opción, la app envía la respuesta al Apps Script configurado en Vercel.
+
+## Environment Variable requerida en Vercel
+
+```text
+VITE_DOCUMENTS_WEBHOOK_URL
+```
+
+Valor: URL publicada del Google Apps Script.
 
 ## Google Sheet
 
-### Nuevo campo en la pestaña `Proyecto`
+En la pestaña `Documentos`, usa estas columnas:
 
 ```text
-LinkCargaDocumentos
+Titulo | Descripcion | Categoria | Item | Detalle | Obligatorio | RespuestaCliente | Estado | Observacion | FechaRespuesta
 ```
 
-Aquí debes colocar el enlace único de OneDrive para que el cliente suba todos sus documentos.
-
-### Nueva pestaña técnica
+## Lógica de actualización
 
 ```text
-Documentos
-```
-
-Columnas esperadas:
-
-```text
-Titulo | Descripcion | Categoria | Item | Detalle | Obligatorio | Estado | Observacion
+Sí tengo → RespuestaCliente: Sí tengo | Estado: Por subir
+No tengo → RespuestaCliente: No tengo | Estado: No disponible
 ```
 
 ## Archivos que debes reemplazar en GitHub
@@ -37,33 +41,3 @@ src/main.jsx
 src/sheets.js
 src/index.css
 ```
-
-
-## V4.1 - Corrección Documentos
-
-Esta versión mejora la lectura de la pestaña de documentos.
-
-La app ahora busca cualquiera de estos nombres de pestaña:
-
-```text
-Documentos
-CargaDocumentos
-Carga de documentos
-Carga Documentos
-ChecklistDocumentos
-Checklist Documentos
-Checklist
-```
-
-Columnas recomendadas:
-
-```text
-Titulo | Descripcion | Categoria | Item | Detalle | Obligatorio | Estado | Observacion
-```
-
-También acepta variantes como `Documento solicitado`, `Documento requerido`, `Descripción documento`, `Requerido`, `Comentarios`, etc.
-
-
-## V4.2 fix
-
-Se corrigió el error de pantalla en blanco al abrir Carga de documentos. La causa era un ícono no importado (`ClipboardCheck`). También se añadió un estado visible cuando no existen ítems en Google Sheet.

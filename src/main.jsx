@@ -27,7 +27,7 @@ import {
   Users,
   Video,
 } from "lucide-react";
-import { loadSheetData, demoData } from "./sheets";
+import { loadSheetData, demoData, getActiveSpreadsheetId } from "./sheets";
 import "./index.css";
 
 const BRAND = "#00b8b5";
@@ -880,10 +880,75 @@ function Education({ education }) {
 
 function DocumentsUpload({ documents = [], project }) {
   const uploadLink = safeUrl(project.documentUploadLink || project.linkCargaDocumentos || "");
+  const webhookUrl = safeUrl(import.meta.env.VITE_DOCUMENTS_WEBHOOK_URL || "");
+  const spreadsheetId = getActiveSpreadsheetId();
+  const [responses, setResponses] = useState({});
+  const [saving, setSaving] = useState({});
+  const [saveMessage, setSaveMessage] = useState({});
+
   const title = documents.find((item) => item.title)?.title || "Carga de documentos iniciales";
   const description =
     documents.find((item) => item.description)?.description ||
     "Para iniciar el diagnóstico, revisa qué documentos tiene tu empresa y súbelos en la carpeta compartida.";
+
+  const getCurrentResponse = (item) => responses[item.id] ?? item.responseClient ?? "";
+  const getCurrentStatus = (item) => {
+    const response = getCurrentResponse(item);
+    if (response === "Sí tengo") return "Por subir";
+    if (response === "No tengo") return "No disponible";
+    return item.status || "Pendiente";
+  };
+
+  const handleResponseChange = async (item, respuesta) => {
+    const key = item.id || item.item;
+    const previous = responses[key] ?? item.responseClient ?? "";
+
+    setResponses((current) => ({ ...current, [key]: respuesta }));
+    setSaving((current) => ({ ...current, [key]: true }));
+    setSaveMessage((current) => ({ ...current, [key]: "Guardando respuesta..." }));
+
+    if (!webhookUrl) {
+      setSaving((current) => ({ ...current, [key]: false }));
+      setSaveMessage((current) => ({ ...current, [key]: "Falta configurar VITE_DOCUMENTS_WEBHOOK_URL en Vercel." }));
+      return;
+    }
+
+    try {
+      const response = await fetch(webhookUrl, {
+        method: "POST",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify({
+          spreadsheetId,
+          item: item.item,
+          id: item.id,
+          categoria: item.category,
+          respuesta,
+          estado: respuesta === "Sí tengo" ? "Por subir" : "No disponible",
+          fecha: new Date().toISOString(),
+        }),
+      });
+
+      const text = await response.text();
+      let result = {};
+      try {
+        result = JSON.parse(text);
+      } catch {
+        result = { ok: response.ok, message: text };
+      }
+
+      if (!response.ok || result.ok === false) {
+        throw new Error(result.message || "No se pudo registrar la respuesta.");
+      }
+
+      setSaveMessage((current) => ({ ...current, [key]: "Respuesta registrada" }));
+    } catch (error) {
+      console.error(error);
+      setResponses((current) => ({ ...current, [key]: previous }));
+      setSaveMessage((current) => ({ ...current, [key]: error.message || "No se pudo guardar la respuesta." }));
+    } finally {
+      setSaving((current) => ({ ...current, [key]: false }));
+    }
+  };
 
   const categories = [...new Set(documents.map((item) => item.category).filter(Boolean))];
   const grouped = categories.map((category) => ({
@@ -892,15 +957,15 @@ function DocumentsUpload({ documents = [], project }) {
   }));
   const ungrouped = documents.filter((item) => !item.category);
 
-  const uploaded = documents.filter((item) => {
-    const status = String(item.status || "").toLowerCase();
-    return status.includes("cargado") || status.includes("validado");
-  }).length;
+  const answered = documents.filter((item) => ["Sí tengo", "No tengo"].includes(getCurrentResponse(item))).length;
+  const yesHave = documents.filter((item) => getCurrentResponse(item) === "Sí tengo").length;
   const required = documents.filter((item) => String(item.required || "").toLowerCase().startsWith("s")).length;
 
   const renderDocumentItem = (item, index) => {
-    const status = String(item.status || "").toLowerCase();
-    const isDone = status.includes("cargado") || status.includes("validado");
+    const key = item.id || item.item || String(index);
+    const currentResponse = getCurrentResponse(item);
+    const currentStatus = getCurrentStatus(item);
+    const isDone = currentResponse === "Sí tengo" || String(currentStatus || "").toLowerCase().includes("cargado") || String(currentStatus || "").toLowerCase().includes("validado");
 
     return (
       <article className="documentChecklistItem" key={`${item.category || "general"}-${item.item}-${index}`}>
@@ -913,12 +978,29 @@ function DocumentsUpload({ documents = [], project }) {
             <h3>{item.item}</h3>
             <div className="badgeRow">
               {item.required && <Badge status="Disponible">Obligatorio: {item.required}</Badge>}
-              {item.status && <Badge status={item.status}>{item.status}</Badge>}
+              {currentStatus && <Badge status={currentStatus}>{currentStatus}</Badge>}
             </div>
           </div>
 
           {item.detail && <p>{item.detail}</p>}
+
+          <div className="documentResponseBox">
+            <label htmlFor={`doc-response-${key}`}>¿Tienes este documento?</label>
+            <select
+              id={`doc-response-${key}`}
+              value={currentResponse}
+              onChange={(event) => handleResponseChange(item, event.target.value)}
+              disabled={Boolean(saving[key])}
+            >
+              <option value="">Seleccionar</option>
+              <option value="Sí tengo">Sí tengo</option>
+              <option value="No tengo">No tengo</option>
+            </select>
+            {saveMessage[key] && <span className="documentSaveMessage">{saveMessage[key]}</span>}
+          </div>
+
           {item.observation && <div className="documentObservation">{item.observation}</div>}
+          {item.responseDate && <div className="documentResponseDate">Última respuesta: {item.responseDate}</div>}
         </div>
       </article>
     );
@@ -959,16 +1041,16 @@ function DocumentsUpload({ documents = [], project }) {
 
         <div className="documentsHeroMetrics">
           <div className="portalMetricCard">
-            <span>Ítems cargados</span>
-            <strong>{uploaded}/{documents.length}</strong>
+            <span>Ítems respondidos</span>
+            <strong>{answered}/{documents.length}</strong>
+          </div>
+          <div className="portalMetricCard">
+            <span>Sí tiene</span>
+            <strong>{yesHave}</strong>
           </div>
           <div className="portalMetricCard">
             <span>Obligatorios</span>
             <strong>{required}</strong>
-          </div>
-          <div className="portalMetricCard">
-            <span>Estado general</span>
-            <strong>{documents.length && uploaded === documents.length ? "Completo" : "En proceso"}</strong>
           </div>
         </div>
       </div>
@@ -990,7 +1072,7 @@ function DocumentsUpload({ documents = [], project }) {
                   <div className="documentItemTop">
                     <h3>Revisa el nombre de la pestaña y los encabezados</h3>
                   </div>
-                  <p>La app busca una pestaña llamada Documentos con columnas como Titulo, Descripcion, Categoria, Item, Detalle, Obligatorio, Estado y Observacion.</p>
+                  <p>La app busca una pestaña llamada Documentos con columnas como Titulo, Descripcion, Categoria, Item, Detalle, Obligatorio, RespuestaCliente, Estado, Observacion y FechaRespuesta.</p>
                 </div>
               </article>
             </div>
@@ -1032,7 +1114,6 @@ function DocumentsUpload({ documents = [], project }) {
     </section>
   );
 }
-
 
 function App() {
   const [view, setView] = useState("portal");
