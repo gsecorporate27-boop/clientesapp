@@ -62,3 +62,8 @@ Titulo | Descripcion | Categoria | Item | Detalle | Obligatorio | Estado | Obser
 ```
 
 También acepta variantes como `Documento solicitado`, `Documento requerido`, `Descripción documento`, `Requerido`, `Comentarios`, etc.
+
+
+## V4.2 fix
+
+Se corrigió el error de pantalla en blanco al abrir Carga de documentos. La causa era un ícono no importado (`ClipboardCheck`). También se añadió un estado visible cuando no existen ítems en Google Sheet.

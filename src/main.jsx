@@ -8,6 +8,7 @@ import {
   Building2,
   BookOpen,
   CheckCircle2,
+  ClipboardCheck,
   ChevronRight,
   Clock3,
   ExternalLink,
