@@ -2539,3 +2539,366 @@ a.secondaryLink {
     border-radius: 26px !important;
   }
 }
+
+/* ==========================================================
+   V3 FINAL CORREGIDA · HOMOGENEIDAD GSE
+   Ajustes solicitados por Belén:
+   - KPIs del resumen con fondo degradado uniforme
+   - Todas las etiquetas/badges solo en tonos #00b8b5
+   - Hallazgos cerrados y desplegados con degradado
+   - Pendientes cerrados y desplegados con degradado
+   - Entregables con fondo degradado y enlaces legibles
+   - Tarjetas derechas del resumen con fondo premium
+   ========================================================== */
+
+:root {
+  --gse-brand: #00b8b5;
+  --gse-dark: #003f3e;
+  --gse-mid: #007f7d;
+  --gse-soft: #dffcfb;
+  --gse-text-soft: rgba(255,255,255,0.82);
+  --gse-gradient: radial-gradient(circle at top left, rgba(101,227,223,0.28), transparent 18rem), linear-gradient(135deg, #003f3e 0%, #007f7d 48%, #00b8b5 100%);
+  --gse-gradient-alt: radial-gradient(circle at top left, rgba(255,255,255,0.16), transparent 16rem), linear-gradient(135deg, #004f4d 0%, #008b89 55%, #00b8b5 100%);
+}
+
+/* Quitar tonos externos en estados */
+.badge,
+.badge.success,
+.badge.warning,
+.badge.danger,
+.badge.info,
+.badge.neutral,
+[class*="badge"] {
+  background: linear-gradient(135deg, #006f6d, #00b8b5) !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(255,255,255,0.28) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.16) !important;
+  text-shadow: none !important;
+}
+
+.badgeRow,
+.badgeRow.center,
+.milestone .badgeRow,
+.deliverableCard .badgeRow,
+.findingItem .badgeRow,
+.pendingCard .badgeRow {
+  background: transparent !important;
+}
+
+/* Barras de progreso solo en marca */
+.progress,
+.progressTrack {
+  background: rgba(0,184,181,0.12) !important;
+}
+.progressFill,
+.progressFill.success,
+.progressFill.warning,
+.progressFill.danger,
+.progressFill.info,
+.progressFill.neutral,
+.progressFill.danger {
+  background: linear-gradient(90deg, #00b8b5, #65e3df) !important;
+}
+
+/* RESUMEN: todas las tarjetas KPI con degradado uniforme */
+.kpis .kpi,
+.kpis .premiumKpi,
+.kpi,
+.premiumKpi {
+  background: var(--gse-gradient) !important;
+  color: #ffffff !important;
+  border: 0 !important;
+  box-shadow: 0 28px 70px rgba(0,63,62,0.18) !important;
+}
+
+.kpis .kpi *,
+.kpis .premiumKpi *,
+.kpi *,
+.premiumKpi * {
+  color: #ffffff !important;
+}
+
+.kpis .kpi .muted,
+.kpis .premiumKpi .muted,
+.kpi .muted,
+.premiumKpi .muted {
+  color: rgba(255,255,255,0.84) !important;
+}
+
+.kpis .kpi .iconBox,
+.kpis .premiumKpi .iconBox,
+.kpi .iconBox,
+.premiumKpi .iconBox {
+  background: rgba(255,255,255,0.92) !important;
+  color: var(--gse-mid) !important;
+  box-shadow: 0 12px 30px rgba(0,0,0,0.10) !important;
+}
+
+.kpis .kpi .iconBox svg,
+.kpis .premiumKpi .iconBox svg,
+.kpi .iconBox svg,
+.premiumKpi .iconBox svg {
+  color: var(--gse-mid) !important;
+  stroke: var(--gse-mid) !important;
+}
+
+.kpis .kpi .badge,
+.kpis .premiumKpi .badge,
+.kpi .badge,
+.premiumKpi .badge {
+  background: rgba(255,255,255,0.16) !important;
+  color: #ffffff !important;
+  border-color: rgba(255,255,255,0.24) !important;
+}
+
+/* Tarjeta de desorden sin rojos */
+.disorderCard .badge,
+.disorderCard [class*="badge"] {
+  background: linear-gradient(135deg, #006f6d, #00b8b5) !important;
+  color: #ffffff !important;
+}
+.disorderScale,
+.disorderBox,
+.disorderCard .disorderBox {
+  background: rgba(0,184,181,0.08) !important;
+  border-color: rgba(0,184,181,0.18) !important;
+}
+.disorderBox strong,
+.disorderBox .dangerText,
+.disorderCard .dangerText {
+  color: var(--gse-dark) !important;
+}
+
+/* Lado derecho del resumen con fondo premium */
+.rightPanel .nextCard,
+.rightPanel .updateCard {
+  background: var(--gse-gradient) !important;
+  color: #ffffff !important;
+  border: 0 !important;
+  box-shadow: 0 28px 70px rgba(0,63,62,0.18) !important;
+}
+.rightPanel .nextCard *,
+.rightPanel .updateCard * {
+  color: #ffffff !important;
+}
+.rightPanel .updateCard p,
+.rightPanel .nextCard p {
+  color: rgba(255,255,255,0.84) !important;
+}
+.rightPanel .iconBox,
+.rightPanel .iconBox.teal {
+  background: rgba(255,255,255,0.92) !important;
+  color: var(--gse-mid) !important;
+}
+.rightPanel .iconBox svg,
+.rightPanel .iconBox.teal svg {
+  stroke: var(--gse-mid) !important;
+}
+.rightPanel .linkBtn,
+.rightPanel .tealButton {
+  background: rgba(255,255,255,0.14) !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(255,255,255,0.22) !important;
+  border-radius: 18px !important;
+}
+
+/* Ruta del proyecto: mantener diseño, solo etiquetas en marca */
+.timelineDetailed .milestone,
+.timelineSummary .milestone,
+.milestone {
+  color: var(--ink) !important;
+}
+.milestone .badge,
+.milestone .badge.success,
+.milestone .badge.warning,
+.milestone .badge.danger,
+.milestone .badge.info,
+.milestone .badge.neutral {
+  min-width: 110px;
+  justify-content: center;
+  background: linear-gradient(135deg, #006f6d, #00b8b5) !important;
+  color: #ffffff !important;
+  border-color: rgba(255,255,255,0.18) !important;
+}
+
+/* Hallazgos: tarjeta cerrada y abierta con degradado */
+.findingItem,
+.findingCard,
+.premiumFindingCard {
+  background: var(--gse-gradient) !important;
+  color: #ffffff !important;
+  border: 0 !important;
+  box-shadow: 0 24px 60px rgba(0,63,62,0.15) !important;
+  overflow: hidden !important;
+}
+.findingItem *,
+.findingCard *,
+.premiumFindingCard * {
+  color: #ffffff !important;
+}
+.findingItem .muted,
+.findingItem .area,
+.findingItem .itemTitle,
+.findingItem .chevron,
+.findingCard .muted,
+.findingCard .area,
+.findingCard .itemTitle,
+.premiumFindingCard .muted,
+.premiumFindingCard .area,
+.premiumFindingCard .itemTitle {
+  color: #ffffff !important;
+}
+.findingItem .findingExpanded,
+.findingExpanded {
+  background: rgba(255,255,255,0.10) !important;
+  border: 1px solid rgba(255,255,255,0.18) !important;
+  color: rgba(255,255,255,0.86) !important;
+}
+.findingExpanded p,
+.findingExpanded strong,
+.findingExpanded .muted {
+  color: rgba(255,255,255,0.88) !important;
+}
+.findingItem .badge,
+.findingExpanded .badge {
+  background: rgba(255,255,255,0.16) !important;
+  color: #ffffff !important;
+  border-color: rgba(255,255,255,0.24) !important;
+}
+
+/* Pendientes: cerrado y desplegado con degradado, sin fondos detrás del título */
+.pendingCard,
+.premiumPendingCard,
+.pendingItem,
+.pendingRow {
+  background: var(--gse-gradient) !important;
+  color: #ffffff !important;
+  border: 0 !important;
+  box-shadow: 0 24px 60px rgba(0,63,62,0.15) !important;
+  overflow: hidden !important;
+}
+.pendingCard *,
+.premiumPendingCard *,
+.pendingItem *,
+.pendingRow * {
+  color: #ffffff !important;
+}
+.pendingHeader,
+.pendingCard .pendingHeader,
+.pendingCard .itemTitle,
+.pendingCard .muted,
+.pendingMeta,
+.pendingMeta strong {
+  background: transparent !important;
+  color: #ffffff !important;
+}
+.pendingCard .muted,
+.pendingCard .pendingMeta,
+.pendingCard .pendingDetails p {
+  color: rgba(255,255,255,0.86) !important;
+}
+.pendingDetails,
+.pendingCard .pendingDetails {
+  background: rgba(255,255,255,0.10) !important;
+  border: 1px solid rgba(255,255,255,0.18) !important;
+  color: rgba(255,255,255,0.88) !important;
+}
+.pendingDetails strong,
+.pendingDetails .muted,
+.pendingDetails a,
+.pendingDetails p {
+  color: rgba(255,255,255,0.92) !important;
+}
+.pendingDetails .secondaryLink,
+.pendingCard .secondaryLink {
+  background: rgba(255,255,255,0.14) !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(255,255,255,0.24) !important;
+}
+.pendingCard .badge {
+  background: rgba(255,255,255,0.16) !important;
+  color: #ffffff !important;
+  border-color: rgba(255,255,255,0.24) !important;
+}
+
+/* Entregables: todas las tarjetas con el diseño del primero */
+.deliverableCard,
+.premiumDeliverableCard {
+  background: var(--gse-gradient) !important;
+  color: #ffffff !important;
+  border: 0 !important;
+  box-shadow: 0 24px 60px rgba(0,63,62,0.15) !important;
+  overflow: hidden !important;
+}
+.deliverableCard *,
+.premiumDeliverableCard * {
+  color: #ffffff !important;
+}
+.deliverableCard .area,
+.deliverableCard .itemTitle,
+.deliverableCard .muted,
+.deliverableCard .chevron,
+.premiumDeliverableCard .area,
+.premiumDeliverableCard .itemTitle,
+.premiumDeliverableCard .muted {
+  color: #ffffff !important;
+}
+.deliverableCard .observation,
+.premiumDeliverableCard .observation {
+  background: rgba(255,255,255,0.10) !important;
+  border: 1px solid rgba(255,255,255,0.18) !important;
+  color: rgba(255,255,255,0.88) !important;
+  max-width: 100% !important;
+  overflow-wrap: anywhere !important;
+  word-break: break-word !important;
+}
+.deliverableCard .secondaryLink,
+.premiumDeliverableCard .secondaryLink,
+.deliverableCard a,
+.premiumDeliverableCard a {
+  background: rgba(255,255,255,0.14) !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(255,255,255,0.24) !important;
+  border-radius: 16px !important;
+  padding: 8px 10px !important;
+  width: fit-content !important;
+  text-decoration: none !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  box-shadow: none !important;
+}
+.deliverableCard .secondaryLink svg,
+.deliverableCard a svg,
+.premiumDeliverableCard .secondaryLink svg,
+.premiumDeliverableCard a svg {
+  stroke: #ffffff !important;
+}
+.deliverableCard .badge,
+.premiumDeliverableCard .badge {
+  background: rgba(255,255,255,0.16) !important;
+  color: #ffffff !important;
+  border-color: rgba(255,255,255,0.24) !important;
+}
+
+/* Evitar fondos claros tipo resaltador detrás de textos sobre tarjetas premium */
+.findingItem .itemTitle,
+.findingItem .muted,
+.pendingCard .itemTitle,
+.pendingCard .muted,
+.deliverableCard .itemTitle,
+.deliverableCard .muted,
+.rightPanel .updateCard strong,
+.rightPanel .updateCard p,
+.rightPanel .nextCard h3,
+.rightPanel .nextCard p {
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+/* Selects/filtros siguen limpios y homogéneos */
+.filters select,
+.filterSelect select {
+  border: 1px solid rgba(0,184,181,0.24) !important;
+  box-shadow: 0 10px 24px rgba(0,88,86,0.05) !important;
+}
