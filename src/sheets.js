@@ -196,6 +196,14 @@ async function fetchCsvSheet(sheetName, required = true) {
   return rowsToObjects(rows);
 }
 
+async function fetchFirstAvailableSheet(sheetNames = []) {
+  for (const sheetName of sheetNames) {
+    const rows = await fetchCsvSheet(sheetName, false);
+    if (rows.length) return rows;
+  }
+  return [];
+}
+
 function getRowValue(row, possibleKeys) {
   const normalizedRow = {};
 
@@ -239,7 +247,11 @@ function projectFromRawRows(rows) {
     "mensajewhatsapp",
     "whatsapp",
     "linkcargadocumentos",
-    "linkonedrive"
+    "enlacecargadocumentos",
+    "linkdocumentos",
+    "enlacedocumentos",
+    "linkonedrive",
+    "onedrive"
   ];
 
   const cleanRows = rows
@@ -314,7 +326,7 @@ function projectFromRawRows(rows) {
     logoClient: map.logocliente || demoData.project.logoClient,
     projectPhrase: map.fraseproyecto || demoData.project.projectPhrase,
     whatsappMessage: map.mensajewhatsapp || map.whatsapp || demoData.project.whatsappMessage,
-    documentUploadLink: map.linkcargadocumentos || map.linkonedrive || demoData.project.documentUploadLink,
+    documentUploadLink: map.linkcargadocumentos || map.enlacecargadocumentos || map.linkdocumentos || map.enlacedocumentos || map.linkonedrive || map.onedrive || demoData.project.documentUploadLink,
   };
 }
 
@@ -381,17 +393,36 @@ function mapUpdates(rows) {
 }
 
 function mapDocuments(rows) {
-  return rows.map((row, index) => ({
-    id: getRowValue(row, ["ID", "Id"]) || String(index + 1),
-    title: getRowValue(row, ["Titulo", "Título", "Title"]),
-    description: getRowValue(row, ["Descripcion", "Descripción", "Description"]),
-    category: getRowValue(row, ["Categoria", "Categoría", "Category"]),
-    item: getRowValue(row, ["Item", "Ítem", "Documento", "Checklist", "Nombre"]),
-    detail: getRowValue(row, ["Detalle", "Detail", "DescripcionItem", "Descripción Item"]),
-    required: getRowValue(row, ["Obligatorio", "Required"]),
-    status: getRowValue(row, ["Estado", "Status"]),
-    observation: getRowValue(row, ["Observacion", "Observación", "Notas", "Comentario"]),
-  })).filter((x) => x.item || x.title || x.description);
+  return rows.map((row, index) => {
+    const title = getRowValue(row, ["Titulo", "Título", "Title", "NombreTitulo", "Nombre Título"]);
+    const description = getRowValue(row, [
+      "Descripcion", "Descripción", "Description", "DescripcionGeneral", "Descripción General",
+      "Texto", "Intro", "Introduccion", "Introducción"
+    ]);
+    const category = getRowValue(row, ["Categoria", "Categoría", "Category", "Tipo", "Grupo", "Area", "Área"]);
+    const item = getRowValue(row, [
+      "Item", "Ítem", "Documento", "Documento solicitado", "Documento Solicitado",
+      "Documento requerido", "Documento Requerido", "Checklist", "Nombre", "Requerimiento",
+      "Solicitud", "Archivo", "Información requerida", "Informacion requerida"
+    ]);
+    const detail = getRowValue(row, [
+      "Detalle", "Detail", "DescripcionItem", "Descripción Item", "Descripcion del item", "Descripción del ítem",
+      "DescripcionDocumento", "Descripción Documento", "Descripcion documento", "Descripción documento",
+      "ParaQueSirve", "Para qué sirve", "Para que sirve", "Instruccion", "Instrucción"
+    ]);
+
+    return {
+      id: getRowValue(row, ["ID", "Id", "N", "N°", "No"]) || String(index + 1),
+      title,
+      description,
+      category,
+      item,
+      detail,
+      required: getRowValue(row, ["Obligatorio", "Required", "Requerido", "Es obligatorio"]),
+      status: getRowValue(row, ["Estado", "Status", "Situacion", "Situación", "Tiene", "Disponible"]),
+      observation: getRowValue(row, ["Observacion", "Observación", "Notas", "Comentario", "Comentarios", "Observaciones"]),
+    };
+  }).filter((x) => x.item || x.title || x.description || x.detail || x.category);
 }
 
 function mapEducation(rows) {
@@ -421,7 +452,7 @@ export async function loadSheetData() {
     fetchCsvSheet("Entregables"),
     fetchCsvSheet("Actualizaciones", false),
     fetchCsvSheet("Educacion", false),
-    fetchCsvSheet("Documentos", false),
+    fetchFirstAvailableSheet(["Documentos", "CargaDocumentos", "Carga de documentos", "Carga Documentos", "ChecklistDocumentos", "Checklist Documentos", "Checklist"]),
   ]);
 
   return {

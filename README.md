@@ -37,3 +37,28 @@ src/main.jsx
 src/sheets.js
 src/index.css
 ```
+
+
+## V4.1 - Corrección Documentos
+
+Esta versión mejora la lectura de la pestaña de documentos.
+
+La app ahora busca cualquiera de estos nombres de pestaña:
+
+```text
+Documentos
+CargaDocumentos
+Carga de documentos
+Carga Documentos
+ChecklistDocumentos
+Checklist Documentos
+Checklist
+```
+
+Columnas recomendadas:
+
+```text
+Titulo | Descripcion | Categoria | Item | Detalle | Obligatorio | Estado | Observacion
+```
+
+También acepta variantes como `Documento solicitado`, `Documento requerido`, `Descripción documento`, `Requerido`, `Comentarios`, etc.

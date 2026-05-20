@@ -973,6 +973,29 @@ function DocumentsUpload({ documents = [], project }) {
       </div>
 
       <div className="documentsChecklist">
+        {!documents.length && (
+          <div className="documentCategoryBlock">
+            <div className="documentCategoryHeader">
+              <div>
+                <span>Checklist pendiente</span>
+                <h3>No se encontraron ítems en Google Sheet</h3>
+              </div>
+              <Badge status="Pendiente">Revisar pestaña Documentos</Badge>
+            </div>
+            <div className="documentItemsGrid">
+              <article className="documentChecklistItem">
+                <div className="documentCheckIcon"><ClipboardCheck size={19} /></div>
+                <div className="documentChecklistContent">
+                  <div className="documentItemTop">
+                    <h3>Revisa el nombre de la pestaña y los encabezados</h3>
+                  </div>
+                  <p>La app busca una pestaña llamada Documentos con columnas como Titulo, Descripcion, Categoria, Item, Detalle, Obligatorio, Estado y Observacion.</p>
+                </div>
+              </article>
+            </div>
+          </div>
+        )}
+
         {grouped.map((group) => (
           <div className="documentCategoryBlock" key={group.category}>
             <div className="documentCategoryHeader">

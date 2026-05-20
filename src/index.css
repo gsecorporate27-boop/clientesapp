@@ -3158,3 +3158,10 @@ a.secondaryLink {
     grid-template-columns: 1fr;
   }
 }
+
+
+/* V4.1 robustez checklist documentos */
+.documentChecklistItem h3,
+.documentChecklistItem p {
+  overflow-wrap: anywhere;
+}
