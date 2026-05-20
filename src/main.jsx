@@ -12,6 +12,8 @@ import {
   Clock3,
   ExternalLink,
   FileText,
+  UploadCloud,
+  FolderOpen,
   Flag,
   Layers3,
   LockKeyhole,
@@ -74,6 +76,7 @@ function Sidebar({ view, setView, project }) {
     [Search, "Hallazgos", "hallazgos"],
     [AlertTriangle, "Pendientes", "pendientes"],
     [FileText, "Entregables", "entregables"],
+    [UploadCloud, "Carga de documentos", "documentos"],
     [BookOpen, "Lo que vas a recibir", "educacion"],
   ];
 
@@ -873,6 +876,140 @@ function Education({ education }) {
   );
 }
 
+
+function DocumentsUpload({ documents = [], project }) {
+  const uploadLink = safeUrl(project.documentUploadLink || project.linkCargaDocumentos || "");
+  const title = documents.find((item) => item.title)?.title || "Carga de documentos iniciales";
+  const description =
+    documents.find((item) => item.description)?.description ||
+    "Para iniciar el diagnóstico, revisa qué documentos tiene tu empresa y súbelos en la carpeta compartida.";
+
+  const categories = [...new Set(documents.map((item) => item.category).filter(Boolean))];
+  const grouped = categories.map((category) => ({
+    category,
+    items: documents.filter((item) => item.category === category),
+  }));
+  const ungrouped = documents.filter((item) => !item.category);
+
+  const uploaded = documents.filter((item) => {
+    const status = String(item.status || "").toLowerCase();
+    return status.includes("cargado") || status.includes("validado");
+  }).length;
+  const required = documents.filter((item) => String(item.required || "").toLowerCase().startsWith("s")).length;
+
+  const renderDocumentItem = (item, index) => {
+    const status = String(item.status || "").toLowerCase();
+    const isDone = status.includes("cargado") || status.includes("validado");
+
+    return (
+      <article className="documentChecklistItem" key={`${item.category || "general"}-${item.item}-${index}`}>
+        <div className="documentCheckIcon">
+          {isDone ? <CheckCircle2 size={19} /> : <ClipboardCheck size={19} />}
+        </div>
+
+        <div className="documentChecklistContent">
+          <div className="documentItemTop">
+            <h3>{item.item}</h3>
+            <div className="badgeRow">
+              {item.required && <Badge status="Disponible">Obligatorio: {item.required}</Badge>}
+              {item.status && <Badge status={item.status}>{item.status}</Badge>}
+            </div>
+          </div>
+
+          {item.detail && <p>{item.detail}</p>}
+          {item.observation && <div className="documentObservation">{item.observation}</div>}
+        </div>
+      </article>
+    );
+  };
+
+  return (
+    <section className="documentsPage">
+      <div className="documentsHero">
+        <div className="documentsHeroContent">
+          <div className="portalEyebrow">
+            <UploadCloud size={16} />
+            Checklist documental
+          </div>
+
+          <h2>{title}</h2>
+          <p>{description}</p>
+
+          <div className="documentsActions">
+            {uploadLink ? (
+              <a className="primaryPortalButton documentsUploadButton" href={uploadLink} target="_blank" rel="noreferrer">
+                <UploadCloud size={18} />
+                Subir documentos
+                <ExternalLink size={17} />
+              </a>
+            ) : (
+              <button className="primaryPortalButton documentsUploadButton disabledButton" type="button">
+                <UploadCloud size={18} />
+                Enlace de carga pendiente
+              </button>
+            )}
+
+            <button className="secondaryPortalButton documentsSecondaryButton" type="button">
+              <FolderOpen size={18} />
+              {documents.length} ítems solicitados
+            </button>
+          </div>
+        </div>
+
+        <div className="documentsHeroMetrics">
+          <div className="portalMetricCard">
+            <span>Ítems cargados</span>
+            <strong>{uploaded}/{documents.length}</strong>
+          </div>
+          <div className="portalMetricCard">
+            <span>Obligatorios</span>
+            <strong>{required}</strong>
+          </div>
+          <div className="portalMetricCard">
+            <span>Estado general</span>
+            <strong>{documents.length && uploaded === documents.length ? "Completo" : "En proceso"}</strong>
+          </div>
+        </div>
+      </div>
+
+      <div className="documentsChecklist">
+        {grouped.map((group) => (
+          <div className="documentCategoryBlock" key={group.category}>
+            <div className="documentCategoryHeader">
+              <div>
+                <span>Categoría</span>
+                <h3>{group.category}</h3>
+              </div>
+              <Badge status="Disponible">{group.items.length} documentos</Badge>
+            </div>
+
+            <div className="documentItemsGrid">
+              {group.items.map((item, index) => renderDocumentItem(item, index))}
+            </div>
+          </div>
+        ))}
+
+        {ungrouped.length > 0 && (
+          <div className="documentCategoryBlock">
+            <div className="documentCategoryHeader">
+              <div>
+                <span>Categoría</span>
+                <h3>Documentos generales</h3>
+              </div>
+              <Badge status="Disponible">{ungrouped.length} documentos</Badge>
+            </div>
+
+            <div className="documentItemsGrid">
+              {ungrouped.map((item, index) => renderDocumentItem(item, index))}
+            </div>
+          </div>
+        )}
+      </div>
+    </section>
+  );
+}
+
+
 function App() {
   const [view, setView] = useState("portal");
   const [data, setData] = useState(demoData);
@@ -895,7 +1032,7 @@ function App() {
       });
   }, []);
 
-  const { project, milestones, findings, pending, deliverables, updates, education } = data;
+  const { project, milestones, findings, pending, deliverables, updates, education, documents = [] } = data;
 
   const completedText = useMemo(() => {
     const completed = milestones.filter((m) => m.status === "Finalizado" || m.status === "Aprobado").length;
@@ -918,6 +1055,7 @@ function App() {
               ["hallazgos", "Hallazgos"],
               ["pendientes", "Pendientes"],
               ["entregables", "Entregables"],
+              ["documentos", "Documentos"],
               ["educacion", "Lo que vas a recibir"],
             ].map(([value, label]) => (
               <button key={value} onClick={() => setView(value)} className={view === value ? "active" : ""}>
@@ -954,6 +1092,7 @@ function App() {
           {view === "hallazgos" && <Findings findings={findings} />}
           {view === "pendientes" && <PendingClient pending={pending} />}
           {view === "entregables" && <Deliverables deliverables={deliverables} selectedDeliverable={selectedDeliverable} setSelectedDeliverable={setSelectedDeliverable} />}
+          {view === "documentos" && <DocumentsUpload documents={documents} project={project} />}
           {view === "educacion" && <Education education={education} />}
         </div>
       </main>

@@ -24,14 +24,50 @@ export const demoData = {
     logoGSE: "",
     logoClient: "",
     projectPhrase: "Ruta de avance del proyecto",
-    whatsappMessage: "Hola, equipo 👋 Ya actualizamos la Ruta de Avance Visible™."
+    whatsappMessage: "Hola, equipo 👋 Ya actualizamos la Ruta de Avance Visible™.",
+    documentUploadLink: ""
   },
   milestones: [],
   findings: [],
   pending: [],
   deliverables: [],
   updates: [],
-  education: []
+  education: [],
+  documents: [
+    {
+      id: "1",
+      title: "Carga de documentos iniciales",
+      description: "Para iniciar el diagnóstico, sube en la carpeta compartida toda la información documental disponible de la empresa.",
+      category: "Estructura",
+      item: "Organigrama actual",
+      detail: "Documento donde se visualice la estructura actual de la empresa.",
+      required: "Sí",
+      status: "Pendiente",
+      observation: ""
+    },
+    {
+      id: "2",
+      title: "Carga de documentos iniciales",
+      description: "Para iniciar el diagnóstico, sube en la carpeta compartida toda la información documental disponible de la empresa.",
+      category: "Talento Humano",
+      item: "Listado de colaboradores",
+      detail: "Base actual de colaboradores con cargo, área, fecha de ingreso y sueldo si aplica.",
+      required: "Sí",
+      status: "Pendiente",
+      observation: ""
+    },
+    {
+      id: "3",
+      title: "Carga de documentos iniciales",
+      description: "Para iniciar el diagnóstico, sube en la carpeta compartida toda la información documental disponible de la empresa.",
+      category: "Procesos",
+      item: "Manuales o procedimientos actuales",
+      detail: "Manuales, instructivos, flujos o documentos internos existentes.",
+      required: "No",
+      status: "No disponible",
+      observation: ""
+    }
+  ]
 };
 
 function cleanText(value) {
@@ -201,7 +237,9 @@ function projectFromRawRows(rows) {
     "logocliente",
     "fraseproyecto",
     "mensajewhatsapp",
-    "whatsapp"
+    "whatsapp",
+    "linkcargadocumentos",
+    "linkonedrive"
   ];
 
   const cleanRows = rows
@@ -276,6 +314,7 @@ function projectFromRawRows(rows) {
     logoClient: map.logocliente || demoData.project.logoClient,
     projectPhrase: map.fraseproyecto || demoData.project.projectPhrase,
     whatsappMessage: map.mensajewhatsapp || map.whatsapp || demoData.project.whatsappMessage,
+    documentUploadLink: map.linkcargadocumentos || map.linkonedrive || demoData.project.documentUploadLink,
   };
 }
 
@@ -341,6 +380,20 @@ function mapUpdates(rows) {
   })).filter((x) => x.title || x.text);
 }
 
+function mapDocuments(rows) {
+  return rows.map((row, index) => ({
+    id: getRowValue(row, ["ID", "Id"]) || String(index + 1),
+    title: getRowValue(row, ["Titulo", "Título", "Title"]),
+    description: getRowValue(row, ["Descripcion", "Descripción", "Description"]),
+    category: getRowValue(row, ["Categoria", "Categoría", "Category"]),
+    item: getRowValue(row, ["Item", "Ítem", "Documento", "Checklist", "Nombre"]),
+    detail: getRowValue(row, ["Detalle", "Detail", "DescripcionItem", "Descripción Item"]),
+    required: getRowValue(row, ["Obligatorio", "Required"]),
+    status: getRowValue(row, ["Estado", "Status"]),
+    observation: getRowValue(row, ["Observacion", "Observación", "Notas", "Comentario"]),
+  })).filter((x) => x.item || x.title || x.description);
+}
+
 function mapEducation(rows) {
   return rows.map((row) => ({
     system: getRowValue(row, ["Sistema"]),
@@ -360,7 +413,7 @@ export async function loadSheetData() {
     throw new Error("Falta configurar VITE_SPREADSHEET_ID o usar ?sheet=ID");
   }
 
-  const [projectRawRows, milestoneRows, findingRows, pendingRows, deliverableRows, updateRows, educationRows] = await Promise.all([
+  const [projectRawRows, milestoneRows, findingRows, pendingRows, deliverableRows, updateRows, educationRows, documentRows] = await Promise.all([
     fetchCsvRows("Proyecto"),
     fetchCsvSheet("Hitos"),
     fetchCsvSheet("Hallazgos"),
@@ -368,6 +421,7 @@ export async function loadSheetData() {
     fetchCsvSheet("Entregables"),
     fetchCsvSheet("Actualizaciones", false),
     fetchCsvSheet("Educacion", false),
+    fetchCsvSheet("Documentos", false),
   ]);
 
   return {
@@ -378,5 +432,6 @@ export async function loadSheetData() {
     deliverables: mapDeliverables(deliverableRows),
     updates: mapUpdates(updateRows),
     education: mapEducation(educationRows),
+    documents: mapDocuments(documentRows),
   };
 }

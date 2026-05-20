@@ -2902,3 +2902,259 @@ a.secondaryLink {
   border: 1px solid rgba(0,184,181,0.24) !important;
   box-shadow: 0 10px 24px rgba(0,88,86,0.05) !important;
 }
+
+
+/* ==========================================================
+   V4 · CARGA DE DOCUMENTOS
+   Mantiene diseño premium degradado GSE
+   ========================================================== */
+
+.documentsPage {
+  display: grid;
+  gap: 24px;
+}
+
+.documentsHero {
+  position: relative;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 330px;
+  gap: 28px;
+  align-items: stretch;
+  border-radius: 42px;
+  padding: 34px;
+  background:
+    radial-gradient(circle at 10% 0%, rgba(0,184,181,0.36), transparent 26rem),
+    radial-gradient(circle at 95% 20%, rgba(101,227,223,0.22), transparent 23rem),
+    linear-gradient(135deg, #003f3e 0%, #007f7d 48%, #00b8b5 100%);
+  color: white;
+  box-shadow: 0 34px 95px rgba(0, 63, 62, 0.24);
+}
+
+.documentsHero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
+  background-size: 42px 42px;
+  mask-image: radial-gradient(circle at center, black, transparent 76%);
+  pointer-events: none;
+}
+
+.documentsHeroContent,
+.documentsHeroMetrics {
+  position: relative;
+  z-index: 1;
+}
+
+.documentsHero h2 {
+  max-width: 860px;
+  font-size: clamp(34px, 4.2vw, 58px);
+  line-height: 0.98;
+  letter-spacing: -0.06em;
+  color: white;
+  margin: 0 0 18px;
+}
+
+.documentsHero p {
+  max-width: 760px;
+  color: rgba(255,255,255,0.82);
+  font-size: 16px;
+  line-height: 1.65;
+  margin: 0 0 28px;
+}
+
+.documentsActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.documentsUploadButton,
+.documentsSecondaryButton {
+  min-height: 52px;
+}
+
+.documentsSecondaryButton {
+  background: rgba(255,255,255,0.10) !important;
+  color: white !important;
+  border: 1px solid rgba(255,255,255,0.20) !important;
+}
+
+.disabledButton {
+  opacity: 0.72;
+  cursor: not-allowed;
+}
+
+.documentsHeroMetrics {
+  display: grid;
+  gap: 14px;
+  align-content: center;
+}
+
+.documentsHeroMetrics .portalMetricCard {
+  background: rgba(255,255,255,0.11) !important;
+  border: 1px solid rgba(255,255,255,0.18) !important;
+  color: white !important;
+}
+
+.documentsHeroMetrics .portalMetricCard * {
+  color: white !important;
+}
+
+.documentsChecklist {
+  display: grid;
+  gap: 22px;
+}
+
+.documentCategoryBlock {
+  border-radius: 34px;
+  border: 1px solid rgba(0,184,181,0.16);
+  overflow: hidden;
+  background: rgba(255,255,255,0.94);
+  box-shadow: 0 18px 45px rgba(0, 88, 86, 0.075);
+}
+
+.documentCategoryHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 18px;
+  padding: 20px 22px;
+  background:
+    radial-gradient(circle at top left, rgba(0,184,181,0.26), transparent 18rem),
+    linear-gradient(135deg, #003f3e 0%, #006f6d 58%, #00b8b5 100%);
+  color: white;
+}
+
+.documentCategoryHeader span {
+  display: block;
+  color: rgba(255,255,255,0.72);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 900;
+}
+
+.documentCategoryHeader h3 {
+  margin: 4px 0 0;
+  color: white !important;
+  font-size: 21px;
+}
+
+.documentCategoryHeader .badge,
+.documentCategoryHeader [class*="badge"] {
+  background: rgba(255,255,255,0.14) !important;
+  border-color: rgba(255,255,255,0.24) !important;
+  color: white !important;
+}
+
+.documentItemsGrid {
+  display: grid;
+  gap: 14px;
+  padding: 18px;
+}
+
+.documentChecklistItem {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr);
+  gap: 14px;
+  align-items: flex-start;
+  border-radius: 26px;
+  padding: 16px;
+  background:
+    radial-gradient(circle at top left, rgba(0,184,181,0.23), transparent 15rem),
+    linear-gradient(135deg, #003f3e 0%, #006f6d 56%, #00b8b5 100%);
+  color: white;
+  box-shadow: 0 14px 34px rgba(0, 88, 86, 0.12);
+}
+
+.documentCheckIcon {
+  width: 42px;
+  height: 42px;
+  border-radius: 16px;
+  display: grid;
+  place-items: center;
+  background: rgba(255,255,255,0.16);
+  color: white;
+  border: 1px solid rgba(255,255,255,0.22);
+}
+
+.documentChecklistContent {
+  min-width: 0;
+}
+
+.documentItemTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.documentItemTop h3 {
+  margin: 0;
+  color: white !important;
+  font-size: 16px;
+  line-height: 1.25;
+}
+
+.documentChecklistContent p {
+  color: rgba(255,255,255,0.82);
+  line-height: 1.55;
+  margin: 8px 0 0;
+  font-size: 14px;
+}
+
+.documentChecklistItem .badge,
+.documentChecklistItem [class*="badge"] {
+  background: rgba(255,255,255,0.14) !important;
+  border-color: rgba(255,255,255,0.22) !important;
+  color: white !important;
+}
+
+.documentObservation {
+  margin-top: 12px;
+  border: 1px solid rgba(255,255,255,0.16);
+  background: rgba(255,255,255,0.10);
+  border-radius: 18px;
+  padding: 10px 12px;
+  color: rgba(255,255,255,0.84);
+  font-size: 13px;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 1120px) {
+  .documentsHero {
+    grid-template-columns: 1fr;
+  }
+
+  .documentsHeroMetrics {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .documentsHero {
+    border-radius: 28px;
+    padding: 24px;
+  }
+
+  .documentsHero h2 {
+    font-size: 36px;
+  }
+
+  .documentsHeroMetrics {
+    grid-template-columns: 1fr;
+  }
+
+  .documentItemTop {
+    flex-direction: column;
+  }
+
+  .documentChecklistItem {
+    grid-template-columns: 1fr;
+  }
+}
