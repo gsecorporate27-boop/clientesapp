@@ -1,43 +1,19 @@
-# Ruta de Avance Visible™ - V5 Documentos con respuesta del cliente
+# Ruta de Avance Visible™ - V5.1 Menú Móvil Premium
 
-## Nuevo comportamiento
+## Ajuste incluido
 
-En la pestaña `Carga de documentos`, cada ítem del checklist ahora muestra un menú:
+Se corrige la navegación móvil para que los botones del menú sean homogéneos y visualmente más premium:
 
-```text
-Sí tengo
-No tengo
-```
-
-Cuando el cliente selecciona una opción, la app envía la respuesta al Apps Script configurado en Vercel.
-
-## Environment Variable requerida en Vercel
-
-```text
-VITE_DOCUMENTS_WEBHOOK_URL
-```
-
-Valor: URL publicada del Google Apps Script.
-
-## Google Sheet
-
-En la pestaña `Documentos`, usa estas columnas:
-
-```text
-Titulo | Descripcion | Categoria | Item | Detalle | Obligatorio | RespuestaCliente | Estado | Observacion | FechaRespuesta
-```
-
-## Lógica de actualización
-
-```text
-Sí tengo → RespuestaCliente: Sí tengo | Estado: Por subir
-No tengo → RespuestaCliente: No tengo | Estado: No disponible
-```
+- Mismo ancho y altura para todos los botones.
+- Scroll horizontal suave.
+- Botón activo con degradado GSE.
+- Botones inactivos con fondo blanco/translúcido y borde sutil.
+- Mejor lectura en pantallas pequeñas.
 
 ## Archivos que debes reemplazar en GitHub
 
 ```text
-src/main.jsx
-src/sheets.js
 src/index.css
 ```
+
+También puedes reemplazar `src/main.jsx` y `src/sheets.js` si deseas mantener la versión completa del ZIP, pero el cambio principal está en `src/index.css`.
