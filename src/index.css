@@ -3318,17 +3318,7 @@ a.secondaryLink {
   .connectedBoardCard {
     display: none !important;
   }
-
-  /* Si el bloque fue generado como heroCard dentro del contenido,
-     se oculta solo en móvil cuando aparece antes del contenido dinámico. */
-  .content > .heroCard:first-child,
-  .content > .premiumHeroCard:first-child,
-  main .content > section.heroCard:first-child,
-  main .content > div.heroCard:first-child {
-    display: none !important;
-  }
-
-  /* Reduce el espacio superior después del menú móvil */
+/* Reduce el espacio superior después del menú móvil */
   .content {
     padding-top: 16px !important;
   }
@@ -3336,5 +3326,39 @@ a.secondaryLink {
   .mobileTabs,
   .mobileTabsWrapper {
     margin-bottom: 14px !important;
+  }
+}
+
+
+/* ==========================================================
+   V5.3 · FIX RUTA MOBILE
+   Corrige ocultamiento excesivo: Ruta vuelve a mostrarse
+   ========================================================== */
+
+@media (max-width: 768px) {
+  /* Solo se oculta la tarjeta estática del tablero, no las tarjetas de cada pestaña */
+  .mobileStaticHero,
+  .summaryHero.mobileStaticHero,
+  .projectSummaryCard.mobileStaticHero,
+  .dashboardIntroCard.mobileStaticHero,
+  .overviewHero.mobileStaticHero,
+  .connectedBoardCard.mobileStaticHero {
+    display: none !important;
+  }
+
+  /* Seguridad: nunca ocultar la ruta del proyecto en móvil */
+  .timelineSummary,
+  .timelineDetailed,
+  .milestone,
+  .premiumMilestone,
+  .timeline,
+  .routeSection,
+  [data-view="ruta"] {
+    display: grid;
+  }
+
+  .milestone,
+  .premiumMilestone {
+    display: block !important;
   }
 }

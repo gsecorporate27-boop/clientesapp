@@ -1,8 +1,14 @@
-# Ruta de Avance Visible™ - V5.2 Mobile sin tarjeta estática
+# Ruta de Avance Visible™ - V5.3 Fix Ruta Mobile
 
-## Cambio incluido
+## Corrección
 
-En versión móvil se oculta la tarjeta superior fija de resumen / tablero conectado para que el cliente pueda ver directamente el contenido de la pestaña seleccionada.
+Se corrige el problema donde la pestaña `Ruta` quedaba en blanco en versión móvil.
+
+## Qué se ajustó
+
+- Se eliminó una regla CSS demasiado amplia que ocultaba el primer bloque de contenido en móvil.
+- Ahora solo se oculta la tarjeta estática marcada como `mobileStaticHero`.
+- La ruta del proyecto vuelve a mostrarse correctamente.
 
 ## Archivo principal a reemplazar
 
@@ -10,12 +16,10 @@ En versión móvil se oculta la tarjeta superior fija de resumen / tablero conec
 src/index.css
 ```
 
-Puedes reemplazar también:
+También puedes reemplazar:
 
 ```text
 src/main.jsx
 src/sheets.js
 src/index.css
 ```
-
-si prefieres subir el ZIP completo.

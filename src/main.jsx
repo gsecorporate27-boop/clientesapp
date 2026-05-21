@@ -372,7 +372,7 @@ function Timeline({ milestones, deliverables = [], detailed = false, setView, se
   };
 
   return (
-    <section className="card premiumSectionCard mobileStaticHero">
+    <section className="card premiumSectionCard">
       <div className="sectionHeader">
         <div>
           <h2>Ruta del proyecto</h2>
