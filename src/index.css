@@ -3300,3 +3300,41 @@ a.secondaryLink {
     padding: 0 10px !important;
   }
 }
+
+
+/* ==========================================================
+   V5.2 · MOBILE SIN TARJETA ESTÁTICA
+   Oculta la tarjeta superior fija en móvil para reducir scroll
+   ========================================================== */
+
+@media (max-width: 768px) {
+  /* Tarjeta resumen superior / tablero conectado */
+  .summaryHero,
+  .projectSummaryCard,
+  .dashboardIntroCard,
+  .heroCard.mobileStaticHero,
+  .mobileStaticHero,
+  .overviewHero,
+  .connectedBoardCard {
+    display: none !important;
+  }
+
+  /* Si el bloque fue generado como heroCard dentro del contenido,
+     se oculta solo en móvil cuando aparece antes del contenido dinámico. */
+  .content > .heroCard:first-child,
+  .content > .premiumHeroCard:first-child,
+  main .content > section.heroCard:first-child,
+  main .content > div.heroCard:first-child {
+    display: none !important;
+  }
+
+  /* Reduce el espacio superior después del menú móvil */
+  .content {
+    padding-top: 16px !important;
+  }
+
+  .mobileTabs,
+  .mobileTabsWrapper {
+    margin-bottom: 14px !important;
+  }
+}

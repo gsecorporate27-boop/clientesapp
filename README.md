@@ -1,19 +1,21 @@
-# Ruta de Avance Visible™ - V5.1 Menú Móvil Premium
+# Ruta de Avance Visible™ - V5.2 Mobile sin tarjeta estática
 
-## Ajuste incluido
+## Cambio incluido
 
-Se corrige la navegación móvil para que los botones del menú sean homogéneos y visualmente más premium:
+En versión móvil se oculta la tarjeta superior fija de resumen / tablero conectado para que el cliente pueda ver directamente el contenido de la pestaña seleccionada.
 
-- Mismo ancho y altura para todos los botones.
-- Scroll horizontal suave.
-- Botón activo con degradado GSE.
-- Botones inactivos con fondo blanco/translúcido y borde sutil.
-- Mejor lectura en pantallas pequeñas.
-
-## Archivos que debes reemplazar en GitHub
+## Archivo principal a reemplazar
 
 ```text
 src/index.css
 ```
 
-También puedes reemplazar `src/main.jsx` y `src/sheets.js` si deseas mantener la versión completa del ZIP, pero el cambio principal está en `src/index.css`.
+Puedes reemplazar también:
+
+```text
+src/main.jsx
+src/sheets.js
+src/index.css
+```
+
+si prefieres subir el ZIP completo.
