@@ -332,7 +332,7 @@ function DisorderCard({ project }) {
 function ProjectHero({ project, completedText }) {
   const meetUrl = safeUrl(project.linkMeet);
   return (
-    <div className="heroCard mobileStaticHero premiumHeroCard">
+    <div className="heroCard mobileStaticHero premiumHeroCard hideDuplicatedProjectCard">
       <div>
         <div className="eyebrow">Tablero conectado</div>
         <h2>{project.service} · {project.client}</h2>
@@ -372,7 +372,7 @@ function Timeline({ milestones, deliverables = [], detailed = false, setView, se
   };
 
   return (
-    <section className="card premiumSectionCard duplicatedProjectCard">
+    <section className="card premiumSectionCard">
       <div className="sectionHeader">
         <div>
           <h2>Ruta del proyecto</h2>

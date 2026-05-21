@@ -1,17 +1,16 @@
-# Ruta de Avance Visible™ - V5.4 Header Unificado Premium
+# Ruta de Avance Visible™ - V5.5 Solo Header Degradado
 
-## Cambio principal
+## Corrección
 
-Se fusiona el header superior con la tarjeta duplicada de `Tablero conectado`.
+Se elimina/oculta definitivamente la tarjeta blanca duplicada de:
 
-## Qué cambia
+```text
+Tablero conectado
+Business Power · Cliente
+Ruta de avance del proyecto
+```
 
-- Header superior con fondo degradado premium.
-- Letras blancas.
-- Ícono integrado sobre fondo translúcido.
-- Badges de conexión/estado en estilo blanco translúcido.
-- Se oculta la tarjeta duplicada inferior para reducir ruido visual.
-- Se mantiene la corrección móvil del menú y de la pestaña Ruta.
+Ahora queda una sola cabecera visible: el header degradado premium.
 
 ## Archivos que debes reemplazar
 
@@ -21,7 +20,7 @@ src/index.css
 src/sheets.js
 ```
 
-Si quieres subir solo lo mínimo, reemplaza:
+Mínimo requerido:
 
 ```text
 src/main.jsx
