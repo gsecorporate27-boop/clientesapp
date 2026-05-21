@@ -264,57 +264,266 @@ function PortalProject({ project, milestones, pending, setView }) {
   );
 }
 
+
+function DashboardMiniGauge({ value = 0 }) {
+  const safe = Math.max(0, Math.min(Number(value) || 0, 100));
+  const angle = Math.round((safe / 100) * 180);
+  return (
+    <div className="dashboardGaugeWrap">
+      <div className="dashboardGaugeTrack">
+        <div
+          className="dashboardGaugeFill"
+          style={{ background: `conic-gradient(from 180deg, var(--brand) 0deg ${angle}deg, #dfe7ea ${angle}deg 180deg, transparent 180deg 360deg)` }}
+        />
+        <div className="dashboardGaugeMask" />
+        <div className="dashboardGaugeNeedle" style={{ transform: `translateX(-50%) rotate(${angle - 90}deg)` }} />
+      </div>
+      <div className="dashboardGaugeLabels"><span>0</span><span>100%</span></div>
+    </div>
+  );
+}
+
+function DashboardMiniThermometer({ value = 0 }) {
+  const safe = Math.max(0, Math.min(Number(value) || 0, 100));
+  return (
+    <div className="thermoWidget">
+      <div className="thermoScale"><span>100%</span><span>50%</span><span>0%</span></div>
+      <div className="thermoTube">
+        <div className="thermoGradient" />
+        <div className="thermoBulb" />
+        <div className="thermoMarker" style={{ bottom: `calc(${safe}% - 5px)` }} />
+      </div>
+      <div className="thermoLegend">
+        <span><i className="swatch danger"></i>Crítico</span>
+        <span><i className="swatch warning"></i>Seguimiento</span>
+        <span><i className="swatch success"></i>Controlado</span>
+      </div>
+    </div>
+  );
+}
+
+function DashboardMiniMilestones({ done = 0, total = 0 }) {
+  const count = Math.max(total || 0, 4);
+  return (
+    <div className="miniMilestoneChart">
+      <div className="miniMilestoneBars">
+        {Array.from({ length: count }).map((_, index) => {
+          const active = index < done;
+          const current = index === done && done < count;
+          return (
+            <div key={index} className={`miniMilestoneCol ${active ? 'done' : current ? 'current' : 'todo'}`}>
+              <span>{index + 1}</span>
+              <div className="miniMilestoneBar" />
+            </div>
+          );
+        })}
+      </div>
+      <div className="miniMilestoneFoot">Total {total} hitos</div>
+    </div>
+  );
+}
+
+function DashboardMiniPending({ pending = 0, done = 0 }) {
+  const total = Math.max(pending + done, 1);
+  return (
+    <div className="miniPendingChart">
+      <div className="miniPendingRow"><span>Pendiente</span><div className="miniPendingBar"><i style={{ width: `${(pending / total) * 100}%` }} /></div><strong>{pending}</strong></div>
+      <div className="miniPendingRow"><span>Completado</span><div className="miniPendingBar success"><i style={{ width: `${(done / total) * 100}%` }} /></div><strong>{done}</strong></div>
+      <div className="miniPendingLine">
+        <svg viewBox="0 0 160 46" preserveAspectRatio="none">
+          <polyline points="0,36 32,30 64,22 96,27 128,18 160,12" fill="rgba(0,184,181,0.12)" stroke="rgba(0,184,181,0.0)" />
+          <polyline points="0,36 32,30 64,22 96,27 128,18 160,12" fill="none" stroke="var(--brand)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      </div>
+    </div>
+  );
+}
+
+function DashboardMiniBlockers({ blocked = 0 }) {
+  const mood = blocked > 0 ? 'Atención' : 'All Good';
+  const ratio = blocked > 0 ? Math.min(100, 20 + blocked * 22) : 82;
+  return (
+    <div className="miniBlockerWidget">
+      <div className="miniSmileGauge" style={{ background: `conic-gradient(from 180deg, var(--brand) 0deg ${Math.round((ratio/100)*180)}deg, #dfe7ea ${Math.round((ratio/100)*180)}deg 180deg, transparent 180deg 360deg)` }}>
+        <div className="miniSmileCenter">
+          <div className="miniSmileFace">{blocked > 0 ? '😐' : '😊'}</div>
+          <strong>{mood}</strong>
+        </div>
+      </div>
+      <div className="miniSparkline">
+        <span className="sparkCheck">✓</span>
+        <svg viewBox="0 0 120 26" preserveAspectRatio="none">
+          <polyline points="0,22 18,22 36,22 54,20 72,20 90,13 108,11 120,8" fill="none" stroke="var(--brand)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      </div>
+    </div>
+  );
+}
+
+function DashboardDisorderVisual({ progress = 0 }) {
+  const chaosRaw = [92, 88, 84, 78, 70, 63, 55, 48];
+  const chaos = chaosRaw.map((value, index) => Math.max(10, Math.min(95, Math.round(value - progress * 0.55 + ((index % 3) - 1) * 3))));
+  const order = chaos.map((v) => 100 - v);
+  const labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Ago'];
+
+  return (
+    <div className="dashboardSplitGrid">
+      <div className="dashboardChartCard">
+        <div className="dashboardChartTitle">Desorden operativo mensual</div>
+        <div className="chartLegendRow"><span><i className="legendDot danger"></i>Caos</span><span><i className="legendDot brand"></i>Orden</span></div>
+        <div className="dashboardBarsChart">
+          {labels.map((label, index) => (
+            <div key={label} className="dashboardBarGroup">
+              <div className="dashboardBars">
+                <div className="dashboardBar danger" style={{ height: `${chaos[index]}%` }} />
+                <div className="dashboardBar brand" style={{ height: `${order[index]}%` }} />
+              </div>
+              <span>{label}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="dashboardChartCard">
+        <div className="dashboardChartTitle">Mapa de orden estructural</div>
+        <DashboardRadar progress={progress} />
+      </div>
+    </div>
+  );
+}
+
+function DashboardRadar({ progress = 0 }) {
+  const labels = ['Procesos', 'Datos', 'Gente', 'Tecnología', 'Estrategia', 'Comunicación'];
+  const values = [
+    Math.min(92, progress + 18),
+    Math.min(86, progress + 10),
+    Math.min(80, progress + 4),
+    Math.min(74, Math.max(22, progress - 4)),
+    Math.min(82, Math.max(24, progress + 2)),
+    Math.min(78, Math.max(28, progress - 1)),
+  ];
+  const dangerValues = values.map((v) => Math.max(10, 100 - v));
+  const size = 260;
+  const center = size / 2;
+  const radius = 82;
+  const pointsFor = (arr) => arr.map((value, index) => {
+    const angle = (Math.PI * 2 * index) / arr.length - Math.PI / 2;
+    const r = radius * (value / 100);
+    return `${(center + Math.cos(angle) * r).toFixed(1)},${(center + Math.sin(angle) * r).toFixed(1)}`;
+  }).join(' ');
+  const axisEnd = labels.map((_, index) => {
+    const angle = (Math.PI * 2 * index) / labels.length - Math.PI / 2;
+    return { x: center + Math.cos(angle) * radius, y: center + Math.sin(angle) * radius, tx: center + Math.cos(angle) * (radius + 24), ty: center + Math.sin(angle) * (radius + 24) };
+  });
+  return (
+    <div className="dashboardRadarWrap">
+      <svg viewBox={`0 0 ${size} ${size}`} className="dashboardRadarSvg">
+        {[20,40,60,80,100].map((step) => {
+          const poly = labels.map((_, index) => {
+            const angle = (Math.PI * 2 * index) / labels.length - Math.PI / 2;
+            const r = radius * (step / 100);
+            return `${(center + Math.cos(angle) * r).toFixed(1)},${(center + Math.sin(angle) * r).toFixed(1)}`;
+          }).join(' ');
+          return <polygon key={step} points={poly} fill="none" stroke="rgba(11,69,78,0.12)" strokeWidth="1" />;
+        })}
+        {axisEnd.map((axis, index) => <line key={index} x1={center} y1={center} x2={axis.x} y2={axis.y} stroke="rgba(11,69,78,0.12)" strokeWidth="1" />)}
+        <polygon points={pointsFor(dangerValues)} fill="rgba(255,120,92,0.22)" stroke="rgba(255,120,92,0.7)" strokeWidth="2" />
+        <polygon points={pointsFor(values)} fill="rgba(0,184,181,0.20)" stroke="rgba(0,184,181,0.9)" strokeWidth="2" />
+        {axisEnd.map((axis, index) => <text key={index} x={axis.tx} y={axis.ty} textAnchor="middle" className="dashboardRadarLabel">{labels[index]}</text>)}
+      </svg>
+      <div className="chartLegendRow radarLegend"><span><i className="legendDot danger"></i>Caos</span><span><i className="legendDot brand"></i>Orden</span></div>
+    </div>
+  );
+}
+
 function KpiCards({ project, milestones, pending, setView }) {
   const done = milestones.filter((m) => m.status === "Finalizado" || m.status === "Aprobado").length;
   const blocked = pending.filter((p) => String(p.status).toLowerCase().includes("bloqueado")).length;
   const disorder = Math.max(0, 100 - (Number(project.progress) || 0));
+  const completedPending = Math.max(0, milestones.length - pending.length - blocked);
 
   const cards = [
-    { label: "Avance general", value: `${project.progress}%`, icon: BarChart3, note: "Proyecto actualizado", status: project.status },
-    { label: "Desorden operativo", value: `${disorder}%`, icon: AlertTriangle, note: "Disminuye con el avance", status: disorder > 60 ? "Bloqueado" : disorder > 30 ? "En validación" : "Finalizado" },
-    { label: "Hitos cumplidos", value: `${done}/${milestones.length}`, icon: CheckCircle2, note: "Avance validado", status: "Finalizado", target: "ruta" },
-    { label: "Pendientes cliente", value: pending.length, icon: Clock3, note: "Requieren seguimiento", status: "En validación", target: "pendientes" },
-    { label: "Bloqueos", value: blocked, icon: LockKeyhole, note: "Impactan cronograma", status: blocked ? "Bloqueado" : "Finalizado", target: "pendientes" },
+    {
+      label: "Avance general",
+      value: `${project.progress}%`,
+      note: "Histórico de progreso",
+      target: "ruta",
+      widget: <DashboardMiniGauge value={Number(project.progress) || 0} />,
+    },
+    {
+      label: "Desorden operativo",
+      value: `${disorder}%`,
+      note: "Se reduce con el avance",
+      widget: <DashboardMiniThermometer value={disorder} />,
+    },
+    {
+      label: "Hitos cumplidos",
+      value: `${done}/${milestones.length}`,
+      note: `${milestones.length} hitos totales`,
+      target: "ruta",
+      widget: <DashboardMiniMilestones done={done} total={milestones.length} />,
+    },
+    {
+      label: "Pendientes cliente",
+      value: pending.length,
+      note: "Seguimiento necesario",
+      target: "pendientes",
+      widget: <DashboardMiniPending pending={pending.length} done={completedPending} />,
+    },
+    {
+      label: "Bloqueos",
+      value: blocked,
+      note: blocked ? "Requieren atención" : "Operación controlada",
+      target: "pendientes",
+      widget: <DashboardMiniBlockers blocked={blocked} />,
+    },
   ];
 
   return (
-    <div className="kpis">
+    <div className="dashboardKpiGrid">
       {cards.map((card) => {
-        const Icon = card.icon;
         const clickable = Boolean(card.target);
         return (
-          <div
-            className={`card kpi ${clickable ? "clickable" : ""}`}
+          <article
+            className={`dashboardWidgetCard ${clickable ? "clickable" : ""}`}
             key={card.label}
             onClick={() => clickable && setView?.(card.target)}
           >
-            <div className="kpiTop">
-              <div className="iconBox"><Icon size={22} /></div>
+            <div className="dashboardWidgetHeader">
+              <span>{card.label}</span>
             </div>
-            <div className="muted">{card.label}</div>
-            <div className="kpiValue">{card.value}</div>
-            <div className="badgeRow"><Badge status={card.status}>{card.note}</Badge></div>
-          </div>
+            <div className="dashboardWidgetValue">{card.value}</div>
+            <div className="dashboardWidgetGraphic">{card.widget}</div>
+            <div className="dashboardWidgetFooter">{card.note}</div>
+          </article>
         );
       })}
     </div>
   );
 }
 
-function DisorderCard({ project }) {
+function DisorderCard({ project, milestones = [], pending = [] }) {
   const progress = Number(project.progress) || 0;
   const disorder = Math.max(0, 100 - progress);
+  const blocked = pending.filter((p) => String(p.status).toLowerCase().includes("bloqueado")).length;
+  const status = disorder > 60 ? "Bloqueado" : disorder > 30 ? "En validación" : "Finalizado";
 
   return (
-    <section className="card disorderCard">
-      <div className="sectionHeader">
+    <section className="card executiveDisorderCard">
+      <div className="sectionHeader executiveHeader">
         <div>
           <h2>Nivel de desorden operativo</h2>
-          <p>Esta barra disminuye conforme avanzan los hitos, validaciones y entregables del proyecto.</p>
+          <p>Vista ejecutiva del avance del orden estructural, basada en el progreso del proyecto y la carga actual de seguimiento.</p>
         </div>
-        <Badge status={disorder > 60 ? "Bloqueado" : disorder > 30 ? "En validación" : "Finalizado"}>{disorder}% restante</Badge>
+        <Badge status={status}>{disorder}% restante</Badge>
       </div>
-      <div className="disorderMeter">
+
+      <div className="executiveDisorderTopline">
+        <span>Esta barra disminuye conforme avanzan los hitos, validaciones y entregables del proyecto.</span>
+        <span>Bloqueos activos: <strong>{blocked}</strong></span>
+      </div>
+
+      <div className="disorderMeter executiveMeter">
         <div className="disorderLabels">
           <span>Caos</span>
           <strong>{disorder}%</strong>
@@ -322,8 +531,11 @@ function DisorderCard({ project }) {
         </div>
         <ProgressBar value={disorder} status="Bloqueado" reverse />
       </div>
-      <div className="disorderNote">
-        Avance general: <strong>{progress}%</strong> · Desorden estimado: <strong>{disorder}%</strong>
+
+      <DashboardDisorderVisual progress={progress} />
+
+      <div className="disorderNote executiveNote">
+        Avance general: <strong>{progress}%</strong> · Desorden estimado: <strong>{disorder}%</strong> · Hitos: <strong>{milestones.length}</strong>
       </div>
     </section>
   );
@@ -1180,7 +1392,7 @@ function App() {
               <KpiCards project={project} milestones={milestones} pending={pending} setView={setView} />
               <div className="layout">
                 <div className="leftContent">
-                  <DisorderCard project={project} />
+                  <DisorderCard project={project} milestones={milestones} pending={pending} />
                   <Timeline milestones={milestones} deliverables={deliverables} setView={setView} setSelectedDeliverable={setSelectedDeliverable} selectedHito={selectedHito} setSelectedHito={setSelectedHito} />
                   <Findings findings={findings} />
                 </div>
