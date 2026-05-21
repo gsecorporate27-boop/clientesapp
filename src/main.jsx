@@ -142,9 +142,9 @@ function Header({ project, connected }) {
   const company = project.companyClient || project.client;
 
   return (
-    <header className="header premiumHeader">
+    <header className="unifiedProjectHeader" className="header premiumHeader">
       <div className="headerIdentity">
-        <div className="headerIcon">
+        <div className="headerIcon unifiedHeaderIcon">
           <Building2 size={22} />
         </div>
         <div className="headerText">
@@ -154,7 +154,7 @@ function Header({ project, connected }) {
         </div>
       </div>
 
-      <div className="headerActions">
+      <div className="headerActions unifiedHeaderActions">
         <Badge status={connected ? "Finalizado" : "Bloqueado"}>{connected ? "Google Sheets conectado" : "Sin conexión"}</Badge>
         <Badge status={project.status}>Estado: {project.status}</Badge>
       </div>
@@ -372,7 +372,7 @@ function Timeline({ milestones, deliverables = [], detailed = false, setView, se
   };
 
   return (
-    <section className="card premiumSectionCard">
+    <section className="card premiumSectionCard duplicatedProjectCard">
       <div className="sectionHeader">
         <div>
           <h2>Ruta del proyecto</h2>

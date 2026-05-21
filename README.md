@@ -1,25 +1,29 @@
-# Ruta de Avance Visible™ - V5.3 Fix Ruta Mobile
+# Ruta de Avance Visible™ - V5.4 Header Unificado Premium
 
-## Corrección
+## Cambio principal
 
-Se corrige el problema donde la pestaña `Ruta` quedaba en blanco en versión móvil.
+Se fusiona el header superior con la tarjeta duplicada de `Tablero conectado`.
 
-## Qué se ajustó
+## Qué cambia
 
-- Se eliminó una regla CSS demasiado amplia que ocultaba el primer bloque de contenido en móvil.
-- Ahora solo se oculta la tarjeta estática marcada como `mobileStaticHero`.
-- La ruta del proyecto vuelve a mostrarse correctamente.
+- Header superior con fondo degradado premium.
+- Letras blancas.
+- Ícono integrado sobre fondo translúcido.
+- Badges de conexión/estado en estilo blanco translúcido.
+- Se oculta la tarjeta duplicada inferior para reducir ruido visual.
+- Se mantiene la corrección móvil del menú y de la pestaña Ruta.
 
-## Archivo principal a reemplazar
-
-```text
-src/index.css
-```
-
-También puedes reemplazar:
+## Archivos que debes reemplazar
 
 ```text
 src/main.jsx
+src/index.css
 src/sheets.js
+```
+
+Si quieres subir solo lo mínimo, reemplaza:
+
+```text
+src/main.jsx
 src/index.css
 ```

@@ -3302,59 +3302,277 @@ a.secondaryLink {
 }
 
 
+
+
+
 /* ==========================================================
-   V5.2 · MOBILE SIN TARJETA ESTÁTICA
-   Oculta la tarjeta superior fija en móvil para reducir scroll
+   V5.4 · HEADER UNIFICADO PREMIUM
+   Fusiona header + tarjeta de tablero conectado
    ========================================================== */
 
+/* Oculta la tarjeta duplicada tipo "Tablero conectado" en desktop y móvil */
+.duplicatedProjectCard,
+.mobileStaticHero.duplicatedProjectCard,
+.connectedBoardCard,
+.projectSummaryCard,
+.dashboardIntroCard,
+.overviewHero {
+  display: none !important;
+}
+
+/* Header principal como bloque premium único */
+.unifiedProjectHeader,
+.premiumHeader,
+.appHeader,
+.topHeader,
+.header.unifiedProjectHeader {
+  position: relative !important;
+  overflow: hidden !important;
+  margin: 22px 24px 24px !important;
+  padding: clamp(24px, 3vw, 38px) !important;
+  border: 0 !important;
+  border-radius: 38px !important;
+  background:
+    radial-gradient(circle at 8% 0%, rgba(101, 227, 223, 0.34), transparent 28rem),
+    radial-gradient(circle at 95% 25%, rgba(255, 255, 255, 0.13), transparent 24rem),
+    linear-gradient(135deg, #003f3e 0%, #007f7d 48%, #00b8b5 100%) !important;
+  color: white !important;
+  box-shadow: 0 32px 90px rgba(0, 63, 62, 0.24) !important;
+}
+
+/* Trama sutil tipo dashboard premium */
+.unifiedProjectHeader::before,
+.premiumHeader::before,
+.appHeader::before,
+.topHeader::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.045) 1px, transparent 1px);
+  background-size: 42px 42px;
+  mask-image: radial-gradient(circle at center, black, transparent 78%);
+  pointer-events: none;
+}
+
+.unifiedProjectHeader > *,
+.premiumHeader > *,
+.appHeader > *,
+.topHeader > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Todo el texto del header en blanco */
+.unifiedProjectHeader h1,
+.unifiedProjectHeader h2,
+.unifiedProjectHeader h3,
+.unifiedProjectHeader p,
+.unifiedProjectHeader span,
+.unifiedProjectHeader div,
+.premiumHeader h1,
+.premiumHeader h2,
+.premiumHeader h3,
+.premiumHeader p,
+.premiumHeader span,
+.premiumHeader div,
+.appHeader h1,
+.appHeader h2,
+.appHeader h3,
+.appHeader p,
+.appHeader span,
+.appHeader div,
+.topHeader h1,
+.topHeader h2,
+.topHeader h3,
+.topHeader p,
+.topHeader span,
+.topHeader div {
+  color: white !important;
+}
+
+.unifiedProjectHeader p,
+.premiumHeader p,
+.appHeader p,
+.topHeader p {
+  color: rgba(255, 255, 255, 0.82) !important;
+}
+
+/* Título principal más potente */
+.unifiedProjectHeader h1,
+.premiumHeader h1,
+.appHeader h1,
+.topHeader h1 {
+  font-size: clamp(34px, 4.2vw, 62px) !important;
+  line-height: 0.95 !important;
+  letter-spacing: -0.065em !important;
+  font-weight: 900 !important;
+}
+
+/* Icono principal integrado */
+.unifiedHeaderIcon,
+.headerIcon,
+.premiumHeader .headerIcon,
+.appHeader .headerIcon,
+.topHeader .headerIcon {
+  width: 68px !important;
+  height: 68px !important;
+  min-width: 68px !important;
+  border-radius: 22px !important;
+  display: grid !important;
+  place-items: center !important;
+  background: rgba(255, 255, 255, 0.16) !important;
+  border: 1px solid rgba(255, 255, 255, 0.24) !important;
+  color: white !important;
+  box-shadow: 0 18px 42px rgba(0, 63, 62, 0.22) !important;
+}
+
+.unifiedHeaderIcon svg,
+.headerIcon svg,
+.premiumHeader .headerIcon svg,
+.appHeader .headerIcon svg,
+.topHeader .headerIcon svg {
+  color: white !important;
+  stroke: white !important;
+}
+
+/* Badges superiores conectados / estado */
+.unifiedProjectHeader .badge,
+.unifiedProjectHeader [class*="badge"],
+.premiumHeader .badge,
+.premiumHeader [class*="badge"],
+.appHeader .badge,
+.appHeader [class*="badge"],
+.topHeader .badge,
+.topHeader [class*="badge"] {
+  background: rgba(255, 255, 255, 0.14) !important;
+  border: 1px solid rgba(255, 255, 255, 0.24) !important;
+  color: white !important;
+  box-shadow: none !important;
+}
+
+.unifiedProjectHeader .badge *,
+.premiumHeader .badge *,
+.appHeader .badge *,
+.topHeader .badge * {
+  color: white !important;
+}
+
+/* Bloques de gerente/responsable si existen dentro del header */
+.unifiedProjectHeader .personCard,
+.unifiedProjectHeader .ownerCard,
+.unifiedProjectHeader .responsibleCard,
+.unifiedProjectHeader .projectPeopleCard,
+.unifiedProjectHeader .miniCard,
+.premiumHeader .personCard,
+.premiumHeader .ownerCard,
+.premiumHeader .responsibleCard,
+.premiumHeader .projectPeopleCard,
+.premiumHeader .miniCard {
+  background: rgba(255, 255, 255, 0.12) !important;
+  border: 1px solid rgba(255, 255, 255, 0.18) !important;
+  color: white !important;
+  border-radius: 24px !important;
+}
+
+/* Botón reunión en header */
+.unifiedProjectHeader a[href*="meet"],
+.unifiedProjectHeader a[href*="calendar"],
+.unifiedProjectHeader .meetButton,
+.unifiedProjectHeader .meetingButton,
+.unifiedProjectHeader .primaryPortalButton,
+.premiumHeader a[href*="meet"],
+.premiumHeader a[href*="calendar"],
+.premiumHeader .meetButton,
+.premiumHeader .meetingButton,
+.premiumHeader .primaryPortalButton,
+.appHeader a[href*="meet"],
+.appHeader .primaryPortalButton,
+.topHeader a[href*="meet"],
+.topHeader .primaryPortalButton {
+  background: rgba(255, 255, 255, 0.16) !important;
+  color: white !important;
+  border: 1px solid rgba(255, 255, 255, 0.24) !important;
+  box-shadow: 0 18px 40px rgba(0, 63, 62, 0.18) !important;
+}
+
+.unifiedProjectHeader a[href*="meet"]:hover,
+.unifiedProjectHeader a[href*="calendar"]:hover,
+.unifiedProjectHeader .meetButton:hover,
+.unifiedProjectHeader .meetingButton:hover,
+.unifiedProjectHeader .primaryPortalButton:hover,
+.premiumHeader a[href*="meet"]:hover,
+.premiumHeader .primaryPortalButton:hover {
+  background: rgba(255, 255, 255, 0.22) !important;
+  transform: translateY(-1px);
+}
+
+/* Reduce espacio porque ya no hay tarjeta duplicada */
+.content,
+.mainContent,
+.pageContent {
+  padding-top: 0 !important;
+}
+
+/* Móvil: header compacto y claro */
 @media (max-width: 768px) {
-  /* Tarjeta resumen superior / tablero conectado */
-  .summaryHero,
-  .projectSummaryCard,
-  .dashboardIntroCard,
-  .heroCard.mobileStaticHero,
-  .mobileStaticHero,
-  .overviewHero,
-  .connectedBoardCard {
-    display: none !important;
-  }
-/* Reduce el espacio superior después del menú móvil */
-  .content {
-    padding-top: 16px !important;
+  .unifiedProjectHeader,
+  .premiumHeader,
+  .appHeader,
+  .topHeader,
+  .header.unifiedProjectHeader {
+    margin: 14px 12px 18px !important;
+    padding: 24px 20px !important;
+    border-radius: 30px !important;
   }
 
-  .mobileTabs,
-  .mobileTabsWrapper {
-    margin-bottom: 14px !important;
+  .unifiedProjectHeader h1,
+  .premiumHeader h1,
+  .appHeader h1,
+  .topHeader h1 {
+    font-size: clamp(30px, 9vw, 42px) !important;
+    line-height: 0.98 !important;
+  }
+
+  .unifiedHeaderIcon,
+  .headerIcon,
+  .premiumHeader .headerIcon,
+  .appHeader .headerIcon,
+  .topHeader .headerIcon {
+    width: 56px !important;
+    height: 56px !important;
+    min-width: 56px !important;
+    border-radius: 18px !important;
+  }
+
+  .unifiedProjectHeader .headerActions,
+  .premiumHeader .headerActions,
+  .appHeader .headerActions,
+  .topHeader .headerActions,
+  .unifiedHeaderActions {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 10px !important;
+    margin-top: 18px !important;
+  }
+
+  .unifiedProjectHeader .badge,
+  .premiumHeader .badge,
+  .appHeader .badge,
+  .topHeader .badge {
+    font-size: 11px !important;
+    padding: 8px 10px !important;
   }
 }
 
-
-/* ==========================================================
-   V5.3 · FIX RUTA MOBILE
-   Corrige ocultamiento excesivo: Ruta vuelve a mostrarse
-   ========================================================== */
-
+/* Seguridad: la ruta del proyecto no debe ocultarse en móvil */
 @media (max-width: 768px) {
-  /* Solo se oculta la tarjeta estática del tablero, no las tarjetas de cada pestaña */
-  .mobileStaticHero,
-  .summaryHero.mobileStaticHero,
-  .projectSummaryCard.mobileStaticHero,
-  .dashboardIntroCard.mobileStaticHero,
-  .overviewHero.mobileStaticHero,
-  .connectedBoardCard.mobileStaticHero {
-    display: none !important;
-  }
-
-  /* Seguridad: nunca ocultar la ruta del proyecto en móvil */
   .timelineSummary,
   .timelineDetailed,
-  .milestone,
-  .premiumMilestone,
   .timeline,
-  .routeSection,
-  [data-view="ruta"] {
-    display: grid;
+  .routeSection {
+    display: grid !important;
   }
 
   .milestone,
