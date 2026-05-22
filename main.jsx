@@ -6,6 +6,10 @@ function getSheetIdFromUrl() {
 
 const SPREADSHEET_ID = getSheetIdFromUrl() || import.meta.env.VITE_SPREADSHEET_ID || "";
 
+export function getActiveSpreadsheetId() {
+  return SPREADSHEET_ID;
+}
+
 export const demoData = {
   project: {
     client: "SIN CONEXIÓN - REVISAR GOOGLE SHEET",
@@ -24,14 +28,56 @@ export const demoData = {
     logoGSE: "",
     logoClient: "",
     projectPhrase: "Ruta de avance del proyecto",
-    whatsappMessage: "Hola, equipo 👋 Ya actualizamos la Ruta de Avance Visible™."
+    whatsappMessage: "Hola, equipo 👋 Ya actualizamos la Ruta de Avance Visible™.",
+    documentUploadLink: ""
   },
   milestones: [],
   findings: [],
   pending: [],
   deliverables: [],
   updates: [],
-  education: []
+  education: [],
+  documents: [
+    {
+      id: "1",
+      title: "Carga de documentos iniciales",
+      description: "Para iniciar el diagnóstico, sube en la carpeta compartida toda la información documental disponible de la empresa.",
+      category: "Estructura",
+      item: "Organigrama actual",
+      detail: "Documento donde se visualice la estructura actual de la empresa.",
+      required: "Sí",
+      responseClient: "",
+      status: "Pendiente",
+      observation: "",
+      responseDate: ""
+    },
+    {
+      id: "2",
+      title: "Carga de documentos iniciales",
+      description: "Para iniciar el diagnóstico, sube en la carpeta compartida toda la información documental disponible de la empresa.",
+      category: "Talento Humano",
+      item: "Listado de colaboradores",
+      detail: "Base actual de colaboradores con cargo, área, fecha de ingreso y sueldo si aplica.",
+      required: "Sí",
+      responseClient: "",
+      status: "Pendiente",
+      observation: "",
+      responseDate: ""
+    },
+    {
+      id: "3",
+      title: "Carga de documentos iniciales",
+      description: "Para iniciar el diagnóstico, sube en la carpeta compartida toda la información documental disponible de la empresa.",
+      category: "Procesos",
+      item: "Manuales o procedimientos actuales",
+      detail: "Manuales, instructivos, flujos o documentos internos existentes.",
+      required: "No",
+      responseClient: "",
+      status: "No disponible",
+      observation: "",
+      responseDate: ""
+    }
+  ]
 };
 
 function cleanText(value) {
@@ -160,6 +206,14 @@ async function fetchCsvSheet(sheetName, required = true) {
   return rowsToObjects(rows);
 }
 
+async function fetchFirstAvailableSheet(sheetNames = []) {
+  for (const sheetName of sheetNames) {
+    const rows = await fetchCsvSheet(sheetName, false);
+    if (rows.length) return rows;
+  }
+  return [];
+}
+
 function getRowValue(row, possibleKeys) {
   const normalizedRow = {};
 
@@ -201,7 +255,13 @@ function projectFromRawRows(rows) {
     "logocliente",
     "fraseproyecto",
     "mensajewhatsapp",
-    "whatsapp"
+    "whatsapp",
+    "linkcargadocumentos",
+    "enlacecargadocumentos",
+    "linkdocumentos",
+    "enlacedocumentos",
+    "linkonedrive",
+    "onedrive"
   ];
 
   const cleanRows = rows
@@ -276,6 +336,7 @@ function projectFromRawRows(rows) {
     logoClient: map.logocliente || demoData.project.logoClient,
     projectPhrase: map.fraseproyecto || demoData.project.projectPhrase,
     whatsappMessage: map.mensajewhatsapp || map.whatsapp || demoData.project.whatsappMessage,
+    documentUploadLink: map.linkcargadocumentos || map.enlacecargadocumentos || map.linkdocumentos || map.enlacedocumentos || map.linkonedrive || map.onedrive || demoData.project.documentUploadLink,
   };
 }
 
@@ -341,6 +402,41 @@ function mapUpdates(rows) {
   })).filter((x) => x.title || x.text);
 }
 
+function mapDocuments(rows) {
+  return rows.map((row, index) => {
+    const title = getRowValue(row, ["Titulo", "Título", "Title", "NombreTitulo", "Nombre Título"]);
+    const description = getRowValue(row, [
+      "Descripcion", "Descripción", "Description", "DescripcionGeneral", "Descripción General",
+      "Texto", "Intro", "Introduccion", "Introducción"
+    ]);
+    const category = getRowValue(row, ["Categoria", "Categoría", "Category", "Tipo", "Grupo", "Area", "Área"]);
+    const item = getRowValue(row, [
+      "Item", "Ítem", "Documento", "Documento solicitado", "Documento Solicitado",
+      "Documento requerido", "Documento Requerido", "Checklist", "Nombre", "Requerimiento",
+      "Solicitud", "Archivo", "Información requerida", "Informacion requerida"
+    ]);
+    const detail = getRowValue(row, [
+      "Detalle", "Detail", "DescripcionItem", "Descripción Item", "Descripcion del item", "Descripción del ítem",
+      "DescripcionDocumento", "Descripción Documento", "Descripcion documento", "Descripción documento",
+      "ParaQueSirve", "Para qué sirve", "Para que sirve", "Instruccion", "Instrucción"
+    ]);
+
+    return {
+      id: getRowValue(row, ["ID", "Id", "N", "N°", "No"]) || String(index + 1),
+      title,
+      description,
+      category,
+      item,
+      detail,
+      required: getRowValue(row, ["Obligatorio", "Required", "Requerido", "Es obligatorio"]),
+      responseClient: getRowValue(row, ["RespuestaCliente", "Respuesta Cliente", "Respuesta", "Tiene", "Disponibilidad", "SeleccionCliente", "Selección Cliente"]),
+      status: getRowValue(row, ["Estado", "Status", "Situacion", "Situación", "Disponible"]),
+      observation: getRowValue(row, ["Observacion", "Observación", "Notas", "Comentario", "Comentarios", "Observaciones"]),
+      responseDate: getRowValue(row, ["FechaRespuesta", "Fecha Respuesta", "Fecha", "FechaRegistro"]),
+    };
+  }).filter((x) => x.item || x.title || x.description || x.detail || x.category);
+}
+
 function mapEducation(rows) {
   return rows.map((row) => ({
     system: getRowValue(row, ["Sistema"]),
@@ -360,7 +456,7 @@ export async function loadSheetData() {
     throw new Error("Falta configurar VITE_SPREADSHEET_ID o usar ?sheet=ID");
   }
 
-  const [projectRawRows, milestoneRows, findingRows, pendingRows, deliverableRows, updateRows, educationRows] = await Promise.all([
+  const [projectRawRows, milestoneRows, findingRows, pendingRows, deliverableRows, updateRows, educationRows, documentRows] = await Promise.all([
     fetchCsvRows("Proyecto"),
     fetchCsvSheet("Hitos"),
     fetchCsvSheet("Hallazgos"),
@@ -368,6 +464,7 @@ export async function loadSheetData() {
     fetchCsvSheet("Entregables"),
     fetchCsvSheet("Actualizaciones", false),
     fetchCsvSheet("Educacion", false),
+    fetchFirstAvailableSheet(["Documentos", "CargaDocumentos", "Carga de documentos", "Carga Documentos", "ChecklistDocumentos", "Checklist Documentos", "Checklist"]),
   ]);
 
   return {
@@ -378,5 +475,6 @@ export async function loadSheetData() {
     deliverables: mapDeliverables(deliverableRows),
     updates: mapUpdates(updateRows),
     education: mapEducation(educationRows),
+    documents: mapDocuments(documentRows),
   };
 }
