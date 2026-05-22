@@ -3681,3 +3681,533 @@ a.secondaryLink {
     display: block !important;
   }
 }
+
+
+/* ==========================================================
+   V6.0 · DASHBOARD EJECUTIVO VISUAL (PASO 1)
+   Rediseño premium de la pestaña Resumen
+   ========================================================== */
+:root {
+  --brand: #00b8b5;
+  --brand-dark: #0b4e58;
+  --warning-soft: #ff9e7d;
+}
+
+.dashboardKpiGrid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 18px;
+  margin-bottom: 22px;
+}
+
+.dashboardWidgetCard {
+  background: rgba(255,255,255,0.94);
+  border: 1px solid rgba(11, 78, 88, 0.18);
+  border-radius: 22px;
+  box-shadow: 0 14px 34px rgba(3, 54, 57, 0.10);
+  padding: 16px 16px 14px;
+  min-height: 220px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.dashboardWidgetCard.clickable { cursor: pointer; transition: transform .2s ease, box-shadow .2s ease; }
+.dashboardWidgetCard.clickable:hover { transform: translateY(-2px); box-shadow: 0 18px 42px rgba(3, 54, 57, 0.14); }
+.dashboardWidgetHeader span { font-family: "Montserrat", sans-serif; font-weight: 700; font-size: 1rem; color: #102f37; }
+.dashboardWidgetValue { font-family: "Montserrat", sans-serif; font-size: 2.2rem; line-height: 1; font-weight: 800; color: var(--brand-dark); }
+.dashboardWidgetGraphic { flex: 1; display: flex; align-items: center; justify-content: center; }
+.dashboardWidgetFooter { font-size: .84rem; color: #58737a; }
+
+.dashboardGaugeWrap { width: 100%; }
+.dashboardGaugeTrack { position: relative; width: 118px; height: 59px; overflow: hidden; margin: 0 auto; }
+.dashboardGaugeFill { position: absolute; inset: 0; border-radius: 999px 999px 0 0; }
+.dashboardGaugeMask { position: absolute; left: 50%; bottom: -18px; transform: translateX(-50%); width: 76px; height: 76px; background: #fff; border-radius: 50%; }
+.dashboardGaugeNeedle { position: absolute; left: 50%; bottom: 0; width: 3px; height: 46px; background: #516d72; transform-origin: bottom center; border-radius: 999px; }
+.dashboardGaugeNeedle::after { content: ""; position: absolute; bottom: -2px; left: 50%; transform: translateX(-50%); width: 12px; height: 12px; border-radius: 50%; background: #516d72; }
+.dashboardGaugeLabels { display: flex; justify-content: space-between; margin-top: 8px; color: #45656a; font-size: .78rem; }
+
+.thermoWidget { display: grid; grid-template-columns: 40px 1fr 76px; gap: 10px; align-items: end; width: 100%; }
+.thermoScale { display: flex; flex-direction: column; justify-content: space-between; height: 112px; font-size: .72rem; color: #5f787d; }
+.thermoTube { position: relative; width: 26px; height: 112px; border-radius: 999px; background: linear-gradient(180deg, #ff5c49 0%, #ffd666 52%, #21c2a4 100%); justify-self: center; box-shadow: inset 0 0 0 3px rgba(255,255,255,0.72), 0 0 0 1px rgba(11, 78, 88, 0.12); }
+.thermoBulb { position: absolute; bottom: -10px; left: 50%; transform: translateX(-50%); width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(180deg, #ff6b54 0%, #ffbb62 100%); box-shadow: inset 0 0 0 3px rgba(255,255,255,0.72), 0 0 0 1px rgba(11, 78, 88, 0.12); }
+.thermoMarker { position: absolute; left: calc(100% + 4px); width: 14px; height: 10px; border-radius: 999px; background: #203d45; }
+.thermoLegend { display: flex; flex-direction: column; gap: 6px; font-size: .73rem; color: #48656b; }
+.swatch { display:inline-block; width:10px; height:10px; border-radius:50%; margin-right:6px; }
+.swatch.danger { background:#ff6c5e; }
+.swatch.warning { background:#ffb55a; }
+.swatch.success { background:#1bc8aa; }
+
+.miniMilestoneChart { width: 100%; }
+.miniMilestoneBars { display: flex; gap: 10px; align-items: end; height: 100px; }
+.miniMilestoneCol { flex: 1; display:flex; flex-direction:column; align-items:center; gap:8px; }
+.miniMilestoneCol span { font-size: .76rem; color: #25434a; }
+.miniMilestoneBar { width: 100%; border-radius: 10px; min-height: 16px; }
+.miniMilestoneCol.done .miniMilestoneBar { height: 65px; background: linear-gradient(180deg, var(--brand-dark), var(--brand)); }
+.miniMilestoneCol.current .miniMilestoneBar { height: 40px; background: rgba(0,184,181,0.4); border: 1px solid rgba(11,78,88,0.15); }
+.miniMilestoneCol.todo .miniMilestoneBar { height: 22px; background: #d9e2e5; }
+.miniMilestoneFoot { margin-top: 10px; font-size: .78rem; color: #4e686e; }
+
+.miniPendingChart { width:100%; display:flex; flex-direction:column; gap:10px; }
+.miniPendingRow { display:grid; grid-template-columns: 64px 1fr 22px; align-items:center; gap:8px; font-size: .76rem; color:#24454c; }
+.miniPendingBar { height: 12px; background:#dfe6e9; border-radius:999px; overflow:hidden; }
+.miniPendingBar i { display:block; height:100%; background: linear-gradient(90deg, var(--brand-dark), var(--brand)); border-radius:999px; }
+.miniPendingBar.success i { background: linear-gradient(90deg, #49d1c6, #83ece4); }
+.miniPendingLine { height: 42px; }
+.miniPendingLine svg { width:100%; height:100%; }
+
+.miniBlockerWidget { width:100%; display:flex; flex-direction:column; gap:10px; }
+.miniSmileGauge { position:relative; width: 118px; height:59px; overflow:hidden; border-radius:999px 999px 0 0; margin:0 auto; }
+.miniSmileCenter { position:absolute; left:50%; bottom:-4px; transform:translateX(-50%); width:82px; height:82px; background:#fff; border-radius:50%; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+.miniSmileFace { font-size: 1.35rem; line-height: 1; }
+.miniSmileCenter strong { margin-top: 2px; font-size:.82rem; color:#29616c; }
+.miniSparkline { display:flex; align-items:center; gap:10px; }
+.sparkCheck { width:18px; height:18px; display:grid; place-items:center; border-radius:50%; background: rgba(0,184,181,0.12); color: var(--brand-dark); font-size:.72rem; font-weight:700; }
+.miniSparkline svg { flex:1; height:30px; }
+
+.executiveDisorderCard { border-radius: 26px; overflow: hidden; }
+.executiveHeader { align-items:flex-start; }
+.executiveDisorderTopline { display:flex; justify-content:space-between; gap:16px; margin: 4px 0 16px; color:#577076; font-size:.92rem; }
+.executiveMeter { margin-bottom: 20px; }
+.dashboardSplitGrid { display:grid; grid-template-columns: 1.35fr 1fr; gap: 20px; }
+.dashboardChartCard { background: linear-gradient(180deg, rgba(248,252,252,0.96), rgba(241,247,247,0.98)); border:1px solid rgba(11,78,88,0.1); border-radius:22px; padding:18px; }
+.dashboardChartTitle { font-family:"Montserrat", sans-serif; font-size:1rem; font-weight:700; color:#13353c; margin-bottom:12px; }
+.chartLegendRow { display:flex; gap:16px; align-items:center; color:#557075; font-size:.78rem; margin-bottom:12px; }
+.legendDot { width:10px; height:10px; border-radius:50%; display:inline-block; margin-right:6px; }
+.legendDot.danger { background:#ff8b77; }
+.legendDot.brand { background:var(--brand); }
+.dashboardBarsChart { height: 235px; display:flex; align-items:flex-end; justify-content:space-between; gap:10px; padding-top:10px; }
+.dashboardBarGroup { flex:1; display:flex; flex-direction:column; align-items:center; gap:8px; }
+.dashboardBars { width:100%; height: 200px; display:flex; align-items:flex-end; justify-content:center; gap:6px; }
+.dashboardBar { width: 14px; border-radius: 8px 8px 0 0; min-height:10px; }
+.dashboardBar.danger { background: linear-gradient(180deg, #ffb39d 0%, #ff8b77 100%); }
+.dashboardBar.brand { background: linear-gradient(180deg, #69ddd4 0%, var(--brand) 100%); }
+.dashboardBarGroup span { font-size:.74rem; color:#577075; }
+.dashboardRadarWrap { display:flex; flex-direction:column; align-items:center; }
+.dashboardRadarSvg { width:100%; max-width:280px; height:auto; }
+.dashboardRadarLabel { font-size: 9px; fill:#46676f; }
+.radarLegend { justify-content:center; margin-top: 8px; }
+.executiveNote { margin-top:16px; }
+
+/* summary right panel enhancement */
+.rightPanel { display:flex; flex-direction:column; gap:16px; }
+.nextCard { background: rgba(255,255,255,0.96); border: 1px solid rgba(11,78,88,0.12); box-shadow: 0 14px 34px rgba(3,54,57,0.09); }
+.updateCard { border-radius: 22px; box-shadow: 0 14px 30px rgba(3,54,57,0.08); }
+
+@media (max-width: 1180px) {
+  .dashboardKpiGrid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@media (max-width: 860px) {
+  .dashboardKpiGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .dashboardSplitGrid { grid-template-columns: 1fr; }
+  .executiveDisorderTopline { flex-direction:column; }
+}
+@media (max-width: 560px) {
+  .dashboardKpiGrid { grid-template-columns: 1fr; }
+  .dashboardWidgetCard { min-height: 200px; }
+  .dashboardWidgetValue { font-size: 1.9rem; }
+  .thermoWidget { grid-template-columns: 34px 1fr 70px; }
+}
+
+
+/* ==========================================================
+   V6.1 REAL · RESUMEN EJECUTIVO LIMPIO
+   Quita duplicados y deja: KPIs + desorden + hitos + lateral blanco
+   ========================================================== */
+
+.executiveSummaryLayout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 360px;
+  gap: 24px;
+  align-items: start;
+}
+
+.executiveSummaryMain {
+  display: grid;
+  gap: 24px;
+}
+
+.executiveRightPanel {
+  display: grid;
+  gap: 18px;
+  position: sticky;
+  top: 22px;
+}
+
+.executiveSideCard {
+  border-radius: 28px;
+  background: rgba(255,255,255,0.96);
+  border: 1px solid rgba(0, 184, 181, 0.15);
+  box-shadow: 0 18px 42px rgba(3, 54, 57, 0.08);
+  padding: 26px;
+  color: #082f36;
+}
+
+.executiveSideCard h3 {
+  margin: 12px 0 10px;
+  color: #062f36;
+  font-size: 24px;
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+}
+
+.executiveSideCard p {
+  margin: 0;
+  color: #587176;
+  line-height: 1.55;
+}
+
+.sideCardIconLine {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #007f7d;
+  font-weight: 900;
+  font-family: "Montserrat", sans-serif;
+}
+
+.sideIcon {
+  width: 42px;
+  height: 42px;
+  border-radius: 16px;
+  display: grid;
+  place-items: center;
+  color: #007f7d;
+  background: rgba(0, 184, 181, 0.12);
+  border: 1px solid rgba(0, 184, 181, 0.15);
+}
+
+.sideIcon.warning {
+  color: #005f5d;
+  background: rgba(0, 184, 181, 0.10);
+}
+
+.sideMeetButton,
+.sideLinkButton {
+  margin-top: 22px;
+  min-height: 50px;
+  border-radius: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  width: 100%;
+  border: 1px solid rgba(0, 184, 181, 0.18);
+  color: white;
+  background: linear-gradient(135deg, #006f6d 0%, #00b8b5 100%);
+  font-family: "Montserrat", sans-serif;
+  font-weight: 900;
+  text-decoration: none;
+  box-shadow: 0 14px 30px rgba(0, 184, 181, 0.20);
+}
+
+.sideLinkButton {
+  color: #007f7d;
+  background: rgba(0, 184, 181, 0.08);
+  box-shadow: none;
+}
+
+.sidePendingMeta {
+  display: grid;
+  gap: 8px;
+  margin: 18px 0 14px;
+  color: #385b60;
+  font-size: 14px;
+}
+
+.executiveMilestonesCard {
+  border-radius: 30px;
+  overflow: hidden;
+}
+
+.executiveMilestonesHeader {
+  align-items: flex-start;
+}
+
+.executiveMilestoneGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.executiveMilestoneItem {
+  border-radius: 24px;
+  background:
+    radial-gradient(circle at top left, rgba(0,184,181,0.16), transparent 14rem),
+    linear-gradient(180deg, rgba(255,255,255,0.96), rgba(248,253,253,0.98));
+  border: 1px solid rgba(0,184,181,0.14);
+  box-shadow: 0 12px 28px rgba(3,54,57,0.055);
+  padding: 16px;
+  cursor: pointer;
+  transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+}
+
+.executiveMilestoneItem:hover,
+.executiveMilestoneItem.selected {
+  transform: translateY(-2px);
+  border-color: rgba(0,184,181,0.34);
+  box-shadow: 0 18px 38px rgba(3,54,57,0.09);
+}
+
+.executiveMilestoneTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.executiveMilestoneNumber {
+  width: 42px;
+  height: 42px;
+  border-radius: 16px;
+  display: grid;
+  place-items: center;
+  font-family: "Montserrat", sans-serif;
+  font-weight: 900;
+  color: white;
+  background: linear-gradient(135deg, #006f6d 0%, #00b8b5 100%);
+}
+
+.executiveMilestoneNumber.neutral {
+  color: #557176;
+  background: #eef6f6;
+}
+
+.executiveMilestoneNumber.warning,
+.executiveMilestoneNumber.info {
+  color: white;
+  background: linear-gradient(135deg, #007f7d 0%, #34d2cc 100%);
+}
+
+.executiveMilestoneItem h3 {
+  min-height: 44px;
+  margin: 0 0 12px;
+  color: #062f36;
+  font-size: 15px;
+  line-height: 1.25;
+}
+
+.executiveMilestoneMeta {
+  min-height: 34px;
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  color: #5f777b;
+  font-size: 12px;
+  margin-bottom: 12px;
+}
+
+.executiveMilestoneMeta strong {
+  color: #082f36;
+}
+
+.executiveMilestoneProgress {
+  margin-top: 9px;
+  color: #5f777b;
+  font-size: 12px;
+}
+
+.executiveDisorderCard {
+  margin-bottom: 0;
+}
+
+/* Evita que vuelvan a aparecer bloques duplicados dentro del resumen */
+.twoColumns {
+  display: none;
+}
+
+@media (max-width: 1280px) {
+  .executiveSummaryLayout {
+    grid-template-columns: 1fr;
+  }
+
+  .executiveRightPanel {
+    position: static;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .executiveMilestoneGrid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 820px) {
+  .executiveRightPanel {
+    grid-template-columns: 1fr;
+  }
+
+  .executiveMilestoneGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .executiveMilestoneGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .executiveSideCard {
+    padding: 22px;
+    border-radius: 24px;
+  }
+}
+
+
+/* ==========================================================
+   V6.2 · RESUMEN CON 4 TARJETAS + HITOS GRANDES
+   ========================================================== */
+.dashboardKpiGrid.fourCards {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.hitosProgressCard {
+  border-radius: 28px;
+  overflow: hidden;
+}
+
+.hitosProgressLayout {
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr);
+  gap: 26px;
+  align-items: center;
+}
+
+.hitosProgressStat {
+  position: relative;
+  min-height: 170px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 14px 8px 14px 18px;
+}
+
+.hitosMiniAccent {
+  position: absolute;
+  left: 0;
+  top: 18px;
+  bottom: 18px;
+  width: 3px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #ff8b77 0%, #ffd1c7 100%);
+}
+
+.hitosProgressValue {
+  font-family: "Montserrat", sans-serif;
+  font-size: 4rem;
+  line-height: 0.95;
+  font-weight: 800;
+  color: #000;
+  letter-spacing: -0.06em;
+}
+
+.hitosProgressLabel {
+  margin-top: 10px;
+  font-family: "Montserrat", sans-serif;
+  font-weight: 500;
+  font-size: 0.95rem;
+  letter-spacing: 0.02em;
+  color: #27383d;
+}
+
+.hitosProgressMain {
+  min-width: 0;
+}
+
+.hitosProgressHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.hitosProgressHeader h2 {
+  margin: 0;
+  text-transform: uppercase;
+  font-size: 1rem;
+  letter-spacing: 0.02em;
+}
+
+.hitosTrackLabels {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.hitosTrackLabel {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font-family: "Montserrat", sans-serif;
+  font-size: 0.9rem;
+  color: #223439;
+  cursor: pointer;
+}
+.hitosTrackLabel.selected { color: #00a8a5; font-weight: 800; }
+
+.hitosLineWrap {
+  position: relative;
+  height: 36px;
+  margin-bottom: 14px;
+}
+.hitosLineBase,
+.hitosLineFill {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+  height: 6px;
+  border-radius: 999px;
+}
+.hitosLineBase { width: 100%; background: #d7e3e6; }
+.hitosLineFill { background: linear-gradient(90deg, #007f7d 0%, #00b8b5 100%); }
+
+.hitosDot {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 4px solid #00b8b5;
+  background: #fff;
+  cursor: pointer;
+  box-shadow: 0 0 0 4px #fff;
+}
+.hitosDot.done { background: #00b8b5; }
+.hitosDot.active { box-shadow: 0 0 0 4px #fff, 0 0 0 7px rgba(0,184,181,0.18); }
+
+.hitosProgressHelp {
+  color: #667d82;
+  font-size: 0.85rem;
+}
+
+.disorderInsightsCard {
+  border-radius: 28px;
+}
+
+.executiveHeader.compact {
+  margin-bottom: 6px;
+}
+
+@media (max-width: 1180px) {
+  .dashboardKpiGrid.fourCards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .hitosProgressLayout { grid-template-columns: 1fr; }
+  .hitosProgressStat { min-height: auto; padding-left: 18px; }
+}
+
+@media (max-width: 760px) {
+  .hitosTrackLabels {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    row-gap: 10px;
+  }
+}
+
+@media (max-width: 560px) {
+  .dashboardKpiGrid.fourCards { grid-template-columns: 1fr; }
+  .hitosProgressValue { font-size: 3.1rem; }
+  .hitosTrackLabels { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}

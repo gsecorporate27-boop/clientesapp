@@ -264,57 +264,336 @@ function PortalProject({ project, milestones, pending, setView }) {
   );
 }
 
+
+function DashboardMiniGauge({ value = 0 }) {
+  const safe = Math.max(0, Math.min(Number(value) || 0, 100));
+  const angle = Math.round((safe / 100) * 180);
+  return (
+    <div className="dashboardGaugeWrap">
+      <div className="dashboardGaugeTrack">
+        <div
+          className="dashboardGaugeFill"
+          style={{ background: `conic-gradient(from 180deg, var(--brand) 0deg ${angle}deg, #dfe7ea ${angle}deg 180deg, transparent 180deg 360deg)` }}
+        />
+        <div className="dashboardGaugeMask" />
+        <div className="dashboardGaugeNeedle" style={{ transform: `translateX(-50%) rotate(${angle - 90}deg)` }} />
+      </div>
+      <div className="dashboardGaugeLabels"><span>0</span><span>100%</span></div>
+    </div>
+  );
+}
+
+function DashboardMiniThermometer({ value = 0 }) {
+  const safe = Math.max(0, Math.min(Number(value) || 0, 100));
+  return (
+    <div className="thermoWidget">
+      <div className="thermoScale"><span>100%</span><span>50%</span><span>0%</span></div>
+      <div className="thermoTube">
+        <div className="thermoGradient" />
+        <div className="thermoBulb" />
+        <div className="thermoMarker" style={{ bottom: `calc(${safe}% - 5px)` }} />
+      </div>
+      <div className="thermoLegend">
+        <span><i className="swatch danger"></i>Crítico</span>
+        <span><i className="swatch warning"></i>Seguimiento</span>
+        <span><i className="swatch success"></i>Controlado</span>
+      </div>
+    </div>
+  );
+}
+
+function DashboardMiniMilestones({ done = 0, total = 0 }) {
+  const count = Math.max(total || 0, 4);
+  return (
+    <div className="miniMilestoneChart">
+      <div className="miniMilestoneBars">
+        {Array.from({ length: count }).map((_, index) => {
+          const active = index < done;
+          const current = index === done && done < count;
+          return (
+            <div key={index} className={`miniMilestoneCol ${active ? 'done' : current ? 'current' : 'todo'}`}>
+              <span>{index + 1}</span>
+              <div className="miniMilestoneBar" />
+            </div>
+          );
+        })}
+      </div>
+      <div className="miniMilestoneFoot">Total {total} hitos</div>
+    </div>
+  );
+}
+
+function DashboardMiniPending({ pending = 0, done = 0 }) {
+  const total = Math.max(pending + done, 1);
+  return (
+    <div className="miniPendingChart">
+      <div className="miniPendingRow"><span>Pendiente</span><div className="miniPendingBar"><i style={{ width: `${(pending / total) * 100}%` }} /></div><strong>{pending}</strong></div>
+      <div className="miniPendingRow"><span>Completado</span><div className="miniPendingBar success"><i style={{ width: `${(done / total) * 100}%` }} /></div><strong>{done}</strong></div>
+      <div className="miniPendingLine">
+        <svg viewBox="0 0 160 46" preserveAspectRatio="none">
+          <polyline points="0,36 32,30 64,22 96,27 128,18 160,12" fill="rgba(0,184,181,0.12)" stroke="rgba(0,184,181,0.0)" />
+          <polyline points="0,36 32,30 64,22 96,27 128,18 160,12" fill="none" stroke="var(--brand)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      </div>
+    </div>
+  );
+}
+
+function DashboardMiniBlockers({ blocked = 0 }) {
+  const mood = blocked > 0 ? 'Atención' : 'All Good';
+  const ratio = blocked > 0 ? Math.min(100, 20 + blocked * 22) : 82;
+  return (
+    <div className="miniBlockerWidget">
+      <div className="miniSmileGauge" style={{ background: `conic-gradient(from 180deg, var(--brand) 0deg ${Math.round((ratio/100)*180)}deg, #dfe7ea ${Math.round((ratio/100)*180)}deg 180deg, transparent 180deg 360deg)` }}>
+        <div className="miniSmileCenter">
+          <div className="miniSmileFace">{blocked > 0 ? '😐' : '😊'}</div>
+          <strong>{mood}</strong>
+        </div>
+      </div>
+      <div className="miniSparkline">
+        <span className="sparkCheck">✓</span>
+        <svg viewBox="0 0 120 26" preserveAspectRatio="none">
+          <polyline points="0,22 18,22 36,22 54,20 72,20 90,13 108,11 120,8" fill="none" stroke="var(--brand)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      </div>
+    </div>
+  );
+}
+
+function DashboardDisorderVisual({ progress = 0 }) {
+  const chaosRaw = [92, 88, 84, 78, 70, 63, 55, 48];
+  const chaos = chaosRaw.map((value, index) => Math.max(10, Math.min(95, Math.round(value - progress * 0.55 + ((index % 3) - 1) * 3))));
+  const order = chaos.map((v) => 100 - v);
+  const labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Ago'];
+
+  return (
+    <div className="dashboardSplitGrid">
+      <div className="dashboardChartCard">
+        <div className="dashboardChartTitle">Desorden operativo mensual</div>
+        <div className="chartLegendRow"><span><i className="legendDot danger"></i>Caos</span><span><i className="legendDot brand"></i>Orden</span></div>
+        <div className="dashboardBarsChart">
+          {labels.map((label, index) => (
+            <div key={label} className="dashboardBarGroup">
+              <div className="dashboardBars">
+                <div className="dashboardBar danger" style={{ height: `${chaos[index]}%` }} />
+                <div className="dashboardBar brand" style={{ height: `${order[index]}%` }} />
+              </div>
+              <span>{label}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="dashboardChartCard">
+        <div className="dashboardChartTitle">Mapa de orden estructural</div>
+        <DashboardRadar progress={progress} />
+      </div>
+    </div>
+  );
+}
+
+function DashboardRadar({ progress = 0 }) {
+  const labels = ['Procesos', 'Datos', 'Gente', 'Tecnología', 'Estrategia', 'Comunicación'];
+  const values = [
+    Math.min(92, progress + 18),
+    Math.min(86, progress + 10),
+    Math.min(80, progress + 4),
+    Math.min(74, Math.max(22, progress - 4)),
+    Math.min(82, Math.max(24, progress + 2)),
+    Math.min(78, Math.max(28, progress - 1)),
+  ];
+  const dangerValues = values.map((v) => Math.max(10, 100 - v));
+  const size = 260;
+  const center = size / 2;
+  const radius = 82;
+  const pointsFor = (arr) => arr.map((value, index) => {
+    const angle = (Math.PI * 2 * index) / arr.length - Math.PI / 2;
+    const r = radius * (value / 100);
+    return `${(center + Math.cos(angle) * r).toFixed(1)},${(center + Math.sin(angle) * r).toFixed(1)}`;
+  }).join(' ');
+  const axisEnd = labels.map((_, index) => {
+    const angle = (Math.PI * 2 * index) / labels.length - Math.PI / 2;
+    return { x: center + Math.cos(angle) * radius, y: center + Math.sin(angle) * radius, tx: center + Math.cos(angle) * (radius + 24), ty: center + Math.sin(angle) * (radius + 24) };
+  });
+  return (
+    <div className="dashboardRadarWrap">
+      <svg viewBox={`0 0 ${size} ${size}`} className="dashboardRadarSvg">
+        {[20,40,60,80,100].map((step) => {
+          const poly = labels.map((_, index) => {
+            const angle = (Math.PI * 2 * index) / labels.length - Math.PI / 2;
+            const r = radius * (step / 100);
+            return `${(center + Math.cos(angle) * r).toFixed(1)},${(center + Math.sin(angle) * r).toFixed(1)}`;
+          }).join(' ');
+          return <polygon key={step} points={poly} fill="none" stroke="rgba(11,69,78,0.12)" strokeWidth="1" />;
+        })}
+        {axisEnd.map((axis, index) => <line key={index} x1={center} y1={center} x2={axis.x} y2={axis.y} stroke="rgba(11,69,78,0.12)" strokeWidth="1" />)}
+        <polygon points={pointsFor(dangerValues)} fill="rgba(255,120,92,0.22)" stroke="rgba(255,120,92,0.7)" strokeWidth="2" />
+        <polygon points={pointsFor(values)} fill="rgba(0,184,181,0.20)" stroke="rgba(0,184,181,0.9)" strokeWidth="2" />
+        {axisEnd.map((axis, index) => <text key={index} x={axis.tx} y={axis.ty} textAnchor="middle" className="dashboardRadarLabel">{labels[index]}</text>)}
+      </svg>
+      <div className="chartLegendRow radarLegend"><span><i className="legendDot danger"></i>Caos</span><span><i className="legendDot brand"></i>Orden</span></div>
+    </div>
+  );
+}
+
 function KpiCards({ project, milestones, pending, setView }) {
-  const done = milestones.filter((m) => m.status === "Finalizado" || m.status === "Aprobado").length;
   const blocked = pending.filter((p) => String(p.status).toLowerCase().includes("bloqueado")).length;
   const disorder = Math.max(0, 100 - (Number(project.progress) || 0));
+  const completedPending = Math.max(0, milestones.length - pending.length - blocked);
 
   const cards = [
-    { label: "Avance general", value: `${project.progress}%`, icon: BarChart3, note: "Proyecto actualizado", status: project.status },
-    { label: "Desorden operativo", value: `${disorder}%`, icon: AlertTriangle, note: "Disminuye con el avance", status: disorder > 60 ? "Bloqueado" : disorder > 30 ? "En validación" : "Finalizado" },
-    { label: "Hitos cumplidos", value: `${done}/${milestones.length}`, icon: CheckCircle2, note: "Avance validado", status: "Finalizado", target: "ruta" },
-    { label: "Pendientes cliente", value: pending.length, icon: Clock3, note: "Requieren seguimiento", status: "En validación", target: "pendientes" },
-    { label: "Bloqueos", value: blocked, icon: LockKeyhole, note: "Impactan cronograma", status: blocked ? "Bloqueado" : "Finalizado", target: "pendientes" },
+    {
+      label: "Avance general",
+      value: `${project.progress}%`,
+      note: "Histórico de progreso",
+      target: "ruta",
+      widget: <DashboardMiniGauge value={Number(project.progress) || 0} />,
+    },
+    {
+      label: "Desorden operativo",
+      value: `${disorder}%`,
+      note: "Se reduce con el avance",
+      widget: <DashboardMiniThermometer value={disorder} />,
+    },
+    {
+      label: "Pendientes cliente",
+      value: pending.length,
+      note: "Seguimiento necesario",
+      target: "pendientes",
+      widget: <DashboardMiniPending pending={pending.length} done={completedPending} />,
+    },
+    {
+      label: "Bloqueos",
+      value: blocked,
+      note: blocked ? "Requieren atención" : "Operación controlada",
+      target: "pendientes",
+      widget: <DashboardMiniBlockers blocked={blocked} />,
+    },
   ];
 
   return (
-    <div className="kpis">
+    <div className="dashboardKpiGrid fourCards">
       {cards.map((card) => {
-        const Icon = card.icon;
         const clickable = Boolean(card.target);
         return (
-          <div
-            className={`card kpi ${clickable ? "clickable" : ""}`}
+          <article
+            className={`dashboardWidgetCard ${clickable ? "clickable" : ""}`}
             key={card.label}
             onClick={() => clickable && setView?.(card.target)}
           >
-            <div className="kpiTop">
-              <div className="iconBox"><Icon size={22} /></div>
+            <div className="dashboardWidgetHeader">
+              <span>{card.label}</span>
             </div>
-            <div className="muted">{card.label}</div>
-            <div className="kpiValue">{card.value}</div>
-            <div className="badgeRow"><Badge status={card.status}>{card.note}</Badge></div>
-          </div>
+            <div className="dashboardWidgetValue">{card.value}</div>
+            <div className="dashboardWidgetGraphic">{card.widget}</div>
+            <div className="dashboardWidgetFooter">{card.note}</div>
+          </article>
         );
       })}
     </div>
   );
 }
 
-function DisorderCard({ project }) {
-  const progress = Number(project.progress) || 0;
-  const disorder = Math.max(0, 100 - progress);
+function HitosProgressCard({ milestones, setView, selectedHito = "", setSelectedHito }) {
+  const total = milestones.length || 0;
+  const completed = milestones.filter((m) => m.status === "Finalizado" || m.status === "Aprobado").length;
 
   return (
-    <section className="card disorderCard">
-      <div className="sectionHeader">
+    <section className="card hitosProgressCard">
+      <div className="hitosProgressLayout">
+        <div className="hitosProgressStat">
+          <div className="hitosMiniAccent" />
+          <div className="hitosProgressValue">{completed}/{total}</div>
+          <div className="hitosProgressLabel">HITOS CUMPLIDOS</div>
+        </div>
+
+        <div className="hitosProgressMain">
+          <div className="hitosProgressHeader">
+            <h2>Hitos completados</h2>
+            <Badge status="En validación">{completed} completados</Badge>
+          </div>
+
+          <div className="hitosTrackLabels">
+            {milestones.map((m, index) => (
+              <button
+                key={`${m.id}-${m.title}`}
+                className={`hitosTrackLabel ${selectedHito === m.title ? "selected" : ""}`}
+                onClick={() => {
+                  setSelectedHito?.(m.title);
+                  setView?.("ruta");
+                }}
+              >
+                {m.id ? `E${m.id}` : `E${index + 1}`}
+              </button>
+            ))}
+          </div>
+
+          <div className="hitosLineWrap">
+            <div className="hitosLineBase" />
+            <div className="hitosLineFill" style={{ width: `${total ? (completed / total) * 100 : 0}%` }} />
+            {milestones.map((m, index) => {
+              const done = index < completed;
+              const active = selectedHito === m.title;
+              const pos = total <= 1 ? 0 : (index / (total - 1)) * 100;
+              return (
+                <button
+                  key={`dot-${m.id}-${index}`}
+                  className={`hitosDot ${done ? "done" : ""} ${active ? "active" : ""}`}
+                  style={{ left: `${pos}%` }}
+                  onClick={() => {
+                    setSelectedHito?.(m.title);
+                    setView?.("ruta");
+                  }}
+                  aria-label={m.title}
+                />
+              );
+            })}
+          </div>
+
+          <div className="hitosProgressHelp">Haz clic en un hito para ver el detalle dentro de la Ruta del proyecto.</div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function DisorderInsightsCard({ project }) {
+  const progress = Number(project.progress) || 0;
+  return (
+    <section className="card disorderInsightsCard">
+      <div className="sectionHeader executiveHeader compact">
         <div>
           <h2>Nivel de desorden operativo</h2>
-          <p>Esta barra disminuye conforme avanzan los hitos, validaciones y entregables del proyecto.</p>
+          <p>Visualización de apoyo para entender cómo se va reduciendo el caos conforme avanza la implementación.</p>
         </div>
-        <Badge status={disorder > 60 ? "Bloqueado" : disorder > 30 ? "En validación" : "Finalizado"}>{disorder}% restante</Badge>
       </div>
-      <div className="disorderMeter">
+      <DashboardDisorderVisual progress={progress} />
+    </section>
+  );
+}
+
+function DisorderCard({ project, milestones = [], pending = [] }) {
+  const progress = Number(project.progress) || 0;
+  const disorder = Math.max(0, 100 - progress);
+  const blocked = pending.filter((p) => String(p.status).toLowerCase().includes("bloqueado")).length;
+  const status = disorder > 60 ? "Bloqueado" : disorder > 30 ? "En validación" : "Finalizado";
+
+  return (
+    <section className="card executiveDisorderCard">
+      <div className="sectionHeader executiveHeader">
+        <div>
+          <h2>Nivel de desorden operativo</h2>
+          <p>Vista ejecutiva del avance del orden estructural, basada en el progreso del proyecto y la carga actual de seguimiento.</p>
+        </div>
+        <Badge status={status}>{disorder}% restante</Badge>
+      </div>
+
+      <div className="executiveDisorderTopline">
+        <span>Esta barra disminuye conforme avanzan los hitos, validaciones y entregables del proyecto.</span>
+        <span>Bloqueos activos: <strong>{blocked}</strong></span>
+      </div>
+
+      <div className="disorderMeter executiveMeter">
         <div className="disorderLabels">
           <span>Caos</span>
           <strong>{disorder}%</strong>
@@ -322,12 +601,75 @@ function DisorderCard({ project }) {
         </div>
         <ProgressBar value={disorder} status="Bloqueado" reverse />
       </div>
-      <div className="disorderNote">
-        Avance general: <strong>{progress}%</strong> · Desorden estimado: <strong>{disorder}%</strong>
+
+      <DashboardDisorderVisual progress={progress} />
+
+      <div className="disorderNote executiveNote">
+        Avance general: <strong>{progress}%</strong> · Desorden estimado: <strong>{disorder}%</strong> · Hitos: <strong>{milestones.length}</strong>
       </div>
     </section>
   );
 }
+
+
+function MilestonesExecutiveDashboard({ milestones, setView, selectedHito = "", setSelectedHito }) {
+  const completed = milestones.filter((m) => m.status === "Finalizado" || m.status === "Aprobado").length;
+
+  return (
+    <section className="card executiveMilestonesCard">
+      <div className="sectionHeader executiveMilestonesHeader">
+        <div>
+          <h2>Hitos del proyecto</h2>
+          <p>Vista amplia para revisar las 12 etapas sin saturar las tarjetas superiores.</p>
+        </div>
+        <Badge status="Finalizado">{completed}/{milestones.length} completados</Badge>
+      </div>
+
+      <div className="executiveMilestoneGrid">
+        {milestones.map((m, index) => {
+          const selected = selectedHito === m.title;
+          return (
+            <article
+              key={`${m.id}-${m.title}`}
+              className={`executiveMilestoneItem ${selected ? "selected" : ""}`}
+              onClick={() => {
+                setSelectedHito?.(m.title);
+                setView?.("ruta");
+              }}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  setSelectedHito?.(m.title);
+                  setView?.("ruta");
+                }
+              }}
+            >
+              <div className="executiveMilestoneTop">
+                <div className={`executiveMilestoneNumber ${getStatusType(m.status)}`}>
+                  {getStatusType(m.status) === "success" ? <CheckCircle2 size={18} /> : (m.id || index + 1)}
+                </div>
+                <Badge status={m.status}>{m.status}</Badge>
+              </div>
+
+              <h3>{m.title}</h3>
+
+              <div className="executiveMilestoneMeta">
+                <span>{m.system || "Sistema general"}</span>
+                {m.date && <strong>{m.date}</strong>}
+              </div>
+
+              <ProgressBar value={m.progress || 0} status={m.status} />
+              <div className="executiveMilestoneProgress">{m.progress || 0}% de avance</div>
+            </article>
+          );
+        })}
+      </div>
+    </section>
+  );
+}
+
 
 function ProjectHero({ project, completedText }) {
   const meetUrl = safeUrl(project.linkMeet);
@@ -700,52 +1042,67 @@ function Deliverables({ deliverables, selectedDeliverable, setSelectedDeliverabl
   );
 }
 
-function UpdatesPanel({ project, updates, setView }) {
+function UpdatesPanel({ project, updates, setView, pending = [] }) {
   const safeUpdates = updates.length ? updates : [{ title: "Próximo paso", text: project.nextStep, target: "ruta" }];
   const meetUrl = safeUrl(project.linkMeet);
-
-  const inferTarget = (u) => {
-    const manual = String(u.target || "").toLowerCase();
-    if (manual.includes("hallazgo")) return "hallazgos";
-    if (manual.includes("pendiente")) return "pendientes";
-    if (manual.includes("entregable")) return "entregables";
-    if (manual.includes("ruta") || manual.includes("hito")) return "ruta";
-    const title = String(u.title || "").toLowerCase();
-    if (title.includes("hallazgo")) return "hallazgos";
-    if (title.includes("pendiente")) return "pendientes";
-    if (title.includes("entregable")) return "entregables";
-    return "ruta";
-  };
+  const mainPending = pending[0];
 
   return (
-    <aside className="rightPanel">
-      <div className="nextCard">
-        <div className="nextLabel"><Flag size={18} /> Próximo paso</div>
-        <h3>{project.nextStep}</h3>
-        <p>{project.nextDate}</p>
+    <aside className="rightPanel executiveRightPanel">
+      <div className="executiveSideCard nextStepWhiteCard">
+        <div className="sideCardIconLine">
+          <div className="sideIcon"><Flag size={18} /></div>
+          <span>Próximo paso</span>
+        </div>
+        <h3>{project.nextStep || "Próximo paso pendiente"}</h3>
+        <p>{project.nextDate || "Fecha por confirmar"}</p>
         {meetUrl && (
-          <a className="tealButton" href={meetUrl} target="_blank" rel="noreferrer">
+          <a className="sideMeetButton" href={meetUrl} target="_blank" rel="noreferrer">
             <Video size={17} />
             Conectarse a Google Meet
           </a>
         )}
       </div>
 
-      {safeUpdates.map((u, index) => {
-        const target = inferTarget(u);
-        return (
-          <div className="card updateCard" key={`${u.title}-${index}`}>
-            <div className="updateTitle">
-              <div className="iconBox teal"><Search size={20} /></div>
-              <strong>{u.title}</strong>
-            </div>
-            <p>{u.text}</p>
-            <button className="linkBtn" onClick={() => setView(target)}>
-              Ver detalle <ChevronRight size={16} />
-            </button>
+      {mainPending && (
+        <div className="executiveSideCard priorityPendingWhiteCard">
+          <div className="sideCardIconLine">
+            <div className="sideIcon warning"><AlertTriangle size={18} /></div>
+            <span>Pendiente prioritario</span>
           </div>
-        );
-      })}
+
+          <h3>{mainPending.request}</h3>
+          <p>Bloquea: {mainPending.blocks}</p>
+
+          <div className="sidePendingMeta">
+            <span><strong>Responsable:</strong> {mainPending.owner}</span>
+            <span><strong>Fecha:</strong> {mainPending.dueDate}</span>
+          </div>
+
+          <div className="badgeRow">
+            <Badge status={mainPending.status}>{mainPending.status}</Badge>
+          </div>
+
+          {safeUrl(mainPending.link) && (
+            <a className="sideLinkButton" href={safeUrl(mainPending.link)} target="_blank" rel="noreferrer">
+              Abrir documento <ExternalLink size={15} />
+            </a>
+          )}
+        </div>
+      )}
+
+      {!mainPending && safeUpdates.slice(0, 1).map((u, index) => (
+        <div className="executiveSideCard priorityPendingWhiteCard" key={`${u.title}-${index}`}>
+          <div className="sideCardIconLine">
+            <div className="sideIcon"><Search size={18} /></div>
+            <span>{u.title}</span>
+          </div>
+          <p>{u.text}</p>
+          <button className="sideLinkButton" onClick={() => setView("ruta")}>
+            Ver detalle <ChevronRight size={16} />
+          </button>
+        </div>
+      ))}
     </aside>
   );
 }
@@ -1178,17 +1535,19 @@ function App() {
           {view === "resumen" && (
             <>
               <KpiCards project={project} milestones={milestones} pending={pending} setView={setView} />
-              <div className="layout">
-                <div className="leftContent">
-                  <DisorderCard project={project} />
-                  <Timeline milestones={milestones} deliverables={deliverables} setView={setView} setSelectedDeliverable={setSelectedDeliverable} selectedHito={selectedHito} setSelectedHito={setSelectedHito} />
-                  <Findings findings={findings} />
+
+              <div className="executiveSummaryLayout hitosFirst">
+                <div className="executiveSummaryMain">
+                  <HitosProgressCard
+                    milestones={milestones}
+                    setView={setView}
+                    selectedHito={selectedHito}
+                    setSelectedHito={setSelectedHito}
+                  />
+                  <DisorderInsightsCard project={project} />
                 </div>
-                <UpdatesPanel project={project} updates={updates} setView={setView} />
-              </div>
-              <div className="twoColumns">
-                <PendingClient pending={pending} compact setView={setView} />
-                <Deliverables deliverables={deliverables} compact setView={setView} selectedDeliverable={selectedDeliverable} setSelectedDeliverable={setSelectedDeliverable} />
+
+                <UpdatesPanel project={project} updates={updates} pending={pending} setView={setView} />
               </div>
             </>
           )}
