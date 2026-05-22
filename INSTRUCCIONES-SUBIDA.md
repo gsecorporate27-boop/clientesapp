@@ -1,17 +1,20 @@
+# V6.2B - Verificación exacta
 
-# V6.2 Hitos Barra - ZIP Final Limpio
+En `src/main.jsx` debes encontrar:
 
-Este ZIP está limpio: al descomprimirlo salen directamente los archivos del proyecto.
+```text
+function MilestonesExecutive(
+```
 
-## Archivos mínimos a reemplazar en GitHub
+También debe existir:
 
-- src/main.jsx
-- src/index.css
+```text
+dashboardKpiGrid fourCards
+```
 
-## Cómo confirmar que subió bien
+Archivos mínimos a reemplazar:
 
-Después del deploy en Vercel, abajo a la derecha debe aparecer una pequeña etiqueta:
+- `src/main.jsx`
+- `src/index.css`
 
-V6.2
-
-Si no aparece, significa que GitHub/Vercel sigue usando archivos anteriores.
+Cuando Vercel despliegue, abajo a la derecha debe verse `V6.2B`.

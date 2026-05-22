@@ -494,7 +494,7 @@ function KpiCards({ project, milestones, pending, setView }) {
   );
 }
 
-function HitosProgressCard({ milestones, setView, selectedHito = "", setSelectedHito }) {
+function MilestonesExecutive({ milestones, setView, selectedHito = "", setSelectedHito }) {
   const total = milestones.length || 0;
   const completed = milestones.filter((m) => m.status === "Finalizado" || m.status === "Aprobado").length;
 
@@ -1502,7 +1502,7 @@ function App() {
   }, [milestones]);
 
   return (
-    <div className="app"><div className="versionWatermarkV62">V6.2</div>
+    <div className="app"><div className="versionWatermarkV62">V6.2B</div>
       <Sidebar view={view} setView={setView} project={project} />
 
       <main className="main">
@@ -1538,7 +1538,7 @@ function App() {
 
               <div className="executiveSummaryLayout hitosFirst">
                 <div className="executiveSummaryMain">
-                  <HitosProgressCard
+                  <MilestonesExecutive
                     milestones={milestones}
                     setView={setView}
                     selectedHito={selectedHito}
@@ -1564,5 +1564,5 @@ function App() {
   );
 }
 
-console.info("Ruta de Avance Visible · V6.2-HITOS-BARRA-FINAL-LIMPIO");
+console.info("Ruta de Avance Visible · V6.2B-MILESTONESEXECUTIVE");
 createRoot(document.getElementById("root")).render(<App />);
