@@ -3580,3 +3580,104 @@ a.secondaryLink {
     display: block !important;
   }
 }
+
+
+/* ==========================================================
+   V5.5 · SOLO HEADER DEGRADADO
+   Oculta definitivamente la tarjeta blanca duplicada
+   ========================================================== */
+
+/* La tarjeta blanca de "Tablero conectado" queda fuera en todas las vistas */
+.hideDuplicatedProjectCard,
+.duplicatedProjectCard,
+.mobileStaticHero,
+.connectedBoardCard,
+.projectSummaryCard,
+.dashboardIntroCard,
+.overviewHero,
+.summaryHero {
+  display: none !important;
+}
+
+/* Mantiene el header degradado como única cabecera visible */
+.unifiedProjectHeader,
+.premiumHeader,
+.appHeader,
+.topHeader,
+.header.unifiedProjectHeader {
+  position: relative !important;
+  overflow: hidden !important;
+  margin: 22px 24px 26px !important;
+  padding: clamp(26px, 3.2vw, 42px) !important;
+  border: 0 !important;
+  border-radius: 38px !important;
+  background:
+    radial-gradient(circle at 8% 0%, rgba(101, 227, 223, 0.34), transparent 28rem),
+    radial-gradient(circle at 95% 25%, rgba(255, 255, 255, 0.13), transparent 24rem),
+    linear-gradient(135deg, #003f3e 0%, #007f7d 48%, #00b8b5 100%) !important;
+  color: white !important;
+  box-shadow: 0 32px 90px rgba(0, 63, 62, 0.24) !important;
+}
+
+.unifiedProjectHeader *,
+.premiumHeader *,
+.appHeader *,
+.topHeader * {
+  color: white !important;
+}
+
+.unifiedProjectHeader p,
+.premiumHeader p,
+.appHeader p,
+.topHeader p {
+  color: rgba(255,255,255,0.82) !important;
+}
+
+.unifiedProjectHeader .badge,
+.unifiedProjectHeader [class*="badge"],
+.premiumHeader .badge,
+.premiumHeader [class*="badge"],
+.appHeader .badge,
+.appHeader [class*="badge"],
+.topHeader .badge,
+.topHeader [class*="badge"] {
+  background: rgba(255,255,255,0.14) !important;
+  border: 1px solid rgba(255,255,255,0.24) !important;
+  color: white !important;
+}
+
+/* En móvil no se reintroduce la tarjeta blanca */
+@media (max-width: 768px) {
+  .hideDuplicatedProjectCard,
+  .duplicatedProjectCard,
+  .mobileStaticHero,
+  .connectedBoardCard,
+  .projectSummaryCard,
+  .dashboardIntroCard,
+  .overviewHero,
+  .summaryHero {
+    display: none !important;
+  }
+
+  .unifiedProjectHeader,
+  .premiumHeader,
+  .appHeader,
+  .topHeader,
+  .header.unifiedProjectHeader {
+    margin: 14px 12px 18px !important;
+    padding: 24px 20px !important;
+    border-radius: 30px !important;
+  }
+
+  .timelineSummary,
+  .timelineDetailed,
+  .timeline,
+  .routeSection {
+    display: grid !important;
+  }
+
+  .milestone,
+  .premiumMilestone {
+    display: block !important;
+  }
+}
