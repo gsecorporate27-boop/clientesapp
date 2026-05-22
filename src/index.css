@@ -4052,3 +4052,162 @@ a.secondaryLink {
     border-radius: 24px;
   }
 }
+
+
+/* ==========================================================
+   V6.2 · RESUMEN CON 4 TARJETAS + HITOS GRANDES
+   ========================================================== */
+.dashboardKpiGrid.fourCards {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.hitosProgressCard {
+  border-radius: 28px;
+  overflow: hidden;
+}
+
+.hitosProgressLayout {
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr);
+  gap: 26px;
+  align-items: center;
+}
+
+.hitosProgressStat {
+  position: relative;
+  min-height: 170px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 14px 8px 14px 18px;
+}
+
+.hitosMiniAccent {
+  position: absolute;
+  left: 0;
+  top: 18px;
+  bottom: 18px;
+  width: 3px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #ff8b77 0%, #ffd1c7 100%);
+}
+
+.hitosProgressValue {
+  font-family: "Montserrat", sans-serif;
+  font-size: 4rem;
+  line-height: 0.95;
+  font-weight: 800;
+  color: #000;
+  letter-spacing: -0.06em;
+}
+
+.hitosProgressLabel {
+  margin-top: 10px;
+  font-family: "Montserrat", sans-serif;
+  font-weight: 500;
+  font-size: 0.95rem;
+  letter-spacing: 0.02em;
+  color: #27383d;
+}
+
+.hitosProgressMain {
+  min-width: 0;
+}
+
+.hitosProgressHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.hitosProgressHeader h2 {
+  margin: 0;
+  text-transform: uppercase;
+  font-size: 1rem;
+  letter-spacing: 0.02em;
+}
+
+.hitosTrackLabels {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.hitosTrackLabel {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font-family: "Montserrat", sans-serif;
+  font-size: 0.9rem;
+  color: #223439;
+  cursor: pointer;
+}
+.hitosTrackLabel.selected { color: #00a8a5; font-weight: 800; }
+
+.hitosLineWrap {
+  position: relative;
+  height: 36px;
+  margin-bottom: 14px;
+}
+.hitosLineBase,
+.hitosLineFill {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+  height: 6px;
+  border-radius: 999px;
+}
+.hitosLineBase { width: 100%; background: #d7e3e6; }
+.hitosLineFill { background: linear-gradient(90deg, #007f7d 0%, #00b8b5 100%); }
+
+.hitosDot {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 4px solid #00b8b5;
+  background: #fff;
+  cursor: pointer;
+  box-shadow: 0 0 0 4px #fff;
+}
+.hitosDot.done { background: #00b8b5; }
+.hitosDot.active { box-shadow: 0 0 0 4px #fff, 0 0 0 7px rgba(0,184,181,0.18); }
+
+.hitosProgressHelp {
+  color: #667d82;
+  font-size: 0.85rem;
+}
+
+.disorderInsightsCard {
+  border-radius: 28px;
+}
+
+.executiveHeader.compact {
+  margin-bottom: 6px;
+}
+
+@media (max-width: 1180px) {
+  .dashboardKpiGrid.fourCards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .hitosProgressLayout { grid-template-columns: 1fr; }
+  .hitosProgressStat { min-height: auto; padding-left: 18px; }
+}
+
+@media (max-width: 760px) {
+  .hitosTrackLabels {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    row-gap: 10px;
+  }
+}
+
+@media (max-width: 560px) {
+  .dashboardKpiGrid.fourCards { grid-template-columns: 1fr; }
+  .hitosProgressValue { font-size: 3.1rem; }
+  .hitosTrackLabels { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}

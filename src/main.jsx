@@ -437,7 +437,6 @@ function DashboardRadar({ progress = 0 }) {
 }
 
 function KpiCards({ project, milestones, pending, setView }) {
-  const done = milestones.filter((m) => m.status === "Finalizado" || m.status === "Aprobado").length;
   const blocked = pending.filter((p) => String(p.status).toLowerCase().includes("bloqueado")).length;
   const disorder = Math.max(0, 100 - (Number(project.progress) || 0));
   const completedPending = Math.max(0, milestones.length - pending.length - blocked);
@@ -457,13 +456,6 @@ function KpiCards({ project, milestones, pending, setView }) {
       widget: <DashboardMiniThermometer value={disorder} />,
     },
     {
-      label: "Hitos cumplidos",
-      value: `${done}/${milestones.length}`,
-      note: `${milestones.length} hitos totales`,
-      target: "ruta",
-      widget: <DashboardMiniMilestones done={done} total={milestones.length} />,
-    },
-    {
       label: "Pendientes cliente",
       value: pending.length,
       note: "Seguimiento necesario",
@@ -480,7 +472,7 @@ function KpiCards({ project, milestones, pending, setView }) {
   ];
 
   return (
-    <div className="dashboardKpiGrid">
+    <div className="dashboardKpiGrid fourCards">
       {cards.map((card) => {
         const clickable = Boolean(card.target);
         return (
@@ -499,6 +491,84 @@ function KpiCards({ project, milestones, pending, setView }) {
         );
       })}
     </div>
+  );
+}
+
+function HitosProgressCard({ milestones, setView, selectedHito = "", setSelectedHito }) {
+  const total = milestones.length || 0;
+  const completed = milestones.filter((m) => m.status === "Finalizado" || m.status === "Aprobado").length;
+
+  return (
+    <section className="card hitosProgressCard">
+      <div className="hitosProgressLayout">
+        <div className="hitosProgressStat">
+          <div className="hitosMiniAccent" />
+          <div className="hitosProgressValue">{completed}/{total}</div>
+          <div className="hitosProgressLabel">HITOS CUMPLIDOS</div>
+        </div>
+
+        <div className="hitosProgressMain">
+          <div className="hitosProgressHeader">
+            <h2>Hitos completados</h2>
+            <Badge status="En validación">{completed} completados</Badge>
+          </div>
+
+          <div className="hitosTrackLabels">
+            {milestones.map((m, index) => (
+              <button
+                key={`${m.id}-${m.title}`}
+                className={`hitosTrackLabel ${selectedHito === m.title ? "selected" : ""}`}
+                onClick={() => {
+                  setSelectedHito?.(m.title);
+                  setView?.("ruta");
+                }}
+              >
+                {m.id ? `E${m.id}` : `E${index + 1}`}
+              </button>
+            ))}
+          </div>
+
+          <div className="hitosLineWrap">
+            <div className="hitosLineBase" />
+            <div className="hitosLineFill" style={{ width: `${total ? (completed / total) * 100 : 0}%` }} />
+            {milestones.map((m, index) => {
+              const done = index < completed;
+              const active = selectedHito === m.title;
+              const pos = total <= 1 ? 0 : (index / (total - 1)) * 100;
+              return (
+                <button
+                  key={`dot-${m.id}-${index}`}
+                  className={`hitosDot ${done ? "done" : ""} ${active ? "active" : ""}`}
+                  style={{ left: `${pos}%` }}
+                  onClick={() => {
+                    setSelectedHito?.(m.title);
+                    setView?.("ruta");
+                  }}
+                  aria-label={m.title}
+                />
+              );
+            })}
+          </div>
+
+          <div className="hitosProgressHelp">Haz clic en un hito para ver el detalle dentro de la Ruta del proyecto.</div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function DisorderInsightsCard({ project }) {
+  const progress = Number(project.progress) || 0;
+  return (
+    <section className="card disorderInsightsCard">
+      <div className="sectionHeader executiveHeader compact">
+        <div>
+          <h2>Nivel de desorden operativo</h2>
+          <p>Visualización de apoyo para entender cómo se va reduciendo el caos conforme avanza la implementación.</p>
+        </div>
+      </div>
+      <DashboardDisorderVisual progress={progress} />
+    </section>
   );
 }
 
@@ -1466,15 +1536,15 @@ function App() {
             <>
               <KpiCards project={project} milestones={milestones} pending={pending} setView={setView} />
 
-              <div className="executiveSummaryLayout">
+              <div className="executiveSummaryLayout hitosFirst">
                 <div className="executiveSummaryMain">
-                  <DisorderCard project={project} milestones={milestones} pending={pending} />
-                  <MilestonesExecutiveDashboard
+                  <HitosProgressCard
                     milestones={milestones}
                     setView={setView}
                     selectedHito={selectedHito}
                     setSelectedHito={setSelectedHito}
                   />
+                  <DisorderInsightsCard project={project} />
                 </div>
 
                 <UpdatesPanel project={project} updates={updates} pending={pending} setView={setView} />
