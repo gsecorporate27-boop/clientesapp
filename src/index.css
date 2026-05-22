@@ -3808,3 +3808,247 @@ a.secondaryLink {
   .dashboardWidgetValue { font-size: 1.9rem; }
   .thermoWidget { grid-template-columns: 34px 1fr 70px; }
 }
+
+
+/* ==========================================================
+   V6.1 REAL · RESUMEN EJECUTIVO LIMPIO
+   Quita duplicados y deja: KPIs + desorden + hitos + lateral blanco
+   ========================================================== */
+
+.executiveSummaryLayout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 360px;
+  gap: 24px;
+  align-items: start;
+}
+
+.executiveSummaryMain {
+  display: grid;
+  gap: 24px;
+}
+
+.executiveRightPanel {
+  display: grid;
+  gap: 18px;
+  position: sticky;
+  top: 22px;
+}
+
+.executiveSideCard {
+  border-radius: 28px;
+  background: rgba(255,255,255,0.96);
+  border: 1px solid rgba(0, 184, 181, 0.15);
+  box-shadow: 0 18px 42px rgba(3, 54, 57, 0.08);
+  padding: 26px;
+  color: #082f36;
+}
+
+.executiveSideCard h3 {
+  margin: 12px 0 10px;
+  color: #062f36;
+  font-size: 24px;
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+}
+
+.executiveSideCard p {
+  margin: 0;
+  color: #587176;
+  line-height: 1.55;
+}
+
+.sideCardIconLine {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #007f7d;
+  font-weight: 900;
+  font-family: "Montserrat", sans-serif;
+}
+
+.sideIcon {
+  width: 42px;
+  height: 42px;
+  border-radius: 16px;
+  display: grid;
+  place-items: center;
+  color: #007f7d;
+  background: rgba(0, 184, 181, 0.12);
+  border: 1px solid rgba(0, 184, 181, 0.15);
+}
+
+.sideIcon.warning {
+  color: #005f5d;
+  background: rgba(0, 184, 181, 0.10);
+}
+
+.sideMeetButton,
+.sideLinkButton {
+  margin-top: 22px;
+  min-height: 50px;
+  border-radius: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  width: 100%;
+  border: 1px solid rgba(0, 184, 181, 0.18);
+  color: white;
+  background: linear-gradient(135deg, #006f6d 0%, #00b8b5 100%);
+  font-family: "Montserrat", sans-serif;
+  font-weight: 900;
+  text-decoration: none;
+  box-shadow: 0 14px 30px rgba(0, 184, 181, 0.20);
+}
+
+.sideLinkButton {
+  color: #007f7d;
+  background: rgba(0, 184, 181, 0.08);
+  box-shadow: none;
+}
+
+.sidePendingMeta {
+  display: grid;
+  gap: 8px;
+  margin: 18px 0 14px;
+  color: #385b60;
+  font-size: 14px;
+}
+
+.executiveMilestonesCard {
+  border-radius: 30px;
+  overflow: hidden;
+}
+
+.executiveMilestonesHeader {
+  align-items: flex-start;
+}
+
+.executiveMilestoneGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.executiveMilestoneItem {
+  border-radius: 24px;
+  background:
+    radial-gradient(circle at top left, rgba(0,184,181,0.16), transparent 14rem),
+    linear-gradient(180deg, rgba(255,255,255,0.96), rgba(248,253,253,0.98));
+  border: 1px solid rgba(0,184,181,0.14);
+  box-shadow: 0 12px 28px rgba(3,54,57,0.055);
+  padding: 16px;
+  cursor: pointer;
+  transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+}
+
+.executiveMilestoneItem:hover,
+.executiveMilestoneItem.selected {
+  transform: translateY(-2px);
+  border-color: rgba(0,184,181,0.34);
+  box-shadow: 0 18px 38px rgba(3,54,57,0.09);
+}
+
+.executiveMilestoneTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.executiveMilestoneNumber {
+  width: 42px;
+  height: 42px;
+  border-radius: 16px;
+  display: grid;
+  place-items: center;
+  font-family: "Montserrat", sans-serif;
+  font-weight: 900;
+  color: white;
+  background: linear-gradient(135deg, #006f6d 0%, #00b8b5 100%);
+}
+
+.executiveMilestoneNumber.neutral {
+  color: #557176;
+  background: #eef6f6;
+}
+
+.executiveMilestoneNumber.warning,
+.executiveMilestoneNumber.info {
+  color: white;
+  background: linear-gradient(135deg, #007f7d 0%, #34d2cc 100%);
+}
+
+.executiveMilestoneItem h3 {
+  min-height: 44px;
+  margin: 0 0 12px;
+  color: #062f36;
+  font-size: 15px;
+  line-height: 1.25;
+}
+
+.executiveMilestoneMeta {
+  min-height: 34px;
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  color: #5f777b;
+  font-size: 12px;
+  margin-bottom: 12px;
+}
+
+.executiveMilestoneMeta strong {
+  color: #082f36;
+}
+
+.executiveMilestoneProgress {
+  margin-top: 9px;
+  color: #5f777b;
+  font-size: 12px;
+}
+
+.executiveDisorderCard {
+  margin-bottom: 0;
+}
+
+/* Evita que vuelvan a aparecer bloques duplicados dentro del resumen */
+.twoColumns {
+  display: none;
+}
+
+@media (max-width: 1280px) {
+  .executiveSummaryLayout {
+    grid-template-columns: 1fr;
+  }
+
+  .executiveRightPanel {
+    position: static;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .executiveMilestoneGrid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 820px) {
+  .executiveRightPanel {
+    grid-template-columns: 1fr;
+  }
+
+  .executiveMilestoneGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .executiveMilestoneGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .executiveSideCard {
+    padding: 22px;
+    border-radius: 24px;
+  }
+}

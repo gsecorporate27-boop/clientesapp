@@ -1,18 +1,23 @@
-# Ruta de Avance Visible™ - V5.5 Solo Header Degradado
+# Ruta de Avance Visible™ - V6.1 Resumen Ejecutivo Limpio REAL
 
-## Corrección
+## Corrección real incluida
 
-Se elimina/oculta definitivamente la tarjeta blanca duplicada de:
+Esta versión parte de V6 Dashboard Ejecutivo Paso 1 y corrige la pestaña Resumen:
 
-```text
-Tablero conectado
-Business Power · Cliente
-Ruta de avance del proyecto
-```
+- Mantiene las 5 tarjetas KPI superiores.
+- Mantiene el bloque grande de Nivel de desorden operativo.
+- Quita del Resumen los bloques duplicados:
+  - Ruta del proyecto
+  - Hallazgos encontrados
+  - Pendientes del cliente duplicados
+  - Entregables principales
+- Baja los hitos a una tarjeta amplia para que se vean mejor los 12.
+- Deja a la derecha solo:
+  - Próximo paso
+  - Pendiente prioritario
+- Las tarjetas laterales quedan blancas, limpias y coherentes con el dashboard.
 
-Ahora queda una sola cabecera visible: el header degradado premium.
-
-## Archivos que debes reemplazar
+## Archivos a reemplazar
 
 ```text
 src/main.jsx
@@ -20,7 +25,7 @@ src/index.css
 src/sheets.js
 ```
 
-Mínimo requerido:
+Mínimo:
 
 ```text
 src/main.jsx

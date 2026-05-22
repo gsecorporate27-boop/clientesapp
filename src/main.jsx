@@ -541,6 +541,66 @@ function DisorderCard({ project, milestones = [], pending = [] }) {
   );
 }
 
+
+function MilestonesExecutiveDashboard({ milestones, setView, selectedHito = "", setSelectedHito }) {
+  const completed = milestones.filter((m) => m.status === "Finalizado" || m.status === "Aprobado").length;
+
+  return (
+    <section className="card executiveMilestonesCard">
+      <div className="sectionHeader executiveMilestonesHeader">
+        <div>
+          <h2>Hitos del proyecto</h2>
+          <p>Vista amplia para revisar las 12 etapas sin saturar las tarjetas superiores.</p>
+        </div>
+        <Badge status="Finalizado">{completed}/{milestones.length} completados</Badge>
+      </div>
+
+      <div className="executiveMilestoneGrid">
+        {milestones.map((m, index) => {
+          const selected = selectedHito === m.title;
+          return (
+            <article
+              key={`${m.id}-${m.title}`}
+              className={`executiveMilestoneItem ${selected ? "selected" : ""}`}
+              onClick={() => {
+                setSelectedHito?.(m.title);
+                setView?.("ruta");
+              }}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  setSelectedHito?.(m.title);
+                  setView?.("ruta");
+                }
+              }}
+            >
+              <div className="executiveMilestoneTop">
+                <div className={`executiveMilestoneNumber ${getStatusType(m.status)}`}>
+                  {getStatusType(m.status) === "success" ? <CheckCircle2 size={18} /> : (m.id || index + 1)}
+                </div>
+                <Badge status={m.status}>{m.status}</Badge>
+              </div>
+
+              <h3>{m.title}</h3>
+
+              <div className="executiveMilestoneMeta">
+                <span>{m.system || "Sistema general"}</span>
+                {m.date && <strong>{m.date}</strong>}
+              </div>
+
+              <ProgressBar value={m.progress || 0} status={m.status} />
+              <div className="executiveMilestoneProgress">{m.progress || 0}% de avance</div>
+            </article>
+          );
+        })}
+      </div>
+    </section>
+  );
+}
+
+
 function ProjectHero({ project, completedText }) {
   const meetUrl = safeUrl(project.linkMeet);
   return (
@@ -912,52 +972,67 @@ function Deliverables({ deliverables, selectedDeliverable, setSelectedDeliverabl
   );
 }
 
-function UpdatesPanel({ project, updates, setView }) {
+function UpdatesPanel({ project, updates, setView, pending = [] }) {
   const safeUpdates = updates.length ? updates : [{ title: "Próximo paso", text: project.nextStep, target: "ruta" }];
   const meetUrl = safeUrl(project.linkMeet);
-
-  const inferTarget = (u) => {
-    const manual = String(u.target || "").toLowerCase();
-    if (manual.includes("hallazgo")) return "hallazgos";
-    if (manual.includes("pendiente")) return "pendientes";
-    if (manual.includes("entregable")) return "entregables";
-    if (manual.includes("ruta") || manual.includes("hito")) return "ruta";
-    const title = String(u.title || "").toLowerCase();
-    if (title.includes("hallazgo")) return "hallazgos";
-    if (title.includes("pendiente")) return "pendientes";
-    if (title.includes("entregable")) return "entregables";
-    return "ruta";
-  };
+  const mainPending = pending[0];
 
   return (
-    <aside className="rightPanel">
-      <div className="nextCard">
-        <div className="nextLabel"><Flag size={18} /> Próximo paso</div>
-        <h3>{project.nextStep}</h3>
-        <p>{project.nextDate}</p>
+    <aside className="rightPanel executiveRightPanel">
+      <div className="executiveSideCard nextStepWhiteCard">
+        <div className="sideCardIconLine">
+          <div className="sideIcon"><Flag size={18} /></div>
+          <span>Próximo paso</span>
+        </div>
+        <h3>{project.nextStep || "Próximo paso pendiente"}</h3>
+        <p>{project.nextDate || "Fecha por confirmar"}</p>
         {meetUrl && (
-          <a className="tealButton" href={meetUrl} target="_blank" rel="noreferrer">
+          <a className="sideMeetButton" href={meetUrl} target="_blank" rel="noreferrer">
             <Video size={17} />
             Conectarse a Google Meet
           </a>
         )}
       </div>
 
-      {safeUpdates.map((u, index) => {
-        const target = inferTarget(u);
-        return (
-          <div className="card updateCard" key={`${u.title}-${index}`}>
-            <div className="updateTitle">
-              <div className="iconBox teal"><Search size={20} /></div>
-              <strong>{u.title}</strong>
-            </div>
-            <p>{u.text}</p>
-            <button className="linkBtn" onClick={() => setView(target)}>
-              Ver detalle <ChevronRight size={16} />
-            </button>
+      {mainPending && (
+        <div className="executiveSideCard priorityPendingWhiteCard">
+          <div className="sideCardIconLine">
+            <div className="sideIcon warning"><AlertTriangle size={18} /></div>
+            <span>Pendiente prioritario</span>
           </div>
-        );
-      })}
+
+          <h3>{mainPending.request}</h3>
+          <p>Bloquea: {mainPending.blocks}</p>
+
+          <div className="sidePendingMeta">
+            <span><strong>Responsable:</strong> {mainPending.owner}</span>
+            <span><strong>Fecha:</strong> {mainPending.dueDate}</span>
+          </div>
+
+          <div className="badgeRow">
+            <Badge status={mainPending.status}>{mainPending.status}</Badge>
+          </div>
+
+          {safeUrl(mainPending.link) && (
+            <a className="sideLinkButton" href={safeUrl(mainPending.link)} target="_blank" rel="noreferrer">
+              Abrir documento <ExternalLink size={15} />
+            </a>
+          )}
+        </div>
+      )}
+
+      {!mainPending && safeUpdates.slice(0, 1).map((u, index) => (
+        <div className="executiveSideCard priorityPendingWhiteCard" key={`${u.title}-${index}`}>
+          <div className="sideCardIconLine">
+            <div className="sideIcon"><Search size={18} /></div>
+            <span>{u.title}</span>
+          </div>
+          <p>{u.text}</p>
+          <button className="sideLinkButton" onClick={() => setView("ruta")}>
+            Ver detalle <ChevronRight size={16} />
+          </button>
+        </div>
+      ))}
     </aside>
   );
 }
@@ -1390,17 +1465,19 @@ function App() {
           {view === "resumen" && (
             <>
               <KpiCards project={project} milestones={milestones} pending={pending} setView={setView} />
-              <div className="layout">
-                <div className="leftContent">
+
+              <div className="executiveSummaryLayout">
+                <div className="executiveSummaryMain">
                   <DisorderCard project={project} milestones={milestones} pending={pending} />
-                  <Timeline milestones={milestones} deliverables={deliverables} setView={setView} setSelectedDeliverable={setSelectedDeliverable} selectedHito={selectedHito} setSelectedHito={setSelectedHito} />
-                  <Findings findings={findings} />
+                  <MilestonesExecutiveDashboard
+                    milestones={milestones}
+                    setView={setView}
+                    selectedHito={selectedHito}
+                    setSelectedHito={setSelectedHito}
+                  />
                 </div>
-                <UpdatesPanel project={project} updates={updates} setView={setView} />
-              </div>
-              <div className="twoColumns">
-                <PendingClient pending={pending} compact setView={setView} />
-                <Deliverables deliverables={deliverables} compact setView={setView} selectedDeliverable={selectedDeliverable} setSelectedDeliverable={setSelectedDeliverable} />
+
+                <UpdatesPanel project={project} updates={updates} pending={pending} setView={setView} />
               </div>
             </>
           )}
