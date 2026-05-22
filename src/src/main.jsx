@@ -437,7 +437,6 @@ function DashboardRadar({ progress = 0 }) {
 }
 
 function KpiCards({ project, milestones, pending, setView }) {
-  const done = milestones.filter((m) => m.status === "Finalizado" || m.status === "Aprobado").length;
   const blocked = pending.filter((p) => String(p.status).toLowerCase().includes("bloqueado")).length;
   const disorder = Math.max(0, 100 - (Number(project.progress) || 0));
   const completedPending = Math.max(0, milestones.length - pending.length - blocked);
@@ -457,13 +456,6 @@ function KpiCards({ project, milestones, pending, setView }) {
       widget: <DashboardMiniThermometer value={disorder} />,
     },
     {
-      label: "Hitos cumplidos",
-      value: `${done}/${milestones.length}`,
-      note: `${milestones.length} hitos totales`,
-      target: "ruta",
-      widget: <DashboardMiniMilestones done={done} total={milestones.length} />,
-    },
-    {
       label: "Pendientes cliente",
       value: pending.length,
       note: "Seguimiento necesario",
@@ -480,7 +472,7 @@ function KpiCards({ project, milestones, pending, setView }) {
   ];
 
   return (
-    <div className="dashboardKpiGrid">
+    <div className="dashboardKpiGrid fourCards">
       {cards.map((card) => {
         const clickable = Boolean(card.target);
         return (
@@ -499,6 +491,84 @@ function KpiCards({ project, milestones, pending, setView }) {
         );
       })}
     </div>
+  );
+}
+
+function HitosProgressCard({ milestones, setView, selectedHito = "", setSelectedHito }) {
+  const total = milestones.length || 0;
+  const completed = milestones.filter((m) => m.status === "Finalizado" || m.status === "Aprobado").length;
+
+  return (
+    <section className="card hitosProgressCard">
+      <div className="hitosProgressLayout">
+        <div className="hitosProgressStat">
+          <div className="hitosMiniAccent" />
+          <div className="hitosProgressValue">{completed}/{total}</div>
+          <div className="hitosProgressLabel">HITOS CUMPLIDOS</div>
+        </div>
+
+        <div className="hitosProgressMain">
+          <div className="hitosProgressHeader">
+            <h2>Hitos completados</h2>
+            <Badge status="En validación">{completed} completados</Badge>
+          </div>
+
+          <div className="hitosTrackLabels">
+            {milestones.map((m, index) => (
+              <button
+                key={`${m.id}-${m.title}`}
+                className={`hitosTrackLabel ${selectedHito === m.title ? "selected" : ""}`}
+                onClick={() => {
+                  setSelectedHito?.(m.title);
+                  setView?.("ruta");
+                }}
+              >
+                {m.id ? `E${m.id}` : `E${index + 1}`}
+              </button>
+            ))}
+          </div>
+
+          <div className="hitosLineWrap">
+            <div className="hitosLineBase" />
+            <div className="hitosLineFill" style={{ width: `${total ? (completed / total) * 100 : 0}%` }} />
+            {milestones.map((m, index) => {
+              const done = index < completed;
+              const active = selectedHito === m.title;
+              const pos = total <= 1 ? 0 : (index / (total - 1)) * 100;
+              return (
+                <button
+                  key={`dot-${m.id}-${index}`}
+                  className={`hitosDot ${done ? "done" : ""} ${active ? "active" : ""}`}
+                  style={{ left: `${pos}%` }}
+                  onClick={() => {
+                    setSelectedHito?.(m.title);
+                    setView?.("ruta");
+                  }}
+                  aria-label={m.title}
+                />
+              );
+            })}
+          </div>
+
+          <div className="hitosProgressHelp">Haz clic en un hito para ver el detalle dentro de la Ruta del proyecto.</div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function DisorderInsightsCard({ project }) {
+  const progress = Number(project.progress) || 0;
+  return (
+    <section className="card disorderInsightsCard">
+      <div className="sectionHeader executiveHeader compact">
+        <div>
+          <h2>Nivel de desorden operativo</h2>
+          <p>Visualización de apoyo para entender cómo se va reduciendo el caos conforme avanza la implementación.</p>
+        </div>
+      </div>
+      <DashboardDisorderVisual progress={progress} />
+    </section>
   );
 }
 
@@ -542,46 +612,56 @@ function DisorderCard({ project, milestones = [], pending = [] }) {
 }
 
 
-function SummaryMilestones({ milestones = [], setView, selectedHito = "", setSelectedHito }) {
-  const done = milestones.filter((m) => m.status === "Finalizado" || m.status === "Aprobado").length;
-
-  const goToRoute = (title) => {
-    setSelectedHito?.(title);
-    setView?.("ruta");
-  };
+function MilestonesExecutiveDashboard({ milestones, setView, selectedHito = "", setSelectedHito }) {
+  const completed = milestones.filter((m) => m.status === "Finalizado" || m.status === "Aprobado").length;
 
   return (
-    <section className="card summaryMilestonesCard">
-      <div className="sectionHeader">
+    <section className="card executiveMilestonesCard">
+      <div className="sectionHeader executiveMilestonesHeader">
         <div>
           <h2>Hitos del proyecto</h2>
-          <p>Vista amplia para revisar los hitos sin saturar las tarjetas superiores del dashboard.</p>
+          <p>Vista amplia para revisar las 12 etapas sin saturar las tarjetas superiores.</p>
         </div>
-        <Badge status="Finalizado">{done}/{milestones.length} completados</Badge>
+        <Badge status="Finalizado">{completed}/{milestones.length} completados</Badge>
       </div>
 
-      <div className="summaryMilestonesGrid">
-        {milestones.map((m) => {
+      <div className="executiveMilestoneGrid">
+        {milestones.map((m, index) => {
           const selected = selectedHito === m.title;
           return (
             <article
               key={`${m.id}-${m.title}`}
-              className={`summaryMilestoneCard ${selected ? "selected" : ""}`}
-              onClick={() => goToRoute(m.title)}
+              className={`executiveMilestoneItem ${selected ? "selected" : ""}`}
+              onClick={() => {
+                setSelectedHito?.(m.title);
+                setView?.("ruta");
+              }}
               role="button"
               tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  setSelectedHito?.(m.title);
+                  setView?.("ruta");
+                }
+              }}
             >
-              <div className="summaryMilestoneTop">
-                <div className={`summaryMilestoneNumber ${m.status === "Finalizado" || m.status === "Aprobado" ? "done" : String(m.status).toLowerCase().includes("validación") ? "current" : "pending"}`}>
-                  {m.status === "Finalizado" || m.status === "Aprobado" ? <CheckCircle2 size={18} /> : m.id}
+              <div className="executiveMilestoneTop">
+                <div className={`executiveMilestoneNumber ${getStatusType(m.status)}`}>
+                  {getStatusType(m.status) === "success" ? <CheckCircle2 size={18} /> : (m.id || index + 1)}
                 </div>
                 <Badge status={m.status}>{m.status}</Badge>
               </div>
 
               <h3>{m.title}</h3>
-              {m.date && <p className="summaryMilestoneDate"><Clock3 size={14} /> Fecha objetivo: <strong>{m.date}</strong></p>}
-              <ProgressBar value={m.progress} status={m.status} />
-              <div className="summaryMilestoneFoot">{m.progress}% de avance</div>
+
+              <div className="executiveMilestoneMeta">
+                <span>{m.system || "Sistema general"}</span>
+                {m.date && <strong>{m.date}</strong>}
+              </div>
+
+              <ProgressBar value={m.progress || 0} status={m.status} />
+              <div className="executiveMilestoneProgress">{m.progress || 0}% de avance</div>
             </article>
           );
         })}
@@ -962,18 +1042,22 @@ function Deliverables({ deliverables, selectedDeliverable, setSelectedDeliverabl
   );
 }
 
-function UpdatesPanel({ project, pending = [], setView }) {
+function UpdatesPanel({ project, updates, setView, pending = [] }) {
+  const safeUpdates = updates.length ? updates : [{ title: "Próximo paso", text: project.nextStep, target: "ruta" }];
   const meetUrl = safeUrl(project.linkMeet);
   const mainPending = pending[0];
 
   return (
     <aside className="rightPanel executiveRightPanel">
-      <div className="nextCard executiveWhiteCard">
-        <div className="nextLabel"><Flag size={18} /> Próximo paso</div>
-        <h3>{project.nextStep}</h3>
-        <p>{project.nextDate}</p>
+      <div className="executiveSideCard nextStepWhiteCard">
+        <div className="sideCardIconLine">
+          <div className="sideIcon"><Flag size={18} /></div>
+          <span>Próximo paso</span>
+        </div>
+        <h3>{project.nextStep || "Próximo paso pendiente"}</h3>
+        <p>{project.nextDate || "Fecha por confirmar"}</p>
         {meetUrl && (
-          <a className="tealButton" href={meetUrl} target="_blank" rel="noreferrer">
+          <a className="sideMeetButton" href={meetUrl} target="_blank" rel="noreferrer">
             <Video size={17} />
             Conectarse a Google Meet
           </a>
@@ -981,23 +1065,44 @@ function UpdatesPanel({ project, pending = [], setView }) {
       </div>
 
       {mainPending && (
-        <div className="card updateCard executiveWhiteCard pendingPriorityCard">
-          <div className="updateTitle">
-            <div className="iconBox teal"><AlertTriangle size={20} /></div>
-            <strong>Pendiente prioritario</strong>
+        <div className="executiveSideCard priorityPendingWhiteCard">
+          <div className="sideCardIconLine">
+            <div className="sideIcon warning"><AlertTriangle size={18} /></div>
+            <span>Pendiente prioritario</span>
           </div>
+
           <h3>{mainPending.request}</h3>
           <p>Bloquea: {mainPending.blocks}</p>
-          <div className="pendingPriorityMeta">
+
+          <div className="sidePendingMeta">
             <span><strong>Responsable:</strong> {mainPending.owner}</span>
             <span><strong>Fecha:</strong> {mainPending.dueDate}</span>
           </div>
-          <Badge status={mainPending.status}>{mainPending.status}</Badge>
-          <button className="linkBtn" onClick={() => setView("pendientes")}>
-            Ver pendientes <ChevronRight size={16} />
-          </button>
+
+          <div className="badgeRow">
+            <Badge status={mainPending.status}>{mainPending.status}</Badge>
+          </div>
+
+          {safeUrl(mainPending.link) && (
+            <a className="sideLinkButton" href={safeUrl(mainPending.link)} target="_blank" rel="noreferrer">
+              Abrir documento <ExternalLink size={15} />
+            </a>
+          )}
         </div>
       )}
+
+      {!mainPending && safeUpdates.slice(0, 1).map((u, index) => (
+        <div className="executiveSideCard priorityPendingWhiteCard" key={`${u.title}-${index}`}>
+          <div className="sideCardIconLine">
+            <div className="sideIcon"><Search size={18} /></div>
+            <span>{u.title}</span>
+          </div>
+          <p>{u.text}</p>
+          <button className="sideLinkButton" onClick={() => setView("ruta")}>
+            Ver detalle <ChevronRight size={16} />
+          </button>
+        </div>
+      ))}
     </aside>
   );
 }
@@ -1397,7 +1502,7 @@ function App() {
   }, [milestones]);
 
   return (
-    <div className="app">
+    <div className="app"><div className="versionWatermarkV62">V6.2</div>
       <Sidebar view={view} setView={setView} project={project} />
 
       <main className="main">
@@ -1430,12 +1535,19 @@ function App() {
           {view === "resumen" && (
             <>
               <KpiCards project={project} milestones={milestones} pending={pending} setView={setView} />
-              <div className="layout executiveSummaryLayout">
-                <div className="leftContent">
-                  <DisorderCard project={project} milestones={milestones} pending={pending} />
-                  <SummaryMilestones milestones={milestones} setView={setView} selectedHito={selectedHito} setSelectedHito={setSelectedHito} />
+
+              <div className="executiveSummaryLayout hitosFirst">
+                <div className="executiveSummaryMain">
+                  <HitosProgressCard
+                    milestones={milestones}
+                    setView={setView}
+                    selectedHito={selectedHito}
+                    setSelectedHito={setSelectedHito}
+                  />
+                  <DisorderInsightsCard project={project} />
                 </div>
-                <UpdatesPanel project={project} pending={pending} setView={setView} />
+
+                <UpdatesPanel project={project} updates={updates} pending={pending} setView={setView} />
               </div>
             </>
           )}
@@ -1452,4 +1564,5 @@ function App() {
   );
 }
 
+console.info("Ruta de Avance Visible · V6.2-HITOS-BARRA-FINAL-LIMPIO");
 createRoot(document.getElementById("root")).render(<App />);
