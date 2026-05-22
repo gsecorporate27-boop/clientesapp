@@ -1,30 +1,29 @@
-# Ruta de Avance Visible™ · Final Dashboard GSE
+# Ruta de Avance Visible™ - V5.4 Header Unificado Premium
 
-Versión final revisada.
+## Cambio principal
 
-## Incluye
+Se fusiona el header superior con la tarjeta duplicada de `Tablero conectado`.
 
-- Resumen con 4 tarjetas superiores: Avance general, Desorden operativo, Pendientes cliente y Bloqueos.
-- Tarjeta grande de hitos con nombres visibles y barra que se pinta según hitos finalizados/aprobados/completados.
-- Radar alineado a los 5 sistemas de Business Power:
-  1. Operación sin Caos
-  2. Talento en el Rol Correcto
-  3. Salarios Justos que Retienen
-  4. Desempeño que Optimiza la Estructura
-  5. K&ZEN Interno Permanente
-- Sin archivos extra de copia ni marcas visuales temporales.
+## Qué cambia
 
-## Archivos mínimos a reemplazar
+- Header superior con fondo degradado premium.
+- Letras blancas.
+- Ícono integrado sobre fondo translúcido.
+- Badges de conexión/estado en estilo blanco translúcido.
+- Se oculta la tarjeta duplicada inferior para reducir ruido visual.
+- Se mantiene la corrección móvil del menú y de la pestaña Ruta.
 
-- src/main.jsx
-- src/index.css
-- src/sheets.js
+## Archivos que debes reemplazar
 
-## Verificación en GitHub
+```text
+src/main.jsx
+src/index.css
+src/sheets.js
+```
 
-Buscar en `src/main.jsx`:
+Si quieres subir solo lo mínimo, reemplaza:
 
-- RESUMEN_HITOS_BARRA_FINAL
-- RADAR_5_SISTEMAS_GSE
-- function MilestonesExecutive
-- BUSINESS_POWER_SYSTEMS
+```text
+src/main.jsx
+src/index.css
+```
