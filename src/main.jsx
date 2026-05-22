@@ -1502,7 +1502,7 @@ function App() {
   }, [milestones]);
 
   return (
-    <div className="app">
+    <div className="app"><div className="versionWatermarkV62">V6.2</div>
       <Sidebar view={view} setView={setView} project={project} />
 
       <main className="main">
@@ -1564,4 +1564,5 @@ function App() {
   );
 }
 
+console.info("Ruta de Avance Visible · V6.2-HITOS-BARRA-FINAL-LIMPIO");
 createRoot(document.getElementById("root")).render(<App />);

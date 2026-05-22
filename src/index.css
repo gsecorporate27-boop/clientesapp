@@ -4211,3 +4211,40 @@ a.secondaryLink {
   .hitosProgressValue { font-size: 3.1rem; }
   .hitosTrackLabels { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 }
+
+
+/* Confirmación temporal de versión subida */
+.versionWatermarkV62 {
+  position: fixed;
+  right: 10px;
+  bottom: 8px;
+  z-index: 9999;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: rgba(0, 184, 181, 0.16);
+  color: #006f6d;
+  border: 1px solid rgba(0, 184, 181, 0.22);
+  font-family: "Montserrat", sans-serif;
+  font-size: 10px;
+  font-weight: 900;
+  pointer-events: none;
+}
+
+
+/* V6.2 FINAL OVERRIDE */
+.dashboardKpiGrid.fourCards {
+  display: grid !important;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+}
+
+@media (max-width: 1180px) {
+  .dashboardKpiGrid.fourCards {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+}
+
+@media (max-width: 560px) {
+  .dashboardKpiGrid.fourCards {
+    grid-template-columns: 1fr !important;
+  }
+}
