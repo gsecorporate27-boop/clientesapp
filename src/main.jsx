@@ -91,7 +91,7 @@ function Sidebar({ view, setView, project }) {
         <Logo src={project.logoGSE} fallback="GSE" />
         <div>
           <div className="brandTitle">GSE&CO.</div>
-          <div className="brandSub">Ruta de Avance Visible™</div>
+          <div className="brandSub">Ruta de Implementación Visible™</div>
         </div>
       </div>
 
@@ -150,7 +150,7 @@ function Header({ project, connected }) {
         <div className="headerText">
           <div className="eyebrow">{project.service}</div>
           <h1>{company}</h1>
-          <p>Seguimiento ejecutivo del proyecto · Ruta de Avance Visible™</p>
+          <p>Seguimiento ejecutivo del proyecto · Ruta de Implementación Visible™</p>
         </div>
       </div>
 
@@ -169,7 +169,7 @@ function PortalProject({ project, milestones, pending, setView }) {
   const role = project.contactRole || "Responsable del proyecto";
   const completed = milestones.filter((m) => m.status === "Finalizado" || m.status === "Aprobado").length;
   const disorder = Math.max(0, 100 - (Number(project.progress) || 0));
-  const welcome = project.welcomeMessage || "Bienvenido a tu Ruta de Avance Visible™. Aquí podrás revisar el avance del proyecto, los hitos trabajados, los pendientes activos y los entregables construidos por GSE para ordenar tu empresa.";
+  const welcome = project.welcomeMessage || "Bienvenido a tu Ruta de Implemtación Visible™. Aquí podrás revisar el avance del proyecto, los hitos trabajados, los pendientes activos y los entregables construidos por GSE para ordenar tu empresa.";
 
   return (
     <div className="portalPage">
@@ -188,7 +188,7 @@ function PortalProject({ project, milestones, pending, setView }) {
             Portal privado del proyecto
           </div>
 
-          <h2>Bienvenido a tu Ruta de Avance Visible™</h2>
+          <h2>Bienvenido a tu Ruta de Implementación Visible™</h2>
           <p>{welcome}</p>
 
           <div className="portalClientBox">
